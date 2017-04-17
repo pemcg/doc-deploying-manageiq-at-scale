@@ -1,0 +1,32 @@
+[[introduction]]
+== Introduction
+
+This reference architecture discusses the challenges of deploying CloudForms _at scale_ to manage large virtual infrastructures or clouds. The term "at scale" in this case infers several thousand managed virtual machines, instances, templates, clusters, hosts and datastores.
+
+Unfortunately there is no magic formula to describe the various maximum sizes, the number of CloudForms appliances and workers that will be required, nor the number of regions or placement of zones. The diverse nature of the many types of provider and their various workload characteristics makes generalization difficult, and at best misleading.
+
+Experience shows that the most effective way to deploy CloudForms in large environments is to start with a minimal set of features enabled, and go through an iterative process of monitoring, tuning and expanding. Understanding the architecture of the product and the various components is an essential part of this process. Although by default a CloudForms Management Engine appliance is tuned for relatively small environments, the product _is_ scalable to manage many thousands of virtual machines, instances or containers. Achieving this level of scale however generally requires some customization of the core components and workers - their numbers, placement, or memory thresholds for example - for the specific environment being managed.
+
+This reference architecture seeks to explain the architecture of CloudForms, and expose the inner workings of the core components. Several 'rules of thumb' such as guideline CFME appliance to VM ratios are offered, along with the rationale behind the numbers, and when they can be adjusted. The principal source of monitoring and tuning data is the _evm.log_ log file. Many examples of log lines for various workers and strings to search for have been included, along with sample scripts to extract real-time timings for activities such as EMS refresh.
+
+The document is divided into three sections, as follows:
+
+Part I - Architecture and Design
+
+* _Architecture_ discusses the principal architectural components that influence scaling: appliances, server roles, workers and messages.
+* _Regions and Zones_ discusses the considerations and options for region and zone design.
+* _Database Sizing and Optimization_ presents some guidelines for sizing and optimizing the PostgreSQL database for larger-scale operations.
+
+Part II - Component Scaling
+
+* _Inventory Refresh_ discusses the mechanism of extracting and saving the inventory of objects - VMs, hosts or containers for example - from an external management system.
+* _Capacity and Utilization_ explains how the three types of C&U worker interact to extract and process performance metrics from an external management system.
+* _Automate_ describes the challenges of scaling Ruby-based automate workflows, and how to optimize automation methods for larger environments.
+* _Provisioning_ focuses on virtual machine and instance provisioning, and the problems that sometimes need to be addressed when complex automation workflows interact with external enterprise tools.
+* _Event Handling_ describes the three workers that combine to process events from external management systems, and how to scale them.
+* _SmartState Analysis_ takes a look at some of the tuning options available to scale SmartState Analysis in larger environments.
+* _Web User Interface_ discusses how to scale WebUI appliances behind load balancers.
+
+Part III - Monitoring
+
+* _Monitoring_ describes some of the in-built monitoring capabilities, and how to setup alerts to warn of problems such as worker restarts.

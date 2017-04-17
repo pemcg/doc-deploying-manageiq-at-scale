@@ -1,0 +1,7 @@
+<productname>Reference Architectures</productname>
+<productnumber>2017</productnumber>
+<subtitle></subtitle>
+<abstract>
+     <para>The purpose of this document is to provide guidelines and considerations for deploying Red Hat CloudForms 4.x to manage large-scale clouds or virtual infrastructures</para>
+ </abstract>
+ <xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

@@ -1,0 +1,227 @@
+[[automate]]
+== Automate
+
+Automate is an important component of CloudForms that performs many tasks, such as:
+
+* Event processing
+* Service provisioning and retirement
+* VM and instance provisioning and retirement
+
+=== Automation Engine
+
+Automate requests and tasks are processed by an automation engine running in either a Generic worker or Priority worker. Priority workers dequeue high priority (priority 20) messages, which include the following types of automate task:
+
+* Automate instances started from a custom button in the WebUI
+* Processing events though the automate event switchboard
+
+Generic workers dequeue all priorities of messages for the server roles that they manage. These include the less time-sensitive automation jobs such as service requests and provisioning workflows, which are typically queued at a priority of 100. An automate message's "Args" list is passed to the automation engine which instantiates the requested automate entry point instance (usually under _/System/Process_ in the automate datastore). The Generic worker does not process any further messages until the automate instance, its children, and any associated methods have completed, or a state machine method exits with `$evm.root['ae_result'] = 'retry'`.
+
+This process can be observed in _evm.log_ by following the message (Message id: [1038885]) that initiated a virtual machine provisioning operation to a RHEV provider. The message is dequeued and passed to the automation engine, as follows:
+
+[source,pypy] 
+----
+[----] I, [2017-03-22T13:04:48.709513 #3149:84f134]  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) Message id: [1038885], MiqWorker id: [3758], Zone: [default], Role: [automate], Server: [], Ident: [generic], Target id: [], Instance id: [], Task id: [miq_provision_147], Command: [MiqAeEngine.deliver], Timeout: [600], Priority: [100], State: [dequeue], Deliver On: [], Data: [], Args: [{:object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, :tenant_id=>1}], Dequeued in: [3.50249721] seconds
+
+[----] I, [2017-03-22T13:04:48.711333 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) Delivering {"request"=>"vm_provision"} for object [ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state [] to Automate
+----
+
+The automation engine processes the first 9 states in the state machine, but does not complete the processing of the message until the CheckProvisioned method exits with `ae_result="retry"`. The automation engine is seen re-queueing a new message for delivery in 60 seconds, and the current message is flagged as "Delivered" after 50.708623233 seconds of processing time, as follows:
+
+[source,pypy] 
+----
+[----] I, [2017-03-22T13:05:39.384371 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) Requeuing :object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, :tenant_id=>1, :state=>"CheckProvisioned", :ae_fsm_started=>nil, :ae_state_started=>"2017-03-22 13:05:34 UTC", :ae_state_retries=>1, :ae_state_previous=>"---\n\"/Bit63/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template\":\n  ae_state: CheckProvisioned\n  ae_state_retries: 1\n  ae_state_started: 2017-03-22 13:05:34 UTC\n"} for object [ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state [CheckProvisioned] to Automate for delivery in [60] seconds
+
+[----] I, [2017-03-22T13:05:39.417885 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(ManageIQ::Providers::Redhat::InfraManager::Provision#after_ae_delivery) ae_result="retry"
+
+[----] I, [2017-03-22T13:05:39.418311 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqQueue#delivered) Message id: [1038885], State: [ok], Delivered in [50.708623233] seconds
+----
+
+The retry allows the Generic worker to dequeue and process the next message.
+
+=== Challenges of Scale
+
+There are several challenges of scale for automate.
+
+[[zone-related-issues]]
+==== Zone-Related Issues
+
+There are some zone-related implications that should be considered when running automation tasks in a large multi-zone CloudForms deployment. 
+
+===== Automation Engine Enablement
+
+All zones should have at least one CFME appliance with the "automation engine" role set, to process zone-related events. Even zones that have no providers associated with them will generate events such as __evm_worker_stop__, or __evm_worker_memory_exceeded__. If no appliance in a zone has the "automation engine" role enabled, the messages for these events will accumulate in the miq_queue table and never be removed.
+
+===== Services
+
+Most automate messages specify the zone that the automate action should be performed in, however an exception to this is found in the messages that initiate service template provision requests and tasks. These messages don't specify a zone and can therefore run on any appliance in the region that has the "automation engine" role enabled. This can lead to unexpected behaviour.
+
+For example if using services to provision virtual machines using the __/ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template__ class, the messages are zone independent as described. The message to execute the first child service template provision task however is queued for a worker with the __ems_operations__ role, but in the same zone as the server creating the message. If there are no CFME appliances in the zone with the "provider operations" role enabled, the task will not be dequeued and processed, and the service provision will appear to hang.
+
+Similarly services that have a catalog item type of "Generic" can run in any zone that has the "automation engine" role enabled. This might not be the intended action if the workflow is intended to run in a specific zone, such as in an environment where network access rules or firewall restrictions might be appliance-specific.
+
+===== RESTful API
+
+When an automation request is submitted via the API, the automate task is queued by default on the same appliance that the web service is running on. This will be dequeued to run by any appliance with the Automation Engine role set _in the same zone_. If the WebUI/web service appliances have been placed in their own zone, this may not necessarily be the desired behaviour.
+
+=== Identifying Automate Problems
+
+==== Requests Not Starting
+
+By default each CFME appliance has 2 Priority and 2 Generic workers. If both of the Generic workers are busy processing long-running automate tasks or high priority messages (such as from an event storm), no further priority 100 automate messages will be dequeued and processed until either of the workers completes their current task. This is often observed in larger deployments when service or automation requests appear to remain in a "Pending" state for a long time.
+
+==== Long Running Tasks Timing Out
+
+The default message timeout for automate messages is 600 seconds, which means that the combined execution times of all automate methods that share a common `$evm.root` must be less than 10 minutes. If this time limit is exceeded the automate method will be deemed "non responsive" and terminated, and the Generic worker running the automation will exit and be re-spawned. This timer is only reset if a state machine method exits with `$evm.root['ae_result'] = 'retry'`.
+
+The timeout mechanism can be observed in _evm.log_, as follows:
+
+[source,pypy] 
+----
+[----] E, [2017-03-23T10:45:50.363107 #3149:84f134] ERROR -- : <AutomationEngine> Terminating non responsive method with pid 29188
+
+[----] E, [2017-03-23T10:45:50.364129 #3149:8552f0] ERROR -- : <AutomationEngine> <AEMethod test> The following error occurred during method evaluation:
+
+[----] E, [2017-03-23T10:45:50.364892 #3149:8552f0] ERROR -- : <AutomationEngine> <AEMethod test>   SignalException: SIGTERM
+
+[----] E, [2017-03-23T10:45:50.393584 #3149:84f134] ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed out after 600.03190583 seconds.  Timeout threshold [600]
+
+[----] I, [2017-03-23T10:45:50.408803 #3149:84f134]  INFO -- : MIQ(MiqQueue#delivered) Message id: [1054092], State: [timeout], Delivered in [600.047235602] seconds
+
+[----] E, [2017-03-23T10:45:50.504300 #3149:84f134] ERROR -- : MIQ(MiqGenericWorker::Runner) ID [3758] PID [3149] GUID [d8bbe584-0e0f-11e7-a1a8-001a4aa0151a] Exiting worker due to timeout error Worker exiting.
+----
+
+==== State Machine Retries Exceeded
+
+If the number of retries attempted by a state machine state reaches the limit defined in the class schema, an error will be logged to _evm.log_.
+
+=== Tuning Automate
+
+Automate can be tuned for scale in several ways. The first is to add concurrency to the workers processing automate requests and tasks, so that more operations can be run at the same time. 
+
+Individual Ruby-based automate workflows can be made more reliable by adopting efficient automate coding techniques where possible to reduce the overall execution time.
+
+==== Increasing Concurrency
+
+The number of Priority workers per CFME appliance can be increased up to a maximum of of 4, and Generic workers up to a maximum of 9. This will increase the concurrency at which automate messages can be processed, however worker count should only be increased after consideration of the additional CPU and memory requirements that an increased number of workers will place on an appliance. 
+
+For larger CloudForms installations it can be beneficial to separate any of the capacity and utilization, and the automation engine server roles onto different CFME appliances, as both are resource intensive. In very large CloudForms installations it can be beneficial to have dedicated appliances per zone with the "automation engine" role enabled, each with the maximum numbers of Generic and Priority workers.
+
+==== Reducing Execution Time
+
+There are two useful techniques that can be used to help keep the overall execution time of custom Ruby-based automation workflows within the 10 minute timeout period. The first is to use state machines as much as possible to model workflows, and to include *CheckCompleted* states after any asynchronous and potentially long-running operation. The *CheckCompleted* state methods check for completion of the prior state, and issue an `ae_result="retry"` if the operation is incomplete.
+
+The second is to use `$evm.execute('create_automation_request',...)` rather than `$evm.instantiate` to execute long-running instances. Using `$evm.instantiate` to start another instance from a currently running method will execute the called instance synchronously. The calling method will wait until the instantiated instance completes before continuing. If the instantiated method integrates with an external system for example, this delay might be significant, and contributes towards the total message processing time.
+
+The use of these two techniques can be illustrated with the following example. In this case a call is made using `$evm.instantiate` to run an instance `update_cmdb` that updates the IP address for a virtual machine in an external CMDB, but the external API call to the CMDB sometimes takes several minutes to complete. The existing in-line call is as follows:
+
+[source,ruby] 
+----
+$evm.instantiate("/Integration/Methods/update_cmdb?name=dbsrv01&ip=10.1.2.3")
+----
+
+To run the `update_cmdb` instance asynchronously, the call can be rewritten to run as a new automation request, for example:
+
+[source,ruby] 
+----
+options = {}
+options[:namespace]     = 'Integration'
+options[:class_name]    = 'Methods'
+options[:instance_name] = 'update_cmdb'
+options[:user_id]       = $evm.root['user'].id
+options[:attrs]         = {
+					      'name' => 'dbsrv01',
+					      'ip'   => '10.1.2.3'
+					      }
+auto_approve            = true
+
+update_cmdb_request = $evm.execute('create_automation_request', options, 'admin', auto_approve)
+----
+
+If the calling method does not need to wait for the completion of `update_cmdb` then processing can continue, and minimal delay has been incurred. If `update_cmdb` should complete before the main processing can continue, the request ID can be saved, and a 'CheckCompleted' state added to the state machine, as follows:
+
+[source,ruby] 
+----
+update_cmdb_request = $evm.execute('create_automation_request', options, 'admin', auto_approve)
+$evm.set_state_var(:update_cmdb_request_id, update_cmdb_request.id)
+$evm.root['ae_result'] = 'ok'
+exit MIQ_OK
+----
+
+The following state in the state machine would be `check_cmdb_request`, containing code similar to the following:
+
+[source,ruby] 
+----
+update_cmdb_request = $evm.vmdb(:miq_request, $evm.get_state_var(:update_cmdb_request_id))
+case update_cmdb_request.state
+when "pending", "active"
+  $evm.log(:info, "Request still active, waiting for 30 seconds...")
+  $evm.root['ae_retry_interval'] = '30.seconds'
+  $evm.root['ae_result']         = 'retry'
+when "finished"
+  $evm.log(:info, "Request complete!")
+  $evm.root['ae_result'] = 'ok'
+else
+  $evm.log(:warn, "Unexpected request status")
+  $evm.root['ae_result'] = 'error'
+end
+exit MIQ_OK
+----
+
+Sometimes the called method needs to pass data back to the caller, and this can be returned via the request object's options hash. The called method `update_cmdb` can retrieve its own request object and use the `set_option` method to encode a key/value pair (where the value is a JSON-encoded hash) as follows:
+
+[source,ruby] 
+----
+request = $evm.root['automation_task'].automation_request
+request.set_option(:return, JSON.generate({:status => 'success',
+                                           :cmdb_return => 'update successful'}))
+----
+
+The options hash can be read from the request object by the caller using the `get_option` method, as follows:
+
+[source,ruby] 
+----
+update_cmdb_request = $evm.vmdb(:miq_request, $evm.get_state_var(:update_cmdb_request_id))
+returned_data = update_cmdb_request.get_option(:return)
+----
+
+Executing long-running tasks asynchronously in this way using a state machine retry loop to check for completion, is an efficient way of reducing overall processing time, and increasing concurrency and throughput of automate operations.
+
+==== Overcoming Default Zone Behaviour
+
+The default behaviour of services and API requests with regard to zones may not necessarily be suitable for all cases.
+
+===== Services
+
+If services are to be used to provision virtual machines, at least one CFME appliance with the "provider operations" role should be enabled in each zone.
+
+As mentioned in <<zone-related-issues>>, services that have a catalog item type of "Generic" might run in any zone that has a CFME appliance with the "automation engine" server role enabled. If this is not desired behaviour, a workaround is for the service catalog item provisioning entry point to run a simple method that re-launches the service provisioning state machine from a `$evm.execute('create_automation_request',...)` call. This allows the target zone to be specified as the `:miq_zone` option, for example:
+
+[source,ruby] 
+----
+attrs = {}
+attrs['dialog_stack_name'] = $evm.root['dialog_stack_name']
+attrs['dialog_password']   = $evm.root['dialog_password']
+options = {}
+options[:namespace]     = 'Service/Provisioning/StateMachines'
+options[:class_name]    = 'ServiceProvision_Template'
+options[:instance_name] = 'create_stack'
+options[:user_id]       = $evm.vmdb(:user).find_by_userid('admin').id
+options[:miq_zone]      = 'Generic'
+options[:attrs]         = attrs
+auto_approve            = true
+$evm.execute('create_automation_request', options, 'admin', auto_approve)
+----
+
+===== RESTful API
+
+Automation requests submitted via RESTful API can be run in a specific zone if required. The zone name can be specified using the `:miq_zone` parameter to the automation request, as follows:
+
+[source,ruby] 
+----
+  :requester => {
+    :auto_approve => true
+  },
+  :parameters => {
+     :miq_zone => 'Zone Name'
+  }
+----

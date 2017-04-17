@@ -1,0 +1,50 @@
+== Web User Interface
+
+The "Operations" or "Classic" WebUI (as opposed to the Self-Service UI) uses an Apache web server as a reverse proxy front-end to a Puma application server. Each instance of a _MiqUiWorker_ worker is a Puma process.
+
+=== Scaling workers
+
+Most but not all of the UI transactions are written to be asynchronous, but a very few of them are either still synchronous or perform other processing. This can sometimes cause the _MiqUiWorker_ process to appear unresponsive to other user sessions. An example of this can be seen when executing a long-running automate task from simulation in one browser window. Other browser sessions connected to the same _MiqUiWorker_ process may appear hung until the simulation has completed.
+
+A solution to this is to increase the number of WebUI workers. The default number of UI workers per CFME appliance is 1, but this can be increased to a maximum of 9, although consideration should be given to additional CPU and memory requirements that an increased number of workers will place on an appliance (the maximum memory threshold for a UI worker is 1GByte).
+
+[TIP]
+====
+WebUI transactions initiated by each _MiqUiWorker_ process are written into the _production.log_ file. This is often a useful source of information when troubleshooting WebUI problems.
+====
+
+=== Scaling Appliances
+
+To allow for a degree of fault-tolerance in a large CloudForms installation, it is common to deploy several dedicated WebUI CFME appliances in their own zone for general user session use. Each of the CFME appliances should be configured with a minimal set of server roles, for example:
+
+* Automation Engine (to process zone events)
+* Provider Operations (if VM provisioning services are used)
+* Reporting (if logged-on users will be running their own reports)
+* User Interface
+* Web Services
+* Websocket
+
+==== Load Balancers
+
+Multiple CFME appliances in a WebUI zone are often placed behind a load balancer. The load balancer should be configured with sticky sessions enabled. This will cause the load balancer to send requests to the same UI worker during a session.
+
+The load balancer should be configured to test for connectivity using the CloudForms ping response page at https://cfme_appliance/ping. The expected reply from the appliance is the text string “pong”. Using this URL is preferable to the standard login URL as it does not establish a connection to the database.
+
+By default the CloudForms UI workers store session data in the local appliance's memcache. When operating behind a load balancer the UI workers should be configured to store session data in the database. This prevents a user from having to re-login if the load balancer redirects them to an alternative server if their original UI worker is unresponsive.
+
+The location of the session store is defined in the *Configuration->Advanced* settings. The default value for `session_store` is as follows:
+
+[source,yaml] 
+----
+:server:
+...
+  :session_store: cache
+----
+
+This should be changed to:
+
+[source,yaml] 
+----
+  :session_store: sql
+----
+
