@@ -109,8 +109,8 @@ Typical symptoms of a high latency connection are as follows:
 * Database-intensive actions such as complex report or widget generation will take longer to run 
 * CFME appliance restarts will be slower since the startup seeding acquires an exclusive lock. 
 * Worker tasks such as EMS refresh or C&U metrics collection that load data into the VMDB will run more slowly
-** Longer EMS refreshes may have a detrimental effect on other operations such as VM provisioning.footnote:[discussed in <<scaling_provisioning>>]
-** Metrics collection might not keep up with the EMS's realtime statistics retention period.footnote:[discussed in <<scaling_capacity_and_utilization>>]
+** Longer EMS refreshes may have a detrimental effect on other operations such as VM provisioning.footnote:[discussed in <<provisioning>>]
+** Metrics collection might not keep up with the EMS's realtime statistics retention period.footnote:[discussed in <<capacity_and_utilization>>]
 
 When considering deploying a CloudForms region spanning a WAN, it is important to establish acceptable performance criteria for the installation. Although in general a higher latency will result in slower but error-free performance, it has been observed that a latency of 5ms can cause the VMDB update transaction from an EMS refresh to timeout in very large regions. A latency as high as 42 ms can cause failures in database seeding operations.footnote:[See https://bugzilla.redhat.com/show_bug.cgi?id=1422671]
 
