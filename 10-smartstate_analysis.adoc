@@ -143,9 +143,9 @@ A virtual machine SmartState Analysis is always performed on a snapshot of the V
 A SmartState Analysis of the CloudForms VMDB appliance should never be performed 
 ====
 
-A control policy can be created to prevent SmartState Analysis from running on any VM tagged with "exclusions/do_not_analyze", as shown in <<i1>>.
+A control policy can be created to prevent SmartState Analysis from running on any VM tagged with "exclusions/do_not_analyze", as shown in <<i10-1>>.
 
-[[i1]]
+[[i10-1]]
 .Control Policy to Block SmartState Analysis
 image::images/ssa_control_policy.png[Screenshot,400,align="center"]
 {zwsp} +
@@ -214,9 +214,9 @@ CloudForms installations managing several thousand objects may benefit from dedi
 
 ==== SmartProxy Affinity
 
-Hosts and datastores can be can be 'pinned' to specific embedded SmartProxy servers using the *SmartProxy Affinity* setting in the *Configuration -> Settings -> Zones* area of the WebUI, as follows:
+Hosts and datastores can be can be 'pinned' to specific embedded SmartProxy servers using the *SmartProxy Affinity* setting in the *Configuration -> Settings -> Zones* area of the WebUI, as shown in <<i10-2>>:
 
-[[i2]]
+[[i10-2]]
 .SmartProxy Affinity
 image::images/smartproxy_affinity.png[Screenshot,500,align="center"]
 {zwsp} +

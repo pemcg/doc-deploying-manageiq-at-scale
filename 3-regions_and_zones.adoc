@@ -1,9 +1,9 @@
 [[regions_and_zones]]
 == Region and Zones
 
-When planning a large CloudForms implementation, consideration should be given to the number and size of regions required, and the layout of zones within those regions.footnote:[Regions and zones are described in the CloudForms "Deployment Planning Guide" https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/deployment_planning_guide/]. <<i1>> shows an example of the multiple regions working together in a Red Hat CloudForms environment.
+When planning a large CloudForms implementation, consideration should be given to the number and size of regions required, and the layout of zones within those regions.footnote:[Regions and zones are described in the CloudForms "Deployment Planning Guide" https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/deployment_planning_guide/]. <<i3-1>> shows an example of the multiple regions working together in a Red Hat CloudForms environment.
 
-[[i1]]
+[[i3-1]]
 .Regions and Zones
 image::images/regions_and_zones.png[Screenshot,450,align="center"]
 {zwsp} +
@@ -52,7 +52,7 @@ A 'global' region is generally capable of handling more objects than this as it 
 
 ==== Number of CFME Appliances in a Region
 
-When sizing a region, some thought needs to be given to the number of CloudForms worker processes that are likely to be needed to handle the expected workload, and hence the number of CFME appliances. The workload will depend on the capabilities of the providers that will be configured, and the CloudForms features that are likely to be used. Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<scaling_capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware or OpenStack VM and instances in the rolling 60 minute time window that realtime metrics are retained for. Aa an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
+When sizing a region, some thought needs to be given to the number of CloudForms worker processes that are likely to be needed to handle the expected workload, and hence the number of CFME appliances. The workload will depend on the capabilities of the providers that will be configured, and the CloudForms features that are likely to be used. Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware or OpenStack VM and instances in the rolling 60 minute time window that realtime metrics are retained for. Aa an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
 
 Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances in default configuration required for a region. For regions that will only manage providers with reduced capabilities (such as cloud providers), this ratio is often increased to 1:400.
 
@@ -143,7 +143,7 @@ The advantages of deploying multiple regions to manage the objects in a distribu
 
 ==== Connecting Regions
 
-As illustrated in <<i1>> regions can be linked in such a way that several subordinate regions replicate their object data to a single _global_ region. The global region has no providers of its own, and is typically used for enterprise-wide reporting as it has visibility of all objects. A new feature with CloudForms 4.2 allows some management operations to be performed directly from the global region, utilising a RESTful API connection to the correct child region to perform the action. These operations include the following:
+As illustrated in <<i3-1>> regions can be linked in such a way that several subordinate regions replicate their object data to a single _global_ region. The global region has no providers of its own, and is typically used for enterprise-wide reporting as it has visibility of all objects. A new feature with CloudForms 4.2 allows some management operations to be performed directly from the global region, utilising a RESTful API connection to the correct child region to perform the action. These operations include the following:
 
 * Virtual machine provisioning
 * Service provisioning

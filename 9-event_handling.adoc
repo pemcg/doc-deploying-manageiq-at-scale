@@ -14,9 +14,9 @@ The event processing workflow involves 3 different workers, as follows:
 ** Process any alarms associated with the event
 ** Initiate any further operations that are required after the event, such as triggering an EMS refresh
 
-The event workflow is illustrated in <<i1>>
+The event workflow is illustrated in <<i9-1>>
  
-[[i1]]
+[[i9-1]]
 .Event Processing Workflow
 image::images/event_processing.png[Screenshot,500,align="center"]
 {zwsp} +

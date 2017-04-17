@@ -101,9 +101,9 @@ grep -A 13 "Vm: 1$" ems_refresh_timings.out | grep collect_inventory_for_targets
 grep -A 13 "Vm: 1$" ems_refresh_timings.out | grep db_save_inventory | awk '{print $2}' > db_save_inventory.txt
 ----
 
-The contents of the two text files can then be plotted, as shown in <<i1>>.
+The contents of the two text files can then be plotted, as shown in <<i5-1>>.
 
-[[i1]]
+[[i5-1]]
 .Single VM EMS Refresh Component Timings, 24 Hour Period
 image::images/ems_refresh_timings.png[Screenshot,600,align="center"]
 {zwsp} +

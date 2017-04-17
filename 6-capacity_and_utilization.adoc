@@ -226,9 +226,9 @@ egrep -A 22 "Worker PID:\s+10563" perf_process_timings.out | grep vim_connect | 
 egrep -A 22 "Worker PID:\s+10563" perf_process_timings.out | grep vim_execute_time | awk '{print $2}' > vim_execute_times.txt
 ----
 
-The contents of the two text files can then be plotted, as shown in <<i1>>.
+The contents of the two text files can then be plotted, as shown in <<i6-1>>.
 
-[[i1]]
+[[i6-1]]
 .VMware Provider C&U Connect and Execute Timings, Single Worker, 24 Hour Period
 image::images/vim_timings.png[Screenshot,600,align="center"]
 {zwsp} +
@@ -293,9 +293,9 @@ order by resource_id, resource_collect_date, resource_type, capture_interval_nam
 
 === Recovering From Capacity and Utilization Problems
 
-If C&U realtime data is not collected it is generally lost. Some historical information is retrievable using C&U gap collection, but this is of a lower granularity than the realtime metrics that are usually collected. It is fully supported with VMware providers, but also works in a more limited capacity with some other providers such as OpenShift Enterprise.
+If C&U realtime data is not collected it is generally lost. Some historical information is retrievable using C&U gap collection (see <<i6-2>>), but this is of a lower granularity than the realtime metrics that are usually collected. It is fully supported with VMware providers, but also works in a more limited capacity with some other providers such as OpenShift Enterprise.
 
-[[i2]]
+[[i6-2]]
 .C&U Gap Collection
 image::images/gap_collection.png[Screenshot,600,align="center"]
 {zwsp} +

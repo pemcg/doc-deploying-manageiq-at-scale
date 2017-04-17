@@ -9,9 +9,9 @@ The VM provisioning process is one of the most complex automate workflows suppli
 
 ==== VM Provision State Machine
 
-The default automate datastore state machine has the following fields:
+The default automate datastore state machine has the fields shown in <<i8-1>>:
 
-[[i1]]
+[[i8-1]]
 .VM Provision State Machine
 image::images/vm_provision_state_machine.png[Screenshot,600,align="center"]
 {zwsp} +
@@ -64,9 +64,9 @@ As mentioned in <<automate>>, the message to initiate a VM provisioning workflow
 
 In larger CloudForms deployments it is common to add enterprise integration to the VM provisioning workflow. Custom instances are often added to the placeholder fields such as *AcquireIPAddress* to retrieve an IP address from a corporate IP Address Management (IPAM) solution, for example. If the methods run by these stages take minutes to run under high load, the state machine may timeout before the *CheckProvisioned* state is reached.
 
-To reduce this possibility the VM provision state machine can be expanded to include check-and-retry states after the custom methods, such as the *CheckIPAddressAcquired* state in <<i2>>.
+To reduce this possibility the VM provision state machine can be expanded to include check-and-retry states after the custom methods, such as the *CheckIPAddressAcquired* state in <<i8-2>>.
 
-[[i2]]
+[[i8-2]]
 .Modified VM Provision State Machine
 image::images/modified_vm_provision_state_machine.png[Screenshot,600,align="center"]
 {zwsp} +

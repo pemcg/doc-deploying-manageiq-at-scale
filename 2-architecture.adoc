@@ -71,9 +71,9 @@ Some examples of this are as follows:
 
 === Server Roles
 
-A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 different server roles. These are enabled or disabled in the server *Configuration* section of the WebUI (see <<i1>>).
+A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 different server roles. These are enabled or disabled in the server *Configuration* section of the WebUI (see <<i2-1>>).
 
-[[i1]]
+[[i2-1]]
 .Server Roles
 image::images/server_roles.png[Screenshot,400,align="center"]
 {zwsp} +
@@ -192,15 +192,12 @@ As can be seen, many of the server roles start worker processes. The currently r
 
  vmdb; bin/rake evm:status
 
-The same information can also be seen in the *Workers* tab of the *Configuration -> Diagnostics* page (see <<i2>>).
+The same information can also be seen in the *Workers* tab of the *Configuration -> Diagnostics* page (see <<i2-2>>).
 
-[[i2]]
+[[i2-2]]
 .Worker Processes
 image::images/workers.png[Screenshot,700,align="center"]
 {zwsp} +
-
-
-
 
 In addition to the workers started by enabling a server role, each appliance has by default four workers that handle more generic tasks: two _MiqGenericWorkers_ and two _MiqPriorityWorkers_. The MiqPriorityWorkers handle the processing of the highest priority messages (priority 20) in the _generic_ message queue (see below). 
 
@@ -251,8 +248,9 @@ Each worker type is given an out-of-the-box initial memory threshold. The defaul
 
 ===== Adjusting Worker Settings
 
-The count and maximum memory thresholds for most worker types can be tuned from the CloudForms WebUI, in the *Workers* tab of the *Configuration -> Settings* page for each appliance (see <<i3>>).
-[[i3]]
+The count and maximum memory thresholds for most worker types can be tuned from the CloudForms WebUI, in the *Workers* tab of the *Configuration -> Settings* page for each appliance (see <<i2-3>>).
+
+[[i2-3]]
 .Worker Settings
 image::images/workers_webui_page.png[Screenshot,600,align="center"]
 {zwsp} +
