@@ -10,7 +10,7 @@ C&U processing is often referred to as _metrics processing_
 
 === Component Parts
 
-As seen in <<cfme_architecture>>, there are three CFME appliance roles connected with C&U processing:
+As discussed in <<arch>>, there are three CFME appliance roles connected with C&U processing:
 
 * Capacity & Utilization Coordinator
 * Capacity & Utilization Data Collector
