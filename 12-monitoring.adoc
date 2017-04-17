@@ -1,3 +1,4 @@
+
 [[monitoring]]
 == Monitoring
 
@@ -5,11 +6,12 @@ this chapter is still under construction!!!
 
 log files
 
-(top_output.log in /var/www/miq/vmdb/log) or the vmstat data (to be found in vmstat_output.log
+(top_output.log in /var/www/miq/vmdb/log) or the vmstat data (to be found in vmstat_output.log)
 
 === Alerts
 
-Some self-protection policies are available out-of-the-box in the form of alerts
+Some self-protection policies are available out-of-the-box in the form of alerts. <<i12-1>> shows the alert types that are configurable to send emails or SNMP traps, or run an automate instance.
+
 
 [[i12-1]]
 .EVM Monitoring Alerts
@@ -17,21 +19,29 @@ image::images/alerts.png[Screenshot,400,align="center"]
 {zwsp} +
 
 
+[NOTE]
+====
+EVM Worker Started and EVM Worker Stopped events are normal occurrences and should not be considered cause for alarm
+====
 
+In addition to setting alarms for the, it is recommended that the following items are monitored:
 
-Cockpit?
+* Database Appliance
+** VMDB disk utilization 
+*** Project when 80% of filesystem will become filled
+*** Review how used space is being consumed vs the rate at which it was expected to be consumed
 
-Monitoring vmdb disk utilization
-Monitor cpu utilization (steady state utilization approaching 80% suggests need to review implementation options for VMDB appliance and possibly region)
+** CPU utilization (steady state utilization approaching 80% suggests need to review implementation options for VMDB appliance and possibly region)
+* CFME Appliances
 	◦	monitoring/reviewing policies for operational limits on a by-appliance basis
-Review rates and reasons for worker restarts
-Review top data for over committed or underutilized appliances
-Review reporting appliances operations when periodic reports are active ( that is review the operational data from these appliances focusing on those times when reporting workers are busiest.
-Review utilization of appliances with smartproxy active roles when scheduled scans are active
-Review C&U data capture and processing for appliances with Performance monitoring (aka C&U or 'Capacity and Utilization') enabled
-Review operation of appliances with event monitoring role enabled
-Review Provider refresh activity and especially full refresh rates (how many full refreshes per day?  How long does a full refresh take by provider instance?)
-* Are certain property changes causing too many refreshes?  Should additional properties be added to the exclude list?
+** Rates and reasons for worker restarts
+** Top data for over committed or underutilized appliances
+** Reporting appliances operations when periodic reports are active ( that is review the operational data from these appliances focusing on those times when reporting workers are busiest.
+** Utilization of appliances with smartproxy active roles when scheduled scans are active
+** C&U data capture and processing for appliances with Performance monitoring (aka C&U or 'Capacity and Utilization') enabled
+** Operation of appliances with event monitoring role enabled
+** Provider refresh activity and especially full refresh rates (how many full refreshes per day?  How long does a full refresh take by provider instance?)
+** Are certain property changes causing too many refreshes?  Should additional properties be added to the exclude list?
 Compare current operational values  with previous operational values (are there unexpected increases or decreases?)
 	
 
@@ -42,3 +52,9 @@ Periodically review VMDB
 * review how used space is being consumed vs the rate at which it was expected to be consumed
 Review VMs that can't/don't get scanned
 Frequently (daily-to-weekly) review queue sizes
+
+
+
+
+
+Cockpit?

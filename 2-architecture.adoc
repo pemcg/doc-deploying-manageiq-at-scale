@@ -1,4 +1,5 @@
-[[arch]]
+
+[[architecture]]
 == Architecture
 
 In order to understand how to deploy CloudForms at scale, it is important to understand the architectural components that affect the design and deployment decisions. These principal components are described in this chapter.
@@ -218,14 +219,18 @@ The following log line shows an example of the normal timeout processing for a R
 
 [source,pypy] 
 ----
-INFO -- : MIQ(MiqServer#validate_worker) Worker [ManageIQ::Providers::Vmware::InfraManager::RefreshWorker] with ID: [1000000258651], PID: [17949], GUID: [77362eba-c179-11e6-aaa4-00505695be62] uptime has reached the interval of 7200 seconds, requesting worker to exit
+INFO -- : MIQ(MiqServer#validate_worker) Worker [ManageIQ::Providers::Vmware::InfraMan
+ager::RefreshWorker] with ID: [1000000258651], PID: [17949], GUID: [77362eba-c179-11e6-aaa4-00505695be62] uptime has reached the interval 
+of 7200 seconds, requesting worker to exit
 ----
 
 The following log line shows an example of an abnormal exit request for a MiqEmsMetricsProcessorWorker that has exceeded its memory threshold (see <<worker_memory_thresholds>>:
 
 [source,pypy] 
 ----
-WARN -- : MIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] with ID: [1000000259290], PID: [15553], GUID: [40698326-c18a-11e6-aaa4-00505695be62] process memory usage [598032000] exceeded limit [419430400], requesting worker to exit
+WARN -- : MIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] with 
+ID: [1000000259290], PID: [15553], GUID: [40698326-c18a-11e6-aaa4-00505695be62] 
+process memory usage [598032000] exceeded limit [419430400], requesting worker to exit
 ----
 
 [TIP]
@@ -350,7 +355,23 @@ A worker (or other Rails process) adds a message to the queue by calling `MiqQue
 
 [source,pypy] 
 ----
-[----] I, [2016-12-14T03:36:37.276270 #4986:11e598c]  INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) Message id: [32425368],  id: [], Zone: [RHEV], Role: [automate], Server: [], Ident: [generic], Target id: [], Instance id: [7829], Task id: [automation_task_7829], Command: [AutomationTask.execute], Timeout: [600], Priority: [100], State: [ready], Deliver On: [], Data: [], Args: []
+... INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) \
+Message id: [32425368], \
+id: [], \
+Zone: [RHEV], \
+Role: [automate], \
+Server: [], \
+Ident: [generic], \
+Target id: [], \
+Instance id: [7829], \
+Task id: [automation_task_7829], \
+Command: [AutomationTask.execute], \
+Timeout: [600], \
+Priority: [100], \
+State: [ready], \
+Deliver On: [], \
+Data: [], \
+Args: []\
 ----
 
 ===== Stage 2 - Retrieving a message from the queue. 
@@ -359,7 +380,24 @@ A Generic worker calls `get_message_via_drb` to dequeue the next available messa
 
 [source,pypy] 
 ----
-[----] I, [2016-12-14T03:36:43.945520 #4986:11e598c]  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) Message id: [32425368], MiqWorker id: [260305], Zone: [RHEV], Role: [automate], Server: [], Ident: [generic], Target id: [], Instance id: [7829], Task id: [automation_task_7829], Command: [AutomationTask.execute], Timeout: [600], Priority: [100], State: [dequeue], Deliver On: [], Data: [], Args: [], Dequeued in: [6.698342458] seconds
+...  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) \
+Message id: [32425368], \
+MiqWorker id: [260305], \
+Zone: [RHEV], \
+Role: [automate], \
+Server: [], \
+Ident: [generic], \
+Target id: [], \
+Instance id: [7829], \
+Task id: [automation_task_7829], \
+Command: [AutomationTask.execute], \
+Timeout: [600], \
+Priority: [100], \
+State: [dequeue], \
+Deliver On: [], \
+Data: [], \
+Args: [], \
+Dequeued in: [6.698342458] seconds
 ----
 
 [TIP]
@@ -373,7 +411,8 @@ The MiqQueue class's `deliver` method writes to _evm.log_ to indicate that the m
 
 [source,pypy] 
 ----
-[----] I, [2016-12-14T03:36:43.945717 #4986:11e598c]  INFO -- : Q-task_id([automation_task_7829]) MIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
+...  INFO -- : Q-task_id([automation_task_7829]) \
+MIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
 ----
 
 ===== Stage 4 - Message delivered and work is complete.
@@ -382,7 +421,11 @@ Once the worker has finished processing the task associated with the message, th
 
 [source,pypy] 
 ----
-[----] I, [2016-12-14T03:37:07.414790 #4986:11e598c]  INFO -- : Q-task_id([automation_task_7829]) MIQ(MiqQueue#delivered) Message id: [32425368], State: [ok], Delivered in [23.469068759] seconds
+...  INFO -- : Q-task_id([automation_task_7829]) \
+MIQ(MiqQueue#delivered) \
+Message id: [32425368], \
+State: [ok], \
+Delivered in [23.469068759] seconds
 ----
 
 [TIP]
@@ -403,7 +446,11 @@ grep 'count for state=\["dequeue"\]' evm.log
 
 [source,pypy] 
 ---- 
-[----] I, [2016-12-13T07:02:09.744300 #17026:11e598c]  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] MiqQueue count for state=["dequeue"] by zone and role: {"RHEV"=>{nil=>1, "automate"=>1, "ems_metrics_coordinator"=>1, "ems_metrics_collector"=>2, "ems_metrics_processor"=>2, "smartproxy"=>1, "smartstate"=>2}, nil=>{"database_owner"=>1}}
+...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
+[EVM Server (2768)] MiqQueue count for state=["dequeue"] by zone and role: \
+{"RHEV"=>{nil=>1, "automate"=>1, "ems_metrics_coordinator"=>1, \
+"ems_metrics_collector"=>2, "ems_metrics_processor"=>2, "smartproxy"=>1, \
+"smartstate"=>2}, nil=>{"database_owner"=>1}}
 ---- 
 
 [TIP]
@@ -420,7 +467,9 @@ grep 'count for state=\["error"\]' evm.log
 
 [source,pypy] 
 ---- 
-[----] I, [2016-12-13T07:02:09.744475 #17026:11e598c]  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] MiqQueue count for state=["error"] by zone and role: {"RHEV"=>{nil=>36}, "default"=>{nil=>16}, "UI Zone"=>{nil=>35}}
+...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
+[EVM Server (2768)] MiqQueue count for state=["error"] by zone and role: \
+{"RHEV"=>{nil=>36}, "default"=>{nil=>16}, "UI Zone"=>{nil=>35}}
 ---- 
 
 To find the numbers of messages in state "ready" that are waiting to be dequeued in each zone, use the following bash command:
@@ -432,7 +481,12 @@ grep 'count for state=\["ready"\]' evm.log
 
 [source,pypy] 
 ---- 
-[----] I, [2016-12-13T07:02:09.744591 #17026:11e598c]  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] MiqQueue count for state=["ready"] by zone and role: {"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, nil=>4}, "default"=>{"automate"=>2, nil=>21, "smartstate"=>1, "smartproxy"=>1}, "RHEV"=>{"automate"=>6, "ems_inventory"=>1, nil=>19, "smartstate"=>2, "ems_metrics_processor"=>1259, "ems_metrics_collector"=>641}}
+...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
+[EVM Server (2768)] MiqQueue count for state=["ready"] by zone and role: { \
+"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, nil=>4}, \
+"default"=>{"automate"=>2, nil=>21, "smartstate"=>1, "smartproxy"=>1}, \
+"RHEV"=>{"automate"=>6, "ems_inventory"=>1, nil=>19, "smartstate"=>2, \
+"ems_metrics_processor"=>1259, "ems_metrics_collector"=>641}}
 ----
 
 [TIP]
@@ -444,7 +498,7 @@ The count for "ready" state elements in the MiqQueue table should not be greater
 
 The following table summarises the server roles, the workers performing the role tasks, the 'Role' field within the messages handled by those workers, whether the role is region or zone based, and the maximum number of concurrent instances of the role in the region or zone..
 
-[width="100%",cols="^18%,^23%,^17%,^15%,^15%",options="header",align="center"]
+[width="100%",cols="^18%,^23%,^23%,^12%,^12%",options="header",align="center"]
 |=======================================================================
 |Role |Worker |Message 'Role' |Region or Zone |Max Concurrent
 |Automation Engine |Generic or Priority |automate |Region |unlimited

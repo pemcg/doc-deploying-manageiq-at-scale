@@ -1,3 +1,4 @@
+
 [[inventory_refresh]]
 == Inventory Refresh
 

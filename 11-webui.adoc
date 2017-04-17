@@ -1,3 +1,5 @@
+
+[[web-user-interface]]
 == Web User Interface
 
 The "Operations" or "Classic" WebUI (as opposed to the Self-Service UI) uses an Apache web server as a reverse proxy front-end to a Puma application server. Each instance of a _MiqUiWorker_ worker is a Puma process.

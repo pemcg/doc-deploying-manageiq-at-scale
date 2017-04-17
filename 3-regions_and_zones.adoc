@@ -1,3 +1,4 @@
+
 [[regions_and_zones]]
 == Region and Zones
 
@@ -212,7 +213,7 @@ Each worker has a minimum startup cost of approximately 250-300MB, and the memor
 ===== Appliance Maintenance
 
 Shutting down or restarting a CFME appliance in a zone because of upgrade or update is less disruptive if only a single provider is affected, rather than risking disruption of the operation of other providers that might be in the same zone.
- 
+
 ===== Provider-Specific Appliance Tuning
 
 Zones allow for more predictable and provider-instance-specific sizing of CFME appliances and appliance settings based on the requirement of individual providers. For example small VMware providers can have significantly different resourcing requirements from very large VMware providers, especially for C&U collection and processing. 
@@ -226,10 +227,10 @@ If the VMDB is running on a CFME appliance (as opposed to a dedicated PostgreSQL
 A zone is a natural and intuitive way of associating a provider with a corresponding set of physical or logical resources, either in the same or remote location. For example there might be a requirement to open firewall ports to enable access to a particular provider's EMS on a restricted or remote network. Isolating the specific CFME appliances to their own zone simplifies this task.
 
 [NOTE]
-==== 
-Not all worker processes are zone-aware. Some workers process messages originating from or relevant to the entire region. 
 ====
- 
+Not all worker processes are zone-aware. Some workers process messages originating from or relevant to the entire region
+====
+
 ===== Improved and Simplified Diagnostics Gathering
 
 Specifying a log depot per zone in *Configuration -> Settings* allows log collection to be initiated for all appliances in the zone, in a single action. When requested, each appliance in the zone is notified to generate and deposit the specified logs into the zone-specific depot.
