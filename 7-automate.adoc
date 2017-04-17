@@ -21,20 +21,41 @@ This process can be observed in _evm.log_ by following the message (Message id: 
 
 [source,pypy] 
 ----
-[----] I, [2017-03-22T13:04:48.709513 #3149:84f134]  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) Message id: [1038885], MiqWorker id: [3758], Zone: [default], Role: [automate], Server: [], Ident: [generic], Target id: [], Instance id: [], Task id: [miq_provision_147], Command: [MiqAeEngine.deliver], Timeout: [600], Priority: [100], State: [dequeue], Deliver On: [], Data: [], Args: [{:object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, :tenant_id=>1}], Dequeued in: [3.50249721] seconds
+... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) \
+Message id: [1038885], MiqWorker id: [3758], Zone: [default], Role: [automate], \
+Server: [], Ident: [generic], Target id: [], Instance id: [], \
+Task id: [miq_provision_147], Command: [MiqAeEngine.deliver], Timeout: [600], \
+Priority: [100], State: [dequeue], Deliver On: [], Data: [], \
+Args: [{:object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", \
+:object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", \
+:user_id=>1, :miq_group_id=>2, :tenant_id=>1}], Dequeued in: [3.50249721] seconds
 
-[----] I, [2017-03-22T13:04:48.711333 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) Delivering {"request"=>"vm_provision"} for object [ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state [] to Automate
+... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) \
+Delivering {"request"=>"vm_provision"} for object \
+[ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state [] to Automate
 ----
 
 The automation engine processes the first 9 states in the state machine, but does not complete the processing of the message until the CheckProvisioned method exits with `ae_result="retry"`. The automation engine is seen re-queueing a new message for delivery in 60 seconds, and the current message is flagged as "Delivered" after 50.708623233 seconds of processing time, as follows:
 
 [source,pypy] 
 ----
-[----] I, [2017-03-22T13:05:39.384371 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) Requeuing :object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, :tenant_id=>1, :state=>"CheckProvisioned", :ae_fsm_started=>nil, :ae_state_started=>"2017-03-22 13:05:34 UTC", :ae_state_retries=>1, :ae_state_previous=>"---\n\"/Bit63/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template\":\n  ae_state: CheckProvisioned\n  ae_state_retries: 1\n  ae_state_started: 2017-03-22 13:05:34 UTC\n"} for object [ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state [CheckProvisioned] to Automate for delivery in [60] seconds
+... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) \
+Requeuing :object_type=>"ManageIQ::Providers::Redhat::InfraManager::Provision", \
+:object_id=>147, :attrs=>{"request"=>"vm_provision"}, :instance_name=>"AUTOMATION", \
+:user_id=>1, :miq_group_id=>2, :tenant_id=>1, :state=>"CheckProvisioned", \
+:ae_fsm_started=>nil, :ae_state_started=>"2017-03-22 13:05:34 UTC", \
+:ae_state_retries=>1, :ae_state_previous=>"---\n\"/Bit63/Infrastructure/VM/ \
+Provisioning/StateMachines/VMProvision_vm/template\":\n  ae_state: CheckProvisioned\n \
+ae_state_retries: 1\n  ae_state_started: 2017-03-22 13:05:34 UTC\n"} for object \
+[ManageIQ::Providers::Redhat::InfraManager::Provision.147] with state \
+[CheckProvisioned] to Automate for delivery in [60] seconds
 
-[----] I, [2017-03-22T13:05:39.417885 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(ManageIQ::Providers::Redhat::InfraManager::Provision#after_ae_delivery) ae_result="retry"
+... INFO -- : Q-task_id([miq_provision_147]) \
+MIQ(ManageIQ::Providers::Redhat::InfraManager::Provision#after_ae_delivery) \
+ae_result="retry"
 
-[----] I, [2017-03-22T13:05:39.418311 #3149:84f134]  INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqQueue#delivered) Message id: [1038885], State: [ok], Delivered in [50.708623233] seconds
+... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqQueue#delivered) \
+Message id: [1038885], State: [ok], Delivered in [50.708623233] seconds
 ----
 
 The retry allows the Generic worker to dequeue and process the next message.
@@ -78,17 +99,22 @@ The timeout mechanism can be observed in _evm.log_, as follows:
 
 [source,pypy] 
 ----
-[----] E, [2017-03-23T10:45:50.363107 #3149:84f134] ERROR -- : <AutomationEngine> Terminating non responsive method with pid 29188
+... ERROR -- : <AutomationEngine> Terminating non responsive method with pid 29188
 
-[----] E, [2017-03-23T10:45:50.364129 #3149:8552f0] ERROR -- : <AutomationEngine> <AEMethod test> The following error occurred during method evaluation:
+... ERROR -- : <AutomationEngine> <AEMethod test> The following error occurred \
+during method evaluation:
 
-[----] E, [2017-03-23T10:45:50.364892 #3149:8552f0] ERROR -- : <AutomationEngine> <AEMethod test>   SignalException: SIGTERM
+... ERROR -- : <AutomationEngine> <AEMethod test>   SignalException: SIGTERM
 
-[----] E, [2017-03-23T10:45:50.393584 #3149:84f134] ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed out after 600.03190583 seconds.  Timeout threshold [600]
+... ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed out after \
+600.03190583 seconds.  Timeout threshold [600]
 
-[----] I, [2017-03-23T10:45:50.408803 #3149:84f134]  INFO -- : MIQ(MiqQueue#delivered) Message id: [1054092], State: [timeout], Delivered in [600.047235602] seconds
+... INFO -- : MIQ(MiqQueue#delivered) Message id: [1054092], State: [timeout], \
+Delivered in [600.047235602] seconds
 
-[----] E, [2017-03-23T10:45:50.504300 #3149:84f134] ERROR -- : MIQ(MiqGenericWorker::Runner) ID [3758] PID [3149] GUID [d8bbe584-0e0f-11e7-a1a8-001a4aa0151a] Exiting worker due to timeout error Worker exiting.
+... ERROR -- : MIQ(MiqGenericWorker::Runner) ID [3758] PID [3149] \
+GUID [d8bbe584-0e0f-11e7-a1a8-001a4aa0151a] Exiting worker due to timeout \
+error Worker exiting.
 ----
 
 ==== State Machine Retries Exceeded

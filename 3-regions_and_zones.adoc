@@ -44,7 +44,7 @@ Database load is determined by many factors including:
 * The frequency and load profile of connections to the RESTful API (including the Self-Service UI)
 * The number of CFME appliances (more accurately, worker processes) in the region
 
-With this number of permutations it is very difficult to define a representative load for simulation purposes. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, datastores, etc.). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud providers - but as with any large database system, performance should be carefully monitored.
+With this number of permutations it is very difficult to define a representative load for simulation purposes. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, datastores, etc.). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud and container providers - but as with any large database system, performance should be carefully monitored.
 
 [NOTE]
 ====

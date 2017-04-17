@@ -49,7 +49,15 @@ A successful capture is written to _evm.log_, as follows.footnote:[As with the E
 
 [source,pypy] 
 ----
-[----] I, [2017-03-09T18:43:24.876241 #4151:5e7130]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_capture) [realtime] Capture for ManageIQ::Providers::Redhat::InfraManager::Vm name: [jst-db01], id: [10]...Complete - Timings: {:server_dequeue=>0.0034334659576416016, :capture_state=>11.9432852268219, :rhevm_connect=>2.576853036880493, :collect_data=>20.8149151802063, :total_time=>788.3716766834259, :process_counter_values=>1.6096689701080322, :db_find_prev_perfs=>2.439769744873047, :process_perfs=>162.7385015487671, :process_perfs_db=>498.7169578075409, :db_find_storage_files=>1.4817078113555908, :init_attrs=>1.6018922328948975, :process_perfs_tag=>0.13536739349365234, :process_bottleneck=>61.32632827758789}
+... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_capture) \
+[realtime] Capture for ManageIQ::Providers::Redhat::InfraManager::Vm name: \
+[jst-db01], id: [10]...Complete - Timings: {:server_dequeue=>0.0034334659576416016, \
+:capture_state=>11.9432852268219, :rhevm_connect=>2.576853036880493, \
+:collect_data=>20.8149151802063, :total_time=>788.3716766834259, \
+:process_counter_values=>1.6096689701080322, :db_find_prev_perfs=>2.439769744873047, \
+:process_perfs=>162.7385015487671, :process_perfs_db=>498.7169578075409, \
+:db_find_storage_files=>1.4817078113555908, :init_attrs=>1.6018922328948975, \
+:process_perfs_tag=>0.13536739349365234, :process_bottleneck=>61.32632827758789}
 ----
 
 ===== Initial Processing & Storage
@@ -60,7 +68,16 @@ The successful completion of this initial processing stage can be seen in _evm.l
 
 [source,pypy] 
 ----
-[----] I, [2017-03-09T18:43:30.218307 #4151:5e7130]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_process) [realtime] Processing for ManageIQ::Providers::Redhat::InfraManager::Vm name: [jst-db01], id: [10], for range [2017-03-09T17:52:40Z - 2017-03-09T18:43:21Z]...Complete - Timings: {:server_dequeue=>0.0034334659576416016, :capture_state=>11.9432852268219, :rhevm_connect=>2.576853036880493, :collect_data=>20.8149151802063, :total_time=>793.7132942676544, :process_counter_values=>1.6245880126953125, :db_find_prev_perfs=>2.452284097671509, :process_perfs=>163.0625307559967, :process_perfs_db=>503.6072528362274, :db_find_storage_files=>1.4817078113555908, :init_attrs=>1.6018922328948975, :process_perfs_tag=>0.13536739349365234, :process_bottleneck=>61.32632827758789}
+... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_process) \
+[realtime] Processing for ManageIQ::Providers::Redhat::InfraManager::Vm name: \
+[jst-db01], id: [10], for range [2017-03-09T17:52:40Z - 2017-03-09T18:43:21Z]... \
+Complete - Timings: {:server_dequeue=>0.0034334659576416016, \
+:capture_state=>11.9432852268219, :rhevm_connect=>2.576853036880493, \
+:collect_data=>20.8149151802063, :total_time=>793.7132942676544, \
+:process_counter_values=>1.6245880126953125, :db_find_prev_perfs=>2.452284097671509, \
+:process_perfs=>163.0625307559967, :process_perfs_db=>503.6072528362274, \
+:db_find_storage_files=>1.4817078113555908, :init_attrs=>1.6018922328948975, \
+:process_perfs_tag=>0.13536739349365234, :process_bottleneck=>61.32632827758789}
 ----
 
 ==== Data Processing
@@ -75,7 +92,13 @@ Additional analysis is performed on the hourly rollup data to identify bottlenec
 
 [source,pypy] 
 ----
-[----] I, [2016-12-13T04:01:16.420180 #5838:11e598c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_rollup) [hourly] Rollup for ManageIQ::Providers::Vmware::InfraManager::Vm name: [ranji], id: [1000000000752] for time: [2016-12-13T02:00:00Z]...Complete - Timings: {:server_dequeue=>0.0035326480865478516, :db_find_prev_perf=>3.514737129211426, :rollup_perfs=>27.559985399246216, :db_update_perf=>7.901974678039551, :process_perfs_tag=>1.1872785091400146, :process_bottleneck=>2.1828694343566895, :total_time=>54.16198229789734}
+... INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_rollup) \
+[hourly] Rollup for ManageIQ::Providers::Vmware::InfraManager::Vm name: \
+[ranj001], id: [1000000000752] for time: [2016-12-13T02:00:00Z]... \
+Complete - Timings: {:server_dequeue=>0.0035326480865478516, \
+:db_find_prev_perf=>3.514737129211426, :rollup_perfs=>27.559985399246216, \
+:db_update_perf=>7.901974678039551, :process_perfs_tag=>1.1872785091400146, \
+:process_bottleneck=>2.1828694343566895, :total_time=>54.16198229789734}
 ----
 
 === Data Retention
@@ -162,12 +185,35 @@ With a very large number of managed objects the C&U Coordinator becomes unable t
 
 [source,pypy] 
 ----
-[----] I, [2017-03-24T13:33:16.830025 #6648:e53134]  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) Message id: [10000221979280], MiqWorker id: [10000001075231], Zone: [OCP], Role: [ems_metrics_coordinator], Server: [], Ident: [generic], Target id: [], Instance id: [], Task id: [], Command: [Metric::Capture.perf_capture_timer], Timeout: [600], Priority: [20], State: [dequeue], Deliver On: [], Data: [], Args: [], Dequeued in: [2.425676767] seconds
-[----] I, [2017-03-24T13:33:16.830379 #6648:e53134]  INFO -- : MIQ(Metric::Capture.perf_capture_timer) Queueing performance capture...
-[----] I, [2017-03-24T13:33:23.766552 #6648:e53134]  INFO -- : MIQ(MiqQueue.put) Message id: [10000221979391],  id: [], Zone: [OCP], Role: [ems_metrics_collector], Server: [], Ident: [openshift_enterprise], Target id: [], Instance id: [10000000000113], Task id: [], Command: [ManageIQ::Providers::Kubernetes::ContainerManager::ContainerNode.perf_capture_realtime], Timeout: [600], Priority: [100], State: [ready], Deliver On: [], Data: [], Args: [2017-03-23 20:59:00 UTC, 2017-03-24 18:33:23 UTC]
+... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) \
+Message id: [10000221979280], MiqWorker id: [10000001075231], Zone: [OCP], \
+Role: [ems_metrics_coordinator], Server: [], Ident: [generic], Target id: [], \
+Instance id: [], Task id: [], Command: [Metric::Capture.perf_capture_timer], \
+Timeout: [600], Priority: [20], State: [dequeue], Deliver On: [], Data: [], \
+Args: [], Dequeued in: [2.425676767] seconds
+
+... INFO -- : MIQ(Metric::Capture.perf_capture_timer) Queueing performance capture...
+
+... INFO -- : MIQ(MiqQueue.put) Message id: [10000221979391],  id: [], \
+Zone: [OCP], Role: [ems_metrics_collector], Server: [], \
+Ident: [openshift_enterprise], Target id: [], Instance id: [10000000000113], \
+Task id: [], Command: [ManageIQ::Providers::Kubernetes::ContainerManager::\
+ContainerNode.perf_capture_realtime], Timeout: [600], Priority: [100], \
+State: [ready], Deliver On: [], Data: [], \
+Args: [2017-03-23 20:59:00 UTC, 2017-03-24 18:33:23 UTC]
+
 ...
-[----] I, [2017-03-24T13:43:15.851294 #6648:e53134]  INFO -- : MIQ(MiqQueue.put) Message id: [10000221990773],  id: [], Zone: [OCP], Role: [ems_metrics_collector], Server: [], Ident: [openshift_enterprise], Target id: [], Instance id: [10000000032703], Task id: [], Command: [ManageIQ::Providers::Kubernetes::ContainerManager::ContainerGroup.perf_capture_realtime], Timeout: [600], Priority: [100], State: [ready], Deliver On: [], Data: [], Args: [2017-03-24 18:10:20 UTC, 2017-03-24 18:43:15 UTC]
-[----] E, [2017-03-24T13:43:16.833256 #6648:e53134] ERROR -- : MIQ(MiqQueue#deliver) Message id: [10000221979280], timed out after 600.002976954 seconds.  Timeout threshold [600]
+
+... INFO -- : MIQ(MiqQueue.put) Message id: [10000221990773],  id: [], \
+Zone: [OCP], Role: [ems_metrics_collector], Server: [], \
+Ident: [openshift_enterprise], Target id: [], Instance id: [10000000032703], \
+Task id: [], Command: [ManageIQ::Providers::Kubernetes::ContainerManager::\
+ContainerGroup.perf_capture_realtime], Timeout: [600], Priority: [100], \
+State: [ready], Deliver On: [], Data: [], \
+Args: [2017-03-24 18:10:20 UTC, 2017-03-24 18:43:15 UTC]
+
+... ERROR -- : MIQ(MiqQueue#deliver) Message id: [10000221979280], \
+timed out after 600.002976954 seconds.  Timeout threshold [600]
 ----
 
 Such problems can be detected by looking for message timeouts in the log using a command such as the following:
@@ -193,7 +239,13 @@ Searching for the string "MetricsCollectorWorker::Runner#get_message_via_drb" wi
 
 [source,pypy] 
 ----
-[----] I, [2016-12-13T14:07:06.563242 #3104:11e598c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::MetricsCollectorWorker::Runner#get_message_via_drb) Message id: [1000032258093], MiqWorker id: [1000000120960], Zone: [VMware], Role: [ems_metrics_collector], Server: [], Ident: [vmware], Target id: [], Instance id: [1000000000060], Task id: [], Command: [ManageIQ::Providers::Vmware::InfraManager::Vm.perf_capture_realtime], Timeout: [600], Priority: [100], State: [dequeue], Deliver On: [], Data: [], Args: [], Dequeued in: [789.95923544] seconds
+... INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::MetricsCollectorWorker\
+::Runner#get_message_via_drb) Message id: [1000032258093], \
+MiqWorker id: [1000000120960], Zone: [VMware], Role: [ems_metrics_collector], \
+Server: [], Ident: [vmware], Target id: [], Instance id: [1000000000060], \
+Task id: [], Command: [ManageIQ::Providers::Vmware::InfraManager::\
+Vm.perf_capture_realtime], Timeout: [600], Priority: [100], State: [dequeue], \
+Deliver On: [], Data: [], Args: [], Dequeued in: [789.95923544] seconds
 ----
 
 ===== Missing Data Samples - Data Collection
@@ -202,7 +254,11 @@ Searching for the string "expected to get data" can reveal whether requested dat
 
 [source,pypy] 
 ----
-[----] W, [2016-12-13T04:00:10.006828 #3104:11e598c]  WARN -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::HostEsx#perf_capture) [realtime] For ManageIQ::Providers::Vmware::InfraManager::HostEsx name: [esx04], id: [1000000000023], expected to get data as of [2016-12-13T01:20:00Z], but got data as of [2016-12-13T02:00:20Z].
+... WARN -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::HostEsx#perf_capture) \
+[realtime] For ManageIQ::Providers::Vmware::InfraManager::HostEsx \
+name: [esx04], id: [1000000000023], \
+expected to get data as of [2016-12-13T01:20:00Z], \
+but got data as of [2016-12-13T02:00:20Z].
 ----
 
 ===== Missing Data Samples - Data Loading
@@ -211,7 +267,8 @@ Searching for the string "performance rows...Complete" reveals the number of per
 
 [source,pypy] 
 ----
-[----] I, [2016-12-15T20:37:17.075943 #10563:11e598c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) [realtime] Processing 138 performance rows...Complete - Added 138 / Updated 0
+...  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) \
+[realtime] Processing 138 performance rows...Complete - Added 138 / Updated 0
 ----
 
 For VMware this should be less than 180 per collection interval. The presence of a number of lines with a value of 180 usually indicates that some realtime data samples have been lost.
@@ -261,9 +318,17 @@ The "Dequeued in" and "Delivered in" times for messages processed by the MiqEmsM
 
 [source,pypy] 
 ----
-[----] I, [2016-12-13T04:40:24.827649 #12456:11e598c]  INFO -- : MIQ(MiqEmsMetricsProcessorWorker::Runner#get_message_via_drb) Message id: [1000032171247], MiqWorker id: [1000000253077], Zone: [VMware], Role: [ems_metrics_processor], Server: [], Ident: [ems_metrics_processor], Target id: [], Instance id: [1000000001228], Task id: [], Command: [ManageIQ::Providers::Vmware::InfraManager::Vm.perf_rollup], Timeout: [1800], Priority: [100], State: [dequeue], Deliver On: [2016-12-13 03:00:00 UTC], Data: [], Args: ["2016-12-13T02:00:00Z", "hourly"], Dequeued in: [243.967960013] seconds
+... INFO -- : MIQ(MiqEmsMetricsProcessorWorker::Runner#get_message_via_drb) \
+Message id: [1000032171247], MiqWorker id: [1000000253077], Zone: [VMware], \
+Role: [ems_metrics_processor], Server: [], Ident: [ems_metrics_processor], \
+Target id: [], Instance id: [1000000001228], Task id: [], \
+Command: [ManageIQ::Providers::Vmware::InfraManager::Vm.perf_rollup], \
+Timeout: [1800], Priority: [100], State: [dequeue], \
+Deliver On: [2016-12-13 03:00:00 UTC], Data: [], \
+Args: ["2016-12-13T02:00:00Z", "hourly"], Dequeued in: [243.967960013] seconds
 
-[----] I, [2016-12-13T04:40:25.030713 #12456:11e598c]  INFO -- : MIQ(MiqQueue#delivered) Message id: [1000032171247], State: [ok], Delivered in [0.202901147] seconds
+... INFO -- : MIQ(MiqQueue#delivered) Message id: [1000032171247], State: [ok], \
+Delivered in [0.202901147] seconds
 ----
 
 When C&U is operating correctly, for each time-profile instance there should be one daily record and at least 24 hourly records for each powered-on VM. There should also be at most 5 of the metrics_## tables that contain more than zero records. 

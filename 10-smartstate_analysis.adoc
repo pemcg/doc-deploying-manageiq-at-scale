@@ -56,7 +56,6 @@ The name `:scan_via_host` is slightly misleading. Setting this value to `false` 
   :scan_via_host: false
 ----  
  
-
 ==== Red Hat Enterprise Virtualization
 
 For SmartState Analysis of RHEV virtual machines to complete successfully, the CFME appliances running the SmartProxy server roles must be in the same RHEV datacenter as the VM being scanned. The storage domains much also be accessible to the SmartProxy appliances. Fibre channel or iSCSI storage domains should be presented to each SmartProxy appliance as shareable direct LUNs. NFS datastores must be mountable by each SmartProxy appliance, which may mean adding secondary network interfaces to the CFME appliances, connected to the storage network.
@@ -104,10 +103,17 @@ The total time for each VM scan can be determined from the time duration between
 
 [source,pypy] 
 ----
-[----] I, [2017-04-12T10:13:39.059303 #3241:33313c]  INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"request_vm_scan", "VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20690, :miq_event_id=>20690, "EventStream::event_stream"=>20690, :e
-vent_stream_id=>20690} for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] to Automate
+... INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"request_vm_scan", \
+"VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20690, \
+:miq_event_id=>20690, "EventStream::event_stream"=>20690, \
+:event_stream_id=>20690} for object \
+[ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] to Automate
 ...
-[----] I, [2017-04-12T10:14:52.544107 #3232:33313c]  INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"vm_scan_complete", "VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20692, :miq_event_id=>20692, "EventStream::event_stream"=>20692, :event_stream_id=>20692} for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] to Automate
+... INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"vm_scan_complete", \
+"VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20692, \
+:miq_event_id=>20692, "EventStream::event_stream"=>20692, :event_stream_id=>20692} \
+for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] \
+to Automate
 ----
 
 This time includes the scan pre-processing by the Generic worker, the handoff by the _JobProxyDispatcher_ to the appropriate SmartProxy appliance, and the subsequent scan an data process and upload times.
@@ -170,7 +176,9 @@ If the _JobProxyDispatcher_ cannot find a suitable SmartProxy to scan a virtual 
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM :[[NFS_PROD] odrsrv001/odrsrv001.vmx] - [No active SmartProxies found to analyze this VM], aborting job [8064001a-e2ea-11e6-9140-005056b19b0f].
+... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM \
+:[[NFS_PROD] odrsrv001/odrsrv001.vmx] - [No active SmartProxies found to \
+analyze this VM], aborting job [8064001a-e2ea-11e6-9140-005056b19b0f].
 ----
 
 ===== Provide credentials
@@ -179,7 +187,9 @@ If a new VMware ESXi hosts's credentials have been omitted from the CloudForms W
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM :[[FCP_MID] osdweb01/osdweb01.vmx] - [Provide credentials for this VM's Host to perform SmartState Analysis], aborting job [d2e08e70-c26b-11e6-aaa4-00505695be62].
+... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM \
+:[[FCP_MID] osdweb01/osdweb01.vmx] - [Provide credentials for this VM's Host \
+to perform SmartState Analysis], aborting job [d2e08e70-c26b-11e6-aaa4-00505695be62].
 ----
 
 ===== Unable to mount filesystem
@@ -188,7 +198,8 @@ If a CFME appliance running the SmartProxy server role does not have access to t
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, Unable to mount filesystem.  Reason:[mount.nfs: Connection timed out
+... MIQ(VmScan#process_abort) job aborting, Unable to mount filesystem. \
+Reason:[mount.nfs: Connection timed out
 ----
 
 === Tuning SmartState Analysis

@@ -157,7 +157,7 @@ The _scheduler_ sends messages to start all scheduled activities such as report 
 
 [NOTE]
 ====
-Each appliance also has a schedule worker running but this only handles schedules for its own appliance. For example the local scheduler would manage the schedules for the C&U coordinator role if that role was enabled on an appliance.
+Each CFME appliance also has a schedule worker running but this only handles local appliance task scheduling. 
 
 The Scheduler role is for region-specific scheduling and is only active on one appliance per region.
 ====
@@ -219,17 +219,20 @@ The following log line shows an example of the normal timeout processing for a R
 
 [source,pypy] 
 ----
-INFO -- : MIQ(MiqServer#validate_worker) Worker [ManageIQ::Providers::Vmware::InfraMan
-ager::RefreshWorker] with ID: [1000000258651], PID: [17949], GUID: [77362eba-c179-11e6-aaa4-00505695be62] uptime has reached the interval 
-of 7200 seconds, requesting worker to exit
+INFO -- : MIQ(MiqServer#validate_worker) \
+Worker [ManageIQ::Providers::Vmware::InfraManager::RefreshWorker] \
+with ID: [1000000258651], PID: [17949], \
+GUID: [77362eba-c179-11e6-aaa4-00505695be62] \
+uptime has reached the interval of 7200 seconds, requesting worker to exit
 ----
 
 The following log line shows an example of an abnormal exit request for a MiqEmsMetricsProcessorWorker that has exceeded its memory threshold (see <<worker_memory_thresholds>>:
 
 [source,pypy] 
 ----
-WARN -- : MIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] with 
-ID: [1000000259290], PID: [15553], GUID: [40698326-c18a-11e6-aaa4-00505695be62] 
+WARN -- : MIQ(MiqServer#validate_worker) \
+Worker [MiqEmsMetricsProcessorWorker] with ID: [1000000259290], PID: [15553], \
+GUID: [40698326-c18a-11e6-aaa4-00505695be62] \
 process memory usage [598032000] exceeded limit [419430400], requesting worker to exit
 ----
 
@@ -325,7 +328,7 @@ Each message has an _Ident_ field that specifies the worker type that the messag
 
 The message also has a _Role_ field that specifies the server role that the message is intended for. Some workers - the generic and priority workers for example - process the messages for several server roles such as automation engine or provider operations. Workers are aware of the active server roles on their CFME appliance, and only dequeue messages for the enabled server roles.
 
-==== Priority
+===== Priority
 
 Messages each have a _Priority_ field such that lower priority messages for the same worker role are processed before higher priority messages (1 = highest, 200 = lowest). For example, priority 90 messages are processed before priority 100 messages regardless of order in which they were created. The default message priority is 100, but tasks that are considered of greater importance are queued using messages with lower priority numbers. These message priorities are generally hard-coded and not customizable.
 
@@ -333,7 +336,7 @@ Messages each have a _Priority_ field such that lower priority messages for the 
 
 Each message has a _Zone_ field that specifies the zone that the receiving worker should be a member of in order to dequeue the message. Some messages are created with the zone field empty, which means that the message can be dequeued and processed by the _Ident_ worker type in any zone.
 
-==== Server
+===== Server
 
 Messages have a _Server_ field, which is only used if the message is intended to be processed by a particular CFME appliance. If used, the field specifies the GUID of the target CFME appliance.
 
@@ -446,8 +449,8 @@ grep 'count for state=\["dequeue"\]' evm.log
 
 [source,pypy] 
 ---- 
-...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
-[EVM Server (2768)] MiqQueue count for state=["dequeue"] by zone and role: \
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \
+MiqQueue count for state=["dequeue"] by zone and role: \
 {"RHEV"=>{nil=>1, "automate"=>1, "ems_metrics_coordinator"=>1, \
 "ems_metrics_collector"=>2, "ems_metrics_processor"=>2, "smartproxy"=>1, \
 "smartstate"=>2}, nil=>{"database_owner"=>1}}
@@ -467,8 +470,7 @@ grep 'count for state=\["error"\]' evm.log
 
 [source,pypy] 
 ---- 
-...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
-[EVM Server (2768)] MiqQueue count for state=["error"] by zone and role: \
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \ MiqQueue count for state=["error"] by zone and role: \
 {"RHEV"=>{nil=>36}, "default"=>{nil=>16}, "UI Zone"=>{nil=>35}}
 ---- 
 
@@ -481,9 +483,8 @@ grep 'count for state=\["ready"\]' evm.log
 
 [source,pypy] 
 ---- 
-...  INFO -- : Q-task_id([log_status]) MIQ(MiqServer.log_system_status) \
-[EVM Server (2768)] MiqQueue count for state=["ready"] by zone and role: { \
-"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, nil=>4}, \
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \ MiqQueue count for state=["ready"] by zone and role: \
+{"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, nil=>4}, \
 "default"=>{"automate"=>2, nil=>21, "smartstate"=>1, "smartproxy"=>1}, \
 "RHEV"=>{"automate"=>6, "ems_inventory"=>1, nil=>19, "smartstate"=>2, \
 "ems_metrics_processor"=>1259, "ems_metrics_collector"=>641}}
@@ -498,7 +499,7 @@ The count for "ready" state elements in the MiqQueue table should not be greater
 
 The following table summarises the server roles, the workers performing the role tasks, the 'Role' field within the messages handled by those workers, whether the role is region or zone based, and the maximum number of concurrent instances of the role in the region or zone..
 
-[width="100%",cols="^18%,^23%,^23%,^12%,^12%",options="header",align="center"]
+[width="100%",cols="^17%,^23%,^23%,^12%,^13%",options="header",align="center"]
 |=======================================================================
 |Role |Worker |Message 'Role' |Region or Zone |Max Concurrent
 |Automation Engine |Generic or Priority |automate |Region |unlimited

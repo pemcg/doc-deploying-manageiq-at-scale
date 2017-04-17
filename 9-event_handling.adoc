@@ -46,14 +46,22 @@ Event storms are very large bursts of events emitted by a provider's EMS. They c
 
 [source,pypy] 
 ----
-[----] I, [2017-01-25T03:23:04.998138 #374:66b14c]  ... caught event [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427657]
-[----] I, [2017-01-25T03:23:04.998233 #374:66b14c]  ... caught event [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427658]
-[----] I, [2017-01-25T03:23:04.998289 #374:66b14c]  ... caught event [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427659]
-[----] I, [2017-01-25T03:23:04.998340 #374:66b14c]  ... caught event [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427660]
-[----] I, [2017-01-25T03:23:04.998389 #374:66b14c]  ... caught event [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427661]
-[----] I, [2017-01-25T03:23:04.998435 #374:66b14c]  ... caught event [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427662]
-[----] I, [2017-01-25T03:23:04.998482 #374:66b14c]  ... caught event [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427663]
-[----] I, [2017-01-25T03:23:04.998542 #374:66b14c]  ... caught event [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427664]
+[----] I, [2017-01-25T03:23:04.998138 #374:66b14c]  ... caught event \
+[EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427657]
+[----] I, [2017-01-25T03:23:04.998233 #374:66b14c]  ... caught event \
+[EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427658]
+[----] I, [2017-01-25T03:23:04.998289 #374:66b14c]  ... caught event \
+[EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427659]
+[----] I, [2017-01-25T03:23:04.998340 #374:66b14c]  ... caught event \
+[EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427660]
+[----] I, [2017-01-25T03:23:04.998389 #374:66b14c]  ... caught event \
+[EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427661]
+[----] I, [2017-01-25T03:23:04.998435 #374:66b14c]  ... caught event \
+[EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427662]
+[----] I, [2017-01-25T03:23:04.998482 #374:66b14c]  ... caught event \
+[EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427663]
+[----] I, [2017-01-25T03:23:04.998542 #374:66b14c]  ... caught event \
+[EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427664]
 ----
 
 [NOTE]
@@ -102,13 +110,15 @@ Some provider events occur relatively frequently, but are either uninteresting t
 
 [source,pypy] 
 ----
-[----] I, [2017-03-07T14:51:06.848338 #3035:5e7130]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher::Runner#after_initialize) EMS [rhevm.bit63.net] as [admin@internal] Event Catcher skipping the following events:
-[----] I, [2017-03-07T14:51:06.848870 #3035:5e7130]  INFO -- :   - UNASSIGNED
-[----] I, [2017-03-07T14:51:06.848915 #3035:5e7130]  INFO -- :   - USER_REMOVE_VG
-[----] I, [2017-03-07T14:51:06.848944 #3035:5e7130]  INFO -- :   - USER_REMOVE_VG_FAILED
-[----] I, [2017-03-07T14:51:06.848968 #3035:5e7130]  INFO -- :   - USER_VDC_LOGIN
-[----] I, [2017-03-07T14:51:06.848994 #3035:5e7130]  INFO -- :   - USER_VDC_LOGIN_FAILED
-[----] I, [2017-03-07T14:51:06.849021 #3035:5e7130]  INFO -- :   - USER_VDC_LOGOUT
+... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: \
+Runner#after_initialize) EMS [rhevm.bit63.net] as [admin@internal] Event Catcher \
+skipping the following events:
+... INFO -- :   - UNASSIGNED
+... INFO -- :   - USER_REMOVE_VG
+... INFO -- :   - USER_REMOVE_VG_FAILED
+... INFO -- :   - USER_VDC_LOGIN
+... INFO -- :   - USER_VDC_LOGIN_FAILED
+... INFO -- :   - USER_VDC_LOGOUT
 ----
 
 These events are defined in the __blacklisted_events__ table in the VMDB. The default rows in the table are as follows: 
@@ -250,7 +260,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group| \
+          vpn)"
       :event_catcher_openstack_infra:
         :poll: 15.seconds
         :topics:
@@ -265,7 +276,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group| \
+          vpn)"
       :event_catcher_openstack_network:
         :poll: 15.seconds
         :topics:
@@ -276,7 +288,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router|subnet|security_group|vpn)"
+          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router|subnet|security_group| \
+          vpn)"
       :event_catcher_amazon:
         :poll: 15.seconds
       :event_catcher_azure:
