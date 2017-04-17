@@ -1,4 +1,4 @@
-[[architecture]]
+[[cfme_architecture]]
 == Architecture
 
 In order to understand how to deploy CloudForms at scale, it is important to understand the architectural components that affect the design and deployment decisions. These principal components are described in this chapter.
