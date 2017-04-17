@@ -1,7 +1,7 @@
 [[database_sizing_and_optimization]]
 == Database Sizing and Optimization
 
-As discussed in <<arch>> CloudForms uses a PostgreSQL 9.5 database as its VMDB back-end, and the performance of this database is critical to the overall smooth-running of the CloudForms installation. This section discusses techniques to ensure that the database is installed and configured correctly, and optimally tuned.
+As discussed in <<introduction>> CloudForms uses a PostgreSQL 9.5 database as its VMDB back-end, and the performance of this database is critical to the overall smooth-running of the CloudForms installation. This section discusses techniques to ensure that the database is installed and configured correctly, and optimally tuned.
 
 === Sizing the Database Appliance
 
