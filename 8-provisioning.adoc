@@ -55,7 +55,7 @@ The VM or instance provisioning workflow contains several operations that are ex
 * Interactions with other enterprise systems such as Active Directory, IPAM or a CMDB
 * Post-provisioning time consumed by initialization scripts such as cloud-init or sysprep (particularly where this includes a software update of the new virtual machine)
 
-With larger enterprises the number of interactions - and inherent workflow delays - often increases, and CloudForms somtimes needs tuning to cater for this.
+With larger enterprises the number of interactions - and inherent workflow delays - often increases, and CloudForms sometimes needs tuning to cater for this.
 
 ==== State Machine Timeouts
 

@@ -2,7 +2,7 @@
 [[regions_and_zones]]
 == Region and Zones
 
-When planning a large CloudForms implementation, consideration should be given to the number and size of regions required, and the layout of zones within those regions.footnote:[Regions and zones are described in the CloudForms "Deployment Planning Guide" https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/deployment_planning_guide/]. <<i3-1>> shows an example of the multiple regions working together in a Red Hat CloudForms environment.
+When planning a large CloudForms implementation, consideration must be given to the number and size of regions required, and the layout of zones within those regions.footnote:[Regions and zones are described in the CloudForms "Deployment Planning Guide" https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/deployment_planning_guide/]. <<i3-1>> shows an example of multiple regions working together in a Red Hat CloudForms environment.
 
 [[i3-1]]
 .Regions and Zones
@@ -10,13 +10,13 @@ image::images/regions_and_zones.png[Screenshot,450,align="center"]
 {zwsp} +
 
 
-In this example the corporate HQ is located in Chicago Technology Center, and this location contains a global "Master" region and a sub-region that manages the worker appliances. The Mahwah technology center contains a single sub-region that manages two zones. Likewise, the San Diego Technology Center contains a single sub-region managing a single zone.
+In this example the Corporate HQ is located in Chicago Technology Center. This location contains a global "Master" region, and a sub-region that manages the worker appliances. The Mahwah technology center contains a single sub-region that manages two zones. Likewise, the San Diego Technology Center contains a single sub-region managing one zone.
 
 This section describes some of the considerations when designing regions and zones, and presents some guidelines and suggestions for implementation.
 
 === Regions
 
-A region is a self-contained collection of CloudForms Management Engine (CFME) appliances. Each region has a database - the VMDB - and one or more appliances running the evmserverd application with an associated set of configured worker processes. Regions are often used for organisational or geographical separation of resources, and the choice of region count, location and size is often based on both operational and technical factors.
+A region is a self-contained collection of CloudForms Management Engine (CFME) appliances. Each region has a database - the VMDB - and one or more appliances running the _evmserverd_ application with an associated set of configured worker processes. Regions are often used for organisational or geographical separation of resources, and the choice of region count, location and size is often based on both operational and technical factors.
 
 ==== Region Size
 
@@ -53,7 +53,9 @@ A 'global' region is generally capable of handling more objects than this as it 
 
 ==== Number of CFME Appliances in a Region
 
-When sizing a region, some thought needs to be given to the number of CloudForms worker processes that are likely to be needed to handle the expected workload, and hence the number of CFME appliances. The workload will depend on the capabilities of the providers that will be configured, and the CloudForms features that are likely to be used. Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware or OpenStack VM and instances in the rolling 60 minute time window that realtime metrics are retained for. Aa an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
+When sizing a region, some thought needs to be given to the number of CloudForms worker processes that are likely to be needed to handle the expected workload, and hence the number of CFME appliances. The workload will depend on the capabilities of the providers that will be configured, and the CloudForms features that are likely to be used. 
+
+Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware VMs or OpenStack instances in the rolling 60 minute time window that realtime metrics are retained for. As an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
 
 Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances in default configuration required for a region. For regions that will only manage providers with reduced capabilities (such as cloud providers), this ratio is often increased to 1:400.
 
@@ -106,10 +108,10 @@ The architecture of CloudForms assumes LAN-speed latency (≈ 1 ms) between CFME
 
 Typical symptoms of a high latency connection are as follows:
 
-* WebUI operations will appear to be slow, especially viewing screens that display a large number of objects such as VMs
-* Database-intensive actions such as complex report or widget generation will take longer to run 
-* CFME appliance restarts will be slower since the startup seeding acquires an exclusive lock. 
-* Worker tasks such as EMS refresh or C&U metrics collection that load data into the VMDB will run more slowly
+* WebUI operations appear to be slow, especially viewing screens that display a large number of objects such as VMs
+* Database-intensive actions such as complex report or widget generation take longer to run 
+* CFME appliance restarts are slower since the startup seeding acquires an exclusive lock. 
+* Worker tasks such as EMS refresh or C&U metrics collection that load data into the VMDB run more slowly
 ** Longer EMS refreshes may have a detrimental effect on other operations such as VM provisioning.footnote:[discussed in <<provisioning>>]
 ** Metrics collection might not keep up with the EMS's realtime statistics retention period.footnote:[discussed in <<capacity_and_utilization>>]
 
@@ -121,13 +123,8 @@ Where WAN latency is deemed acceptable, the advantages of deploying a single reg
 
 * Simplified appliance upgrade procedures (no multiple regions or global region upgrade coordination issues)
 * Simplified disaster recovery when there is only one database to manage
-* Simpler architectural design, and therefore operational procedures and documentation
+* Simpler architectural design, and therefore more straightforward operational procedures and documentation
 * Easier to manage the deployment of customisations such as automate code, policies, or reports (there is a single point of import)
-
-[NOTE]
-====
-Some providers are less suitable for use with regions that span locations, for example a SmartState Analysis of an OpenStack instance copies a snapshot of the instance to the CFME appliance to run the scan.
-====
 
 ====== Multi-Region
 
@@ -212,11 +209,11 @@ Each worker has a minimum startup cost of approximately 250-300MB, and the memor
 
 ===== Appliance Maintenance
 
-Shutting down or restarting a CFME appliance in a zone because of upgrade or update is less disruptive if only a single provider is affected, rather than risking disruption of the operation of other providers that might be in the same zone.
+Shutting down or restarting a CFME appliance in a zone because of upgrade or update is less disruptive if only a single provider is affected.
 
 ===== Provider-Specific Appliance Tuning
 
-Zones allow for more predictable and provider-instance-specific sizing of CFME appliances and appliance settings based on the requirement of individual providers. For example small VMware providers can have significantly different resourcing requirements from very large VMware providers, especially for C&U collection and processing. 
+Zones allow for more predictable and provider-instance-specific sizing of CFME appliances and appliance settings based on the requirement of individual providers. For example small VMware providers can have significantly different resourcing requirements to very large VMware providers, especially for C&U collection and processing. 
 
 ===== VMDB Isolation
 

@@ -9,8 +9,8 @@ The timely processing of external and internal events is important to the overal
 The event processing workflow involves 3 different workers, as follows:
 
 . A provider-specific event catcher polls the EMS event source for new events using an API call such as `https://rhevm/api/events?from=54316`. For each new event caught a message is queued for the event handler
-. The generic MiqEventHandler worker dequeues the message, and creates an 'EmsEvent' EventStream object. Any EMS-specific references such as `:vm=>{:id=>"4e7b66b7-080d-4593-b670-3d6259e47a0f"}` are translated into the equivalent CloudForms object ID such as `"VmOrTemplate::vm"=>1000000000023`, and a new high priority message is queued for automate
-. A Priority worker dequeues the message and processes it through the automate event switchboard using the EventStream object created by the MiqEventHandler. Processing the event may involve several _event handler_ automate instances that perform actions such as:
+. The generic _MiqEventHandler_ worker dequeues the message, and creates an _EmsEvent_ EventStream object. Any EMS-specific references such as `:vm=>{:id=>"4e7b66b7-080d-4593-b670-3d6259e47a0f"}` are translated into the equivalent CloudForms object ID such as `"VmOrTemplate::vm"=>1000000000023`, and a new high priority message is queued for automate
+. A Priority worker dequeues the message and processes it through the automate event switchboard using the EventStream object created by the _MiqEventHandler_. Processing the event may involve several _event handler_ automate instances that perform actions such as:
 ** Process any control policies associated with the event
 ** Process any alarms associated with the event
 ** Initiate any further operations that are required after the event, such as triggering an EMS refresh
@@ -46,21 +46,21 @@ Event storms are very large bursts of events emitted by a provider's EMS. They c
 
 [source,pypy] 
 ----
-[----] I, [2017-01-25T03:23:04.998138 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998138 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427657]
-[----] I, [2017-01-25T03:23:04.998233 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998233 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427658]
-[----] I, [2017-01-25T03:23:04.998289 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998289 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427659]
-[----] I, [2017-01-25T03:23:04.998340 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998340 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427660]
-[----] I, [2017-01-25T03:23:04.998389 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998389 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427661]
-[----] I, [2017-01-25T03:23:04.998435 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998435 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.problem.scsi.device.io.latency.high] chainId [427662]
-[----] I, [2017-01-25T03:23:04.998482 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998482 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427663]
-[----] I, [2017-01-25T03:23:04.998542 #374:66b14c]  ... caught event \
+[----] I, [2017-01-25T03:23:04.998542 #374:66b14c]  ... caught event ⏎
 [EventEx]-[esx.clear.scsi.device.io.latency.improved] chainId [427664]
 ----
 
@@ -71,11 +71,11 @@ The log snippet above is from a production CloudForms installation. Note that ma
 
 Event storms are highly detrimental to the overall performance of a CloudForms region for many reasons, including the following:
 
-* All MiqEventHandler workers in a zone can be overwhelmed processing messages from one provider, to the detriment of other providers in that zone
-* The many hundreds of thousands (up to tens of millions) of unprocessed high-priority messages in the __miq_queue__ table consume all Generic and Priority workers in the zone
-* The number of messages in the __miq_queue__ table affects the performance of `get_message_via_drb` for all queue workers in the entire region
+* All _MiqEventHandler_ workers in a zone can be overwhelmed processing messages from one provider, to the detriment of other providers in that zone
+* The many hundreds of thousands (up to tens of millions) of unprocessed high-priority messages in the miq_queue table consume all Generic and Priority workers in the zone
+* The number of messages in the miq_queue table affects the performance of `get_message_via_drb` for all queue workers in the entire region
 
-In some cases the problems are temporary and clear themselves after the event messages stop being emitted and the CFME appliances can process the messages already queued for processing. In other cases the sheer volume of event messages can result in appliances which still appear to be running, but where the CFME services - including the WebUI - are unresponsive.
+In some cases the problems are temporary and clear themselves after the event message emission stops and the CFME appliances can process the messages already queued for processing. In other cases the sheer volume of event messages can result in appliances which still appear to be running, but where the CFME services - including the WebUI - are unresponsive.
 
 ==== Handling and Recovering from Event Storms
 
@@ -110,9 +110,9 @@ Some provider events occur relatively frequently, but are either uninteresting t
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: \
-Runner#after_initialize) EMS [rhevm.bit63.net] as [admin@internal] Event Catcher \
-skipping the following events:
+... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: ⏎
+Runner#after_initialize) EMS [rhevm.bit63.net] as [cfme@internal] ⏎
+Event Catcher skipping the following events:
 ... INFO -- :   - UNASSIGNED
 ... INFO -- :   - USER_REMOVE_VG
 ... INFO -- :   - USER_REMOVE_VG_FAILED
@@ -125,45 +125,46 @@ These events are defined in the __blacklisted_events__ table in the VMDB. The de
 
 [source,sql] 
 ----
-vmdb_production=# select event_name,provider_model,enabled from blacklisted_events;
-               event_name               |                 provider_model                 | enabled
-----------------------------------------+------------------------------------------------+---------
- storageAccounts_listKeys_BeginRequest  | ManageIQ::Providers::Azure::CloudManager       | t
- storageAccounts_listKeys_EndRequest    | ManageIQ::Providers::Azure::CloudManager       | t
- identity.authenticate                  | ManageIQ::Providers::Openstack::CloudManager   | t
- scheduler.run_instance.start           | ManageIQ::Providers::Openstack::CloudManager   | t
- scheduler.run_instance.scheduled       | ManageIQ::Providers::Openstack::CloudManager   | t
- scheduler.run_instance.end             | ManageIQ::Providers::Openstack::CloudManager   | t
- ConfigurationSnapshotDeliveryCompleted | ManageIQ::Providers::Amazon::CloudManager      | t
- ConfigurationSnapshotDeliveryStarted   | ManageIQ::Providers::Amazon::CloudManager      | t
- ConfigurationSnapshotDeliveryFailed    | ManageIQ::Providers::Amazon::CloudManager      | t
- UNASSIGNED                             | ManageIQ::Providers::Redhat::InfraManager      | t
- USER_REMOVE_VG                         | ManageIQ::Providers::Redhat::InfraManager      | t
- USER_REMOVE_VG_FAILED                  | ManageIQ::Providers::Redhat::InfraManager      | t
- USER_VDC_LOGIN                         | ManageIQ::Providers::Redhat::InfraManager      | t
- USER_VDC_LOGOUT                        | ManageIQ::Providers::Redhat::InfraManager      | t
- USER_VDC_LOGIN_FAILED                  | ManageIQ::Providers::Redhat::InfraManager      | t
- AlarmActionTriggeredEvent              | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmCreatedEvent                      | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmEmailCompletedEvent               | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmEmailFailedEvent                  | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmReconfiguredEvent                 | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmRemovedEvent                      | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmScriptCompleteEvent               | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmScriptFailedEvent                 | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmSnmpCompletedEvent                | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmSnmpFailedEvent                   | ManageIQ::Providers::Vmware::InfraManager      | t
- AlarmStatusChangedEvent                | ManageIQ::Providers::Vmware::InfraManager      | t
- AlreadyAuthenticatedSessionEvent       | ManageIQ::Providers::Vmware::InfraManager      | t
- EventEx                                | ManageIQ::Providers::Vmware::InfraManager      | t
- UserLoginSessionEvent                  | ManageIQ::Providers::Vmware::InfraManager      | t
- UserLogoutSessionEvent                 | ManageIQ::Providers::Vmware::InfraManager      | t
- scheduler.run_instance.start           | ManageIQ::Providers::Openstack::NetworkManager | t
- scheduler.run_instance.scheduled       | ManageIQ::Providers::Openstack::NetworkManager | t
- scheduler.run_instance.end             | ManageIQ::Providers::Openstack::NetworkManager | t
- ConfigurationSnapshotDeliveryCompleted | ManageIQ::Providers::Amazon::NetworkManager    | t
- ConfigurationSnapshotDeliveryStarted   | ManageIQ::Providers::Amazon::NetworkManager    | t
- ConfigurationSnapshotDeliveryFailed    | ManageIQ::Providers::Amazon::NetworkManager    | t
+vmdb_production=# select event_name,provider_model,enabled ⏎
+from blacklisted_events;
+               event_name               |    provider_model            | enabled
+----------------------------------------+---------------------------------------
+ storageAccounts_listKeys_BeginRequest  | ...Azure::CloudManager       | t
+ storageAccounts_listKeys_EndRequest    | ...Azure::CloudManager       | t
+ identity.authenticate                  | ...Openstack::CloudManager   | t
+ scheduler.run_instance.start           | ...Openstack::CloudManager   | t
+ scheduler.run_instance.scheduled       | ...Openstack::CloudManager   | t
+ scheduler.run_instance.end             | ...Openstack::CloudManager   | t
+ ConfigurationSnapshotDeliveryCompleted | ...Amazon::CloudManager      | t
+ ConfigurationSnapshotDeliveryStarted   | ...Amazon::CloudManager      | t
+ ConfigurationSnapshotDeliveryFailed    | ...Amazon::CloudManager      | t
+ UNASSIGNED                             | ...Redhat::InfraManager      | t
+ USER_REMOVE_VG                         | ...Redhat::InfraManager      | t
+ USER_REMOVE_VG_FAILED                  | ...Redhat::InfraManager      | t
+ USER_VDC_LOGIN                         | ...Redhat::InfraManager      | t
+ USER_VDC_LOGOUT                        | ...Redhat::InfraManager      | t
+ USER_VDC_LOGIN_FAILED                  | ...Redhat::InfraManager      | t
+ AlarmActionTriggeredEvent              | ...Vmware::InfraManager      | t
+ AlarmCreatedEvent                      | ...Vmware::InfraManager      | t
+ AlarmEmailCompletedEvent               | ...Vmware::InfraManager      | t
+ AlarmEmailFailedEvent                  | ...Vmware::InfraManager      | t
+ AlarmReconfiguredEvent                 | ...Vmware::InfraManager      | t
+ AlarmRemovedEvent                      | ...Vmware::InfraManager      | t
+ AlarmScriptCompleteEvent               | ...Vmware::InfraManager      | t
+ AlarmScriptFailedEvent                 | ...Vmware::InfraManager      | t
+ AlarmSnmpCompletedEvent                | ...Vmware::InfraManager      | t
+ AlarmSnmpFailedEvent                   | ...Vmware::InfraManager      | t
+ AlarmStatusChangedEvent                | ...Vmware::InfraManager      | t
+ AlreadyAuthenticatedSessionEvent       | ...Vmware::InfraManager      | t
+ EventEx                                | ...Vmware::InfraManager      | t
+ UserLoginSessionEvent                  | ...Vmware::InfraManager      | t
+ UserLogoutSessionEvent                 | ...Vmware::InfraManager      | t
+ scheduler.run_instance.start           | ...Openstack::NetworkManager | t
+ scheduler.run_instance.scheduled       | ...Openstack::NetworkManager | t
+ scheduler.run_instance.end             | ...Openstack::NetworkManager | t
+ ConfigurationSnapshotDeliveryCompleted | ...Amazon::NetworkManager    | t
+ ConfigurationSnapshotDeliveryStarted   | ...Amazon::NetworkManager    | t
+ ConfigurationSnapshotDeliveryFailed    | ...Amazon::NetworkManager    | t
 (36 rows)
 ----
 
@@ -260,8 +261,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group| \
-          vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet| ⏎
+          security_group|vpn)"
       :event_catcher_openstack_infra:
         :poll: 15.seconds
         :topics:
@@ -276,8 +277,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet|security_group| \
-          vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet| ⏎
+          security_group|vpn)"
       :event_catcher_openstack_network:
         :poll: 15.seconds
         :topics:
@@ -288,8 +289,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router|subnet|security_group| \
-          vpn)"
+          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router|subnet| ⏎
+          security_group|vpn)"
       :event_catcher_amazon:
         :poll: 15.seconds
       :event_catcher_azure:
@@ -315,4 +316,4 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
 
 === Scaling Out
 
-As can be seen, the event processing workflow can be quite resource-intensive. CloudForms installations managing several thousand objects may benefit from dedicated CFME appliances exclusively running the provider-specific EventCatcher workers and MiqEventHandler worker.
+As can be seen, the event processing workflow can be quite resource-intensive. CloudForms installations managing several thousand objects may benefit from dedicated CFME appliances exclusively running the provider-specific _EventCatcher_ workers and _MiqEventHandler_ worker.

@@ -1,4 +1,4 @@
-
+:numbered:
 [[architecture]]
 == Architecture
 
@@ -510,26 +510,26 @@ The count for "ready" state elements in the MiqQueue table should not be greater
 
 The following table summarises the server roles, the workers performing the role tasks, the 'Role' field within the messages handled by those workers, and the maximum number of concurrent instances of the role per region or zone.
 
-[width="100%",cols="^20%,^30%,^30%,^20%",options="header",align="center"]
+[width="100%",cols="^20%,^32%,^30%,^18%",options="header",align="center"]
 |=======================================================================
 |Role |Worker |Message 'Role' |Maximum Concurrent Workers
-|Automation Engine |Generic or Priority |automate |unlimited/region
-|C&U Coordinator |Generic or Priority |ems_metrics_coordinator |one/zone
-|C&U Data Collector | provider-specific MetricsCollectorWorker |ems_metrics_collector |unlimited/zone 
-|C&U Data Processor | MiqEmsMetricsProcessorWorker |ems_metrics_processor |unlimited/zone
-|Database Operations |Generic or Priority |database_owner |unlimited/region
-|Embedded Ansible |EmbeddedAnsibleWorker |N/A |one/region
-|Event Monitor | MiqEventHandler & provider-specific EventCatchers |event |one/zone & one/provider/zone
-|Git Repositories Owner |N/A |N/A |one/zone
-|Notifier |Generic or Priority | notifier |one/region
-|Provider Inventory | provider-specific RefreshWorker |ems_inventory |one/provider/zone
-|Provider Operations |Generic or Priority |ems_operations |unlimited/zone
-|RHN Mirror |N/A |N/A |unlimited/region
-|Reporting |MiqReportingWorker |reporting |unlimited/region 
-|Scheduler |MiqScheduleWorker | N/A |one/region
-|SmartProxy |MiqSmartProxyWorker |smartproxy |unlimited/zone
-|SmartState Analysis |Generic or Priority |smartstate |unlimited/zone
-|User Interface |MiqUiWorker |N/A |unlimited/region
-|Web Services |MiqWebServiceWorker |N/A |unlimited/region
-|Web Socket |MiqWebsocketWorker |N/A |unlimited/region
+|Automation Engine |Generic or Priority |automate |unlimited/ region
+|C&U Coordinator |Generic or Priority |ems_metrics_coordinator |one/ zone
+|C&U Data Collector | provider-specific MetricsCollectorWorker |ems_metrics_collector |unlimited/ zone 
+|C&U Data Processor | MiqEmsMetricsProcessorWorker |ems_metrics_processor |unlimited/ zone
+|Database Operations |Generic or Priority |database_owner |unlimited/ region
+|Embedded Ansible |EmbeddedAnsibleWorker |N/A |one/ region
+|Event Monitor | MiqEventHandler & provider-specific EventCatchers |event |one/ zone & one/ provider/ zone
+|Git Repositories Owner |N/A |N/A |one/ zone
+|Notifier |Generic or Priority | notifier |one/ region
+|Provider Inventory | provider-specific RefreshWorker |ems_inventory |one/ provider/ zone
+|Provider Operations |Generic or Priority |ems_operations |unlimited/ zone
+|RHN Mirror |N/A |N/A |unlimited/ region
+|Reporting |MiqReportingWorker |reporting |unlimited/ region 
+|Scheduler |MiqScheduleWorker | N/A |one/ region
+|SmartProxy |MiqSmartProxyWorker |smartproxy |unlimited/ zone
+|SmartState Analysis |Generic or Priority |smartstate |unlimited/ zone
+|User Interface |MiqUiWorker |N/A |unlimited/ region
+|Web Services |MiqWebServiceWorker |N/A |unlimited/ region
+|Web Socket |MiqWebsocketWorker |N/A |unlimited/ region
 |=======================================================================
