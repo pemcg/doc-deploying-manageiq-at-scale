@@ -78,7 +78,6 @@ Some self-protection policies are available out-of-the-box in the form of alerts
 image::images/alerts.png[Screenshot,400,align="center"]
 {zwsp} +
 
-
 [NOTE]
 ====
 EVM Worker Started and EVM Worker Stopped events are normal occurrences and should not be considered cause for alarm
