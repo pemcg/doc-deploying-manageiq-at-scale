@@ -2,6 +2,8 @@
 [[web-user-interface]]
 == Web User Interface
 
+Scaling a CloudForms installation usually implies that many users will be accessing the WebUI components. It is therefore prudent to scale the WebUI capability along with the CFME infrastructure components and workers to ensure that responsiveness and connection reliability are maintained.
+
 The "Operations" or "Classic" WebUI (as opposed to the Self-Service UI) uses an Apache web server as a reverse proxy front-end to a Puma application server. Each instance of a _MiqUiWorker_ worker is a Puma process.
 
 === Scaling workers
@@ -34,7 +36,7 @@ The load balancer should be configured to test for connectivity using the CloudF
 
 By default the CloudForms UI workers store session data in the local appliance's memcache. When operating behind a load balancer the UI workers should be configured to store session data in the database. This prevents a user from having to re-login if the load balancer redirects them to an alternative server if their original UI worker is unresponsive.
 
-The location of the session store is defined in the *Configuration->Advanced* settings. The default value for `session_store` is as follows:
+The location of the session store is defined in the *Configuration -> Advanced* settings. The default value for `session_store` is as follows:
 
 [source,yaml] 
 ----

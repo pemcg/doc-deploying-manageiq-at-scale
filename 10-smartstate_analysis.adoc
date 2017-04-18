@@ -2,9 +2,14 @@
 [[smartstate_analysis]]
 == SmartState Analysis
 
-SmartState Analysis uses two server roles. The first - _SmartState Analysis_ - is performed by a Generic or Priority worker, depending on message priority. The SmartState Analysis role calls a component called the _JobProxyDispatcher_ to determine the most suitable _Smart Proxy_ server to run the VM scan. Once the scan has completed the SmartState Analysis role saves the scan metadata to the VM’s model, and creates drift history data by comparing the most recent scan with previous results.
+SmartState Analysis allows CloudForms to perform a deep introspection of virtual machines, containers and hosts to discover their contents. The technology is agentless, and does not require virtual machines to be powered on.
 
-The second server role - _SmartProxy_ - enables the embedded or "coresident".footnote:[Earlier versions of CloudForms and ManageIQ supported _external_ Smart Proxies running on Windows servers or VMware ESX hosts. These are no longer required and so have been removed from the product] __MiqSmartProxyWorker__ processes. These workers perform the actual scans of the virtual machines using the following steps: 
+[NOTE]
+====
+SmartState Analysis is alternatively known as "fleecing"
+====
+
+SmartState Analysis uses two server roles. The first - SmartState Analysis - is performed by a Generic or Priority worker, depending on message priority. The second server role - SmartProxy - enables the embedded or "coresident".footnote:[Earlier versions of CloudForms and ManageIQ supported _external_ Smart Proxies running on Windows servers or VMware ESX hosts. These are no longer required and so have been removed from the product] __MiqSmartProxyWorker__ processes. These workers perform the following sequence of steps to scan each virtual machine: 
 
 * Create a snapshot of the VM
 * Analyze the snapshot:
@@ -14,13 +19,19 @@ The second server role - _SmartProxy_ - enables the embedded or "coresident".foo
 * Remove the snapshot
 * Upload the metadata to temporary storage in the VMDB
 
+The SmartState Analysis role calls a component named the _JobProxyDispatcher_ to determine the most suitable SmartProxy server to run the VM scan. Once the scan has completed the SmartState Analysis worker saves the scan metadata to the VM’s model, and creates drift history data by comparing the most recent scan with previous results.
+
 === Provider-Specific Considerations
 
-There are several provider-specific considerations for SmartState Analysis.
+There are several provider-specific considerations to be aware of when configuring SmartState Analysis.
 
 ==== VMware
 
-The _MiqSmartProxyWorker_ processes scans virtual machines after making an authenticated connection to the ESXi host running the VM. Any CFME appliance in the provider's zone that is running the smart proxy role must also have the VMware Virtual Disk Development Kit (VDDK) installed.footnote:[The procedure to install the VDDK is described in the following Red Hat Knowledge Base article: https://access.redhat.com/articles/2078103]. For the authentication to succeed the credentials for each ESXi hypervisor should be defined against the host properties in the CloudForms WebUI. The credentials should use either _root_, or a VMware account with the following role permissions:
+The _MiqSmartProxyWorker_ processes scan virtual machines using the VixDiskLib API functionality provided by the VMware Virtual Disk Development Kit (VDDK). Any CFME appliance in the provider's zone that is running the SmartProxy role must therefore have the VDDK installed.footnote:[The procedure to install the VDDK is described in the following Red Hat Knowledge Base article: https://access.redhat.com/articles/2078103]. 
+
+===== Authentication
+
+The VDDK requires an authenticated connection to be made to the ESXi host running the VM. For the authentication to succeed the credentials for each ESXi hypervisor must be defined against the host properties in the CloudForms WebUI. The credentials should use either _root_, or a VMware account with the following role permissions:
 
 * Datastore
 ** Browse Datastore
@@ -38,15 +49,15 @@ The _MiqSmartProxyWorker_ processes scans virtual machines after making an authe
 *** Create snapshot
 *** Remove snapshot
 
-===== Authentication Via vCenter
+====== Authentication via vCenter
 
 If it is not possible to add credentials for the ESXi hosts, virtual machine scanning can still be performed using an authentication token provided by the vCenter.
 
-The CloudForms *Configuration->Advanced* settings contain a section entitled `:coresident_miqproxy` that has a value `:scan_via_host`. By default this is set to `true`, but changing the value to `false` and restarting the __MiqSmartProxyWorker__ processes enables vCenter authentication for VM scans.
+The CloudForms *Configuration -> Advanced* settings contain a section entitled `:coresident_miqproxy` that has a value `:scan_via_host`. By default this is set to `true`, but changing the value to `false` and restarting the __MiqSmartProxyWorker__ processes enables vCenter authentication for VM scans.
 
 [NOTE]
 ====
-The name `:scan_via_host` is slightly misleading. Setting this value to `false` only enables VDDK authentication via the vCenter. The actual scan is still performed by the Smart Proxy server connecting directly to the ESXi host using port 902.
+The name `:scan_via_host` is slightly misleading. Setting this value to `false` only enables VDDK authentication via the vCenter. The actual scan is still performed by the SmartProxy server connecting directly to the ESXi host using port 902.
 ====
 
 [source,yaml] 
@@ -87,7 +98,7 @@ CloudForms is able to perform a SmartState Analysis of OpenStack Platform Direct
 
 SmartState scanning of OpenShift containers is performed by an __image_inspector__ pod that is pulled from the Red Hat registry as required. The image inspector dynamically downloads and uses the latest OpenScap definition/rules file from Red Hat before scanning.footnote:[Enabling proxy access for the openshift3/image-inspector is described in the following Red Hat Knowledge Base article: https://access.redhat.com/solutions/2915411]
 
-With CloudForms 4.5 the registry and repository are configurable in *Configuration->Advanced* settings, as follows:
+With CloudForms 4.5 the registry and repository are configurable in *Configuration -> Advanced* settings, as follows:
 
 [source,yaml] 
 ----
@@ -103,17 +114,21 @@ The total time for each VM scan can be determined from the time duration between
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"request_vm_scan", \
-"VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20690, \
-:miq_event_id=>20690, "EventStream::event_stream"=>20690, \
-:event_stream_id=>20690} for object \
-[ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] to Automate
+... INFO -- : MIQ(MiqAeEngine.deliver) Delivering ⏎
+{:event_type=>"request_vm_scan", "VmOrTemplate::vm"=>39, :vm_id=>39, ⏎
+:host=>nil, "MiqEvent::miq_event"=>20690, :miq_event_id=>20690, ⏎
+"EventStream::event_stream"=>20690, :event_stream_id=>20690} ⏎
+for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] ⏎
+with state [] to Automate
+
 ...
-... INFO -- : MIQ(MiqAeEngine.deliver) Delivering {:event_type=>"vm_scan_complete", \
-"VmOrTemplate::vm"=>39, :vm_id=>39, :host=>nil, "MiqEvent::miq_event"=>20692, \
-:miq_event_id=>20692, "EventStream::event_stream"=>20692, :event_stream_id=>20692} \
-for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] with state [] \
-to Automate
+
+... INFO -- : MIQ(MiqAeEngine.deliver) Delivering ⏎
+{:event_type=>"vm_scan_complete", "VmOrTemplate::vm"=>39, :vm_id=>39,  
+:host=>nil, "MiqEvent::miq_event"=>20692, :miq_event_id=>20692, ⏎
+"EventStream::event_stream"=>20692, :event_stream_id=>20692} ⏎
+for object [ManageIQ::Providers::Redhat::InfraManager::Vm.39] ⏎
+with state [] to Automate
 ----
 
 This time includes the scan pre-processing by the Generic worker, the handoff by the _JobProxyDispatcher_ to the appropriate SmartProxy appliance, and the subsequent scan an data process and upload times.
@@ -176,9 +191,9 @@ If the _JobProxyDispatcher_ cannot find a suitable SmartProxy to scan a virtual 
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM \
-:[[NFS_PROD] odrsrv001/odrsrv001.vmx] - [No active SmartProxies found to \
-analyze this VM], aborting job [8064001a-e2ea-11e6-9140-005056b19b0f].
+... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
+:[[NFS_PROD] odrsrv001/odrsrv001.vmx] - [No active SmartProxies found ⏎
+to analyze this VM], aborting job [8064001a-e2ea-11e6-9140-005056b19b0f].
 ----
 
 ===== Provide credentials
@@ -187,9 +202,10 @@ If a new VMware ESXi hosts's credentials have been omitted from the CloudForms W
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM \
-:[[FCP_MID] osdweb01/osdweb01.vmx] - [Provide credentials for this VM's Host \
-to perform SmartState Analysis], aborting job [d2e08e70-c26b-11e6-aaa4-00505695be62].
+... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
+:[[FCP_MID] osdweb01/osdweb01.vmx] - [Provide credentials for this VM's ⏎
+Host to perform SmartState Analysis], aborting job ⏎
+[d2e08e70-c26b-11e6-aaa4-00505695be62].
 ----
 
 ===== Unable to mount filesystem
@@ -198,7 +214,7 @@ If a CFME appliance running the SmartProxy server role does not have access to t
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, Unable to mount filesystem. \
+... MIQ(VmScan#process_abort) job aborting, Unable to mount filesystem. ⏎
 Reason:[mount.nfs: Connection timed out
 ----
 
