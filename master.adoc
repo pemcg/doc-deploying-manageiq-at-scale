@@ -26,11 +26,11 @@ In the spirit of open source, we invite anyone to provide feedback and comments 
 
 
 include::1-introduction.adoc[]
-include::part_1/adoc[]
+include::part_1.adoc[]
 include::2-architecture.adoc[]
 include::3-regions_and_zones.adoc[]
 include::4-database_sizing_and_optimization.adoc[]
-include::part_2/adoc[]
+include::part_2.adoc[]
 include::5-inventory_refresh.adoc[]
 include::6-capacity_and_utilization.adoc[]
 include::7-automate.adoc[]
@@ -38,7 +38,7 @@ include::8-provisioning.adoc[]
 include::9-event_handling.adoc[]
 include::10-smartstate_analysis.adoc[]
 include::11-webui.adoc[]
-include::part_3/adoc[]
+include::part_3.adoc[]
 include::12-monitoring.adoc[]
 include::13-appendix_a.adoc[]
 
