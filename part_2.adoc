@@ -1,5 +1,0 @@
-
-:numbered!:
-== Part II
-
-=== Component Scaling

@@ -1,5 +1,0 @@
-
-:numbered!:
-== Part III
-
-=== Monitoring
