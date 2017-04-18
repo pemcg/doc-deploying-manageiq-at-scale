@@ -30,3 +30,12 @@ Part II - Component Scaling
 Part III - Monitoring
 
 * _Monitoring_ describes some of the in-built monitoring capabilities, and how to setup alerts to warn of problems such as worker restarts.
+
+=== Acknowledgements
+
+The author would like to thank Tom Hennessy and Bill Helgeson of Red Hat for their patience, knowledge and advice when preparing this reference architecture.
+
+
+
+
+

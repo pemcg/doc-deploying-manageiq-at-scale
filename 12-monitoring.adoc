@@ -2,19 +2,79 @@
 [[monitoring]]
 == Monitoring
 
-this chapter is still under construction!!!
+!! This chapter is still under construction !!
 
-log files
+Monitoring a large CloudForms installation is an essential part of ensuring its continued smooth running. This reference architecture has provided examples of 
 
-(top_output.log in /var/www/miq/vmdb/log) or the vmstat data (to be found in vmstat_output.log)
+=== Database Appliance
+
+It is recommended that the following items are monitored on the VMDB appliance:
+
+* VMDB disk space utilization - monitor and forecast when 80% of filesystem will become filled. Track actual disk consumption versus expected consumption
+* CPU utilization. A steady state utilization approaching 80% may indicate that VMDB appliance scaling or region redesign is required
+* Memory utilization, especially swap usage
+* I/O throughput - use the sysstat or iotop tools to monitor I/O utilization, throughput, and I/O wait state processing
+* Review the number of miq_queue messages in "ready" state
+* Ensure that the database maintenance scripts run regularly
+
+=== CFME 'Worker' Appliances
+
+For non-VMDB or "worker" appliances operational limits are often established on a per-appliance basis, and depend on the enabled server roles and number of worker processes. The following items are typically monitored:
+
+==== General Appliance
+
+* CPU utilization
+* Memory utilization, especially swap usage
+* Check for message timeouts
+
+==== Workers
+
+* Rates and reasons for worker process restarts
+** Increase allocated memory if workers are exceeding memory thresholds
+
+===== Provider Refresh
+
+* Provider refresh activity and especially full refresh rates 
+** How many full refreshes per day?
+** How long does a refresh take by provider instance?
+*** Data extraction component
+*** Database load component
+** Are certain property changes triggering too many refreshes?
+
+===== Capacity & Utilization
+
+* Are any realtime metrics being lost?
+* How long does metrics collection take?
+** Data extraction component
+** Database load component
+* Are rollups completing in time?
+
+===== Automate
+
+* Are any requests staying in a "pending" state for a long time?
+* Check for state machine retries or timeouts exceeded
+* Monitor provisioning failures
+
+===== Event Monitoring
+
+* Operation of appliances with Event Monitor role enabled
+
+===== SmartState Analysis
+
+* Monitor utilization of appliances with SmartProxy role enabled when scheduled scans are running
+* Review scan failures/aborts
+
+===== Reporting 
+
+* Monitor utilization of appliances with Reporting role enabled when periodic reports are running.
 
 === Alerts
 
-Some self-protection policies are available out-of-the-box in the form of alerts. <<i12-1>> shows the alert types that are configurable to send emails or SNMP traps, or run an automate instance.
+Some self-protection policies are available out-of-the-box in the form of alerts. <<i12-1>> shows the alert types that are available. Each is configurable to send an  email, an SNMP trap, or run an automate instance.
 
 
 [[i12-1]]
-.EVM Monitoring Alerts
+.EVM Self-Monitoring Alerts
 image::images/alerts.png[Screenshot,400,align="center"]
 {zwsp} +
 
@@ -23,38 +83,3 @@ image::images/alerts.png[Screenshot,400,align="center"]
 ====
 EVM Worker Started and EVM Worker Stopped events are normal occurrences and should not be considered cause for alarm
 ====
-
-In addition to setting alarms for the, it is recommended that the following items are monitored:
-
-* Database Appliance
-** VMDB disk utilization 
-*** Project when 80% of filesystem will become filled
-*** Review how used space is being consumed vs the rate at which it was expected to be consumed
-
-** CPU utilization (steady state utilization approaching 80% suggests need to review implementation options for VMDB appliance and possibly region)
-* CFME Appliances
-	◦	monitoring/reviewing policies for operational limits on a by-appliance basis
-** Rates and reasons for worker restarts
-** Top data for over committed or underutilized appliances
-** Reporting appliances operations when periodic reports are active ( that is review the operational data from these appliances focusing on those times when reporting workers are busiest.
-** Utilization of appliances with smartproxy active roles when scheduled scans are active
-** C&U data capture and processing for appliances with Performance monitoring (aka C&U or 'Capacity and Utilization') enabled
-** Operation of appliances with event monitoring role enabled
-** Provider refresh activity and especially full refresh rates (how many full refreshes per day?  How long does a full refresh take by provider instance?)
-** Are certain property changes causing too many refreshes?  Should additional properties be added to the exclude list?
-Compare current operational values  with previous operational values (are there unexpected increases or decreases?)
-	
-
-Periodically review operation of all appliances in region
-Review size of miq_queue events in ready state
-Periodically review VMDB
-* free space to project when 80% of filesystem will become filled
-* review how used space is being consumed vs the rate at which it was expected to be consumed
-Review VMs that can't/don't get scanned
-Frequently (daily-to-weekly) review queue sizes
-
-
-
-
-
-Cockpit?
