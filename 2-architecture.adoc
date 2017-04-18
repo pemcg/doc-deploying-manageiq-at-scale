@@ -6,7 +6,7 @@ In order to understand how to deploy CloudForms at scale, it is important to und
 
 === Appliances
 
-To simplify installation, CloudForms Management Engine (CFME) is distributed as fully installed virtual machine template. CFME virtual machines created from these templates are often referred to as _appliances_, and an appliance template comes pre-configured with all required components. A CFME 5.8 appliance runs Red Hat Enterprise Linux 7.x, with PostgreSQL 9.x, Rails 5.0.x, the CloudForms evmserverd service, and all associated Ruby gems installed. 
+To simplify installation, CloudForms Management Engine (CFME) is distributed as a fully installed virtual machine template. CFME virtual machines created from these templates are often referred to as _appliances_, and an appliance template comes pre-configured with all required components. A CFME 5.8 appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.1, the CloudForms evmserverd service, and all associated Ruby gems installed. 
 
 The self-contained nature of appliances makes them ideal for horizontally scaling a CloudForms deployment to handle the increased load that larger clouds or virtual infrastructures present. 
 
@@ -22,7 +22,7 @@ CloudForms is a Ruby on Rails application. The main __miq_server.rb__ Rails appl
 
 === Providers
 
-CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialisation enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is often referred to as an External Management System or EMS.
+CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is often referred to as an External Management System or EMS.
 
 Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Network, Middleware and Storage.
 
@@ -36,7 +36,7 @@ CloudForms 4.5 supports three traditional infrastructure providers: VMware vCent
 
 ==== Container Providers
 
-CloudForms 4.5 supports OpenShift Container Platform as a Docker container manager
+CloudForms 4.5 supports OpenShift Container Platform as a Docker container manager.
 
 ==== Configuration Management Providers
 
@@ -76,7 +76,7 @@ A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 d
 
 [[i2-1]]
 .Server Roles
-image::images/server_roles.png[Screenshot,400,align="center"]
+image::images/server_roles.png[Screenshot,300,align="center"]
 {zwsp} +
 
 Roles are implemented by worker processes, many of which communicate via messages. The roles are described as follows:
@@ -89,28 +89,30 @@ The _automation engine_ role enables the CFME appliance to handle automation tas
 
 Capacity and utilization (C&U) metrics processing is a relatively resource-intensive operation, and there are three roles associated with its operation.
 
-* The _capacity & utilization coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the capacity and ctilization data collector. If more than one CFME appliance in a zone has this role, only one will be active at a time. This role does not have a dedicated worker, the C&U coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+* The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one CFME appliance in a zone has this role, only one will be active at a time. This role does not have a dedicated worker, the C&U coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
 
-* The _capacity & utilization data collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a RHEV provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U data collector server role was enabled.. 
+* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a RHEV provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U Data Collector server role was enabled.. 
 
-* The _capacity & utilization data processor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_. There can be more than one CFME appliance with this role in a zone. 
+* The _Capacity & Utilization Data Drocessor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_. There can be more than one CFME appliance with this role in a zone. 
 
 ==== Database Operations
 
-The _database operations_ role enables the CFME appliance to run certain database maintenance tasks such as purging old metrics. This role does not have a dedicated worker, the database operations tasks are processed by a _MiqGenericWorker_.
+The _Database Operations_ role enables the CFME appliance to run certain database maintenance tasks such as purging old metrics. This role does not have a dedicated worker, the database operations tasks are processed by a _MiqGenericWorker_.
 
 ==== Embedded Ansible
 
-The _embedded ansible_ role enables the use of the built-in Ansible manager, which allows service catalog items of type _Ansible Playbook_ to be created and run. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but also enables an event catcher and refresh worker:
+The _Embedded Ansible_ role enables the use of the built-in Ansible manager, which allows service catalog items of type _Ansible Playbook_ to be created and run. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but also enables the following event catcher and refresh workers:
 
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::EventCatcher_
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::RefreshWorker_ 
 
 ==== Event Monitor
 
-The _event monitor_ role is responsible for detecting and processing provider events such as a VM snapshot completing, a cloud instance being created, or a hypervisor rebooting. Enabling the role starts at least 2 workers, one or more provider-specific and one common event handler. 
+The _Event Monitor_ role is responsible for detecting and processing provider events such as a VM starting or stopping, a cloud instance being created, or a hypervisor rebooting. Enabling the role starts at least 2 workers; one or more provider-specific, and one common event handler. 
 
-The provider-specific event catcher maintains a connection to a provider's event source (such as the Google Cloud Pub/Sub API for Google Compute Engine) and detects or 'catches' events and passes them to the generic event handler. An event catcher worker will be started for each provider in the appliance's zone, so a zone containing a VMware provider would contain a _ManageIQ::Providers::Vmware::InfraManager::EventCatcher_ worker. Some cloud providers automatically add several types of manager, and these might each have an event catcher worker. For example enabling the event monitor role on an appliance in an OpenStack Cloud provider zone would start the following event catcher workers:
+The provider-specific event catcher maintains a connection to a provider's event source (such as the Google Cloud Pub/Sub API for Google Compute Engine) and detects or 'catches' events and passes them to the common event handler. An event catcher worker is started for each provider in the appliance's zone; a zone containing a VMware provider would contain a _ManageIQ::Providers::Vmware::InfraManager::EventCatcher_ worker, for example. 
+
+Some cloud providers automatically add several types of manager, and these might each have an event catcher worker. To illustrate this, enabling the event monitor role on an appliance in an OpenStack Cloud provider zone would start the following event catcher workers:
 
 * _ManageIQ::Providers::Openstack::CloudManager::EventCatcher_
 * _ManageIQ::Providers::Openstack::NetworkManager::EventCatcher_ 
@@ -122,38 +124,38 @@ There should be at least one CFME appliance with the event monitor role set in a
 
 ==== Git Repositories Owner
 
-A CFME appliance with the _git repositories owner_ role enabled is responsible for synchronising git repository data from a git source such as Github or Gitlab, and making it available to other appliances in the region that have the automation engine role set. The git repository data is copied to _/var/www/miq/vmdb/data/git_repos/<git_profile_name>/<git_repo_name>_ on the CFME appliance. This role does not have a dedicated worker.
+A CFME appliance with the _Git Repositories Owner_ role enabled is responsible for synchronising git repository data from a git source such as Github or Gitlab, and making it available to other appliances in the region that have the automation engine role set. The git repository data is copied to _/var/www/miq/vmdb/data/git_repos/<git_profile_name>/<git_repo_name>_ on the CFME appliance. This role does not have a dedicated worker.
 
 ==== Notifier
 
-The _notifier_ role is required if CloudForms _control_ or automate is required to forward SNMP traps to a monitoring system, or to send e-mails. If more than one CFME appliance in a specific region has this role, only one will be active at a time. This role does not have a dedicated worker; notification tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+The _Notifier_ role is required if CloudForms _control_ or automate is required to forward SNMP traps to a monitoring system, or to send e-mails. If more than one CFME appliance in a specific region has this role, only one will be active at a time. This role does not have a dedicated worker; notification tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
 
 ==== Provider Inventory
 
-The _provider inventory_ role is responsible for refreshing provider inventory information for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one CFME appliance in a specific zone has this role, only one will be active at a time. 
+The _Provider Inventory_ role is responsible for refreshing provider inventory data for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one CFME appliance in a specific zone has this role, only one will be active at a time. 
 
-Setting this role starts the provider-specific refresh workers for any providers in the appliance's zone, so a zone containing a RHV provider would contain a _ManageIQ::Providers::Redhat::InfraManager::RefreshWorker_ worker. 
+Setting this role starts the provider-specific refresh workers for any providers in the appliance's zone; a zone containing a RHV provider would contain a _ManageIQ::Providers::Redhat::InfraManager::RefreshWorker_ worker, for example. 
 
-VMware providers add an additional _MiqEmsRefreshCoreWorker_, while cloud providers that add several types of manager would add a worker per manager. For example enabling the Provider Inventory role on an appliance in an Azure provider zone would start the following Refresh workers:
+VMware providers add an additional _MiqEmsRefreshCoreWorker_, while cloud providers that use several types of manager add a worker per manager. For example enabling the Provider Inventory role on an appliance in an Azure provider zone would start the following Refresh workers:
 
 * _ManageIQ::Providers::Azure::CloudManager::RefreshWorker_
 * _ManageIQ::Providers::Azure::NetworkManager::RefreshWorker_
 
 ==== Provider Operations
 
-A CFME appliance with the _provider operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. More than one CFME appliance can have this role active in a zone. The role does not have a dedicated worker; provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+A CFME appliance with the _Provider Operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. More than one CFME appliance can have this role active in a zone. The role does not have a dedicated worker, provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
 
 ==== RHN Mirror
 
-An appliance with _RHN mirror_ role enabled acts as a server containing a repository with the latest CloudForms RPM packages. This also configures other appliances within the same region to point to the chosen RHN mirror server for updates. This provides a low bandwidth method to update environments with multiple appliances. The role does not have a dedicated worker.
+A CFME appliance with the _RHN Mirror_ role acts as a repository server for the latest CloudForms RPM packages. It also configures other appliances within the same region to point to itself for updates. This provides a low bandwidth method to update environments with multiple appliances. The role does not have a dedicated worker.
 
 ==== Reporting
 
-The _reporting_ role specifies which CFME appliances can generate reports. There should be at least one CFME appliance with this role in any zone where report generation is required, and the role can be active on more than one appliance. Enabling this server role starts one or more _MiqReportingWorker_ workers.
+The _Reporting_ role allows a CFME appliance to generate reports. There should be at least one CFME appliance with this role in any zone where report generation is required, and the role can be active on more than one appliance. Enabling this server role starts one or more _MiqReportingWorker_ workers.
 
 ==== Scheduler
 
-The _scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled CloudForms events will not occur. If more than one CFME appliance in a specific region has this role, only one will be active at a time. Enabling this server role starts the _MiqScheduleWorker_ worker.
+The _Scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled CloudForms events will not occur. If more than one CFME appliance in a specific region has this role, only one will be active at a time. Enabling this server role starts the _MiqScheduleWorker_ worker.
 
 [NOTE]
 ====
@@ -168,11 +170,11 @@ Enabling the _SmartProxy_ role turns on the embedded SmartProxy on the CFME appl
 
 ==== SmartState Analysis
 
-The _SmartState Analysis_ role controls which CFME appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker; SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+The _SmartState Analysis_ role controls which CFME appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker, SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
 
 ==== User Interface
 
-This role enables access this CFME appliance using the Red Hat CloudForms WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
+This role enables access to a CFME appliance using the Red Hat CloudForms WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
 
 ==== Web Services
 
@@ -185,13 +187,17 @@ Both the User Interface and Web Services roles must be enabled on a CFME applian
 
 ==== Websocket
 
-This role enables a CFME appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the new WebUI notification service in CloudForms 4.2. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
+This role enables a CFME appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the WebUI notification service in CloudForms 4.2 and later. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
 
 === Workers
 
 As can be seen, many of the server roles start worker processes. The currently running worker processes on a CFME appliance can be viewed using the following commands in a root bash shell on an appliance:
 
- vmdb; bin/rake evm:status
+[source,bash] 
+----
+vmdb
+bin/rake evm:status
+----
 
 The same information can also be seen in the *Workers* tab of the *Configuration -> Diagnostics* page (see <<i2-2>>).
 
@@ -219,21 +225,21 @@ The following log line shows an example of the normal timeout processing for a R
 
 [source,pypy] 
 ----
-INFO -- : MIQ(MiqServer#validate_worker) \
-Worker [ManageIQ::Providers::Vmware::InfraManager::RefreshWorker] \
-with ID: [1000000258651], PID: [17949], \
-GUID: [77362eba-c179-11e6-aaa4-00505695be62] \
-uptime has reached the interval of 7200 seconds, requesting worker to exit
+INFO -- : MIQ(MiqServer#validate_worker) Worker ⏎
+[ManageIQ::Providers::Vmware::InfraManager::RefreshWorker] ⏎
+with ID: [1000000258651], PID: [17949], ⏎
+GUID: [77362eba-c179-11e6-aaa4-00505695be62] uptime has reached ⏎
+the interval of 7200 seconds, requesting worker to exit
 ----
 
-The following log line shows an example of an abnormal exit request for a MiqEmsMetricsProcessorWorker that has exceeded its memory threshold (see <<worker_memory_thresholds>>:
+The following log line shows an example of an abnormal exit request for a _MiqEmsMetricsProcessorWorker_ that has exceeded its memory threshold (see <<worker_memory_thresholds>>:
 
 [source,pypy] 
 ----
-WARN -- : MIQ(MiqServer#validate_worker) \
-Worker [MiqEmsMetricsProcessorWorker] with ID: [1000000259290], PID: [15553], \
-GUID: [40698326-c18a-11e6-aaa4-00505695be62] \
-process memory usage [598032000] exceeded limit [419430400], requesting worker to exit
+WARN -- : MIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] ⏎
+with ID: [1000000259290], PID: [15553], ⏎
+GUID: [40698326-c18a-11e6-aaa4-00505695be62] process memory usage [598032000] ⏎
+exceeded limit [419430400], requesting worker to exit
 ----
 
 [TIP]
@@ -263,7 +269,7 @@ The count and maximum memory thresholds for most worker types can be tuned from 
 image::images/workers_webui_page.png[Screenshot,600,align="center"]
 {zwsp} +
 
-For other workers not listed in this page, the memory threshold settings can be tuned (with caution) in the *Configuration->Advanced* settings by directly editing the YAML, for example:
+For other workers not listed in this page, the memory threshold settings can be tuned (with caution) in the *Configuration -> Advanced* settings by directly editing the YAML, for example:
 
 [source,yaml] 
 ----
@@ -310,7 +316,7 @@ Queue workers process messages in a serial fashion. A worker processes one and o
 
 === Messages
 
-The queue workers receive work instructions from messages, delivered via a VMDB table called __miq_queue__, and modelled by the Rails class MiqQueue. Each queue worker queries the __miq_queue__ table to look for work for any of its roles. If a message is claimed by a worker, the message state is changed from "ready" to "dequeue" and the worker starts processing the message. When the message processing is completed the message state is updated to indicate "ok", "error" or "timeout". Messages that have completed processing are purged on a regular basis. 
+The queue workers receive work instructions from messages, delivered via a VMDB table called __miq_queue__, and modelled by the Rails class `MiqQueue`. Each queue worker queries the __miq_queue__ table to look for work for any of its roles. If a message is claimed by a worker, the message state is changed from "ready" to "dequeue" and the worker starts processing the message. When the message processing is completed the message state is updated to indicate "ok", "error" or "timeout". Messages that have completed processing are purged on a regular basis. 
 
 ==== Message Prefetch
 
@@ -318,19 +324,19 @@ To improve the performance of the messaging system, each CFME appliance prefetch
 
 ==== Message Fields
 
-A message contains a number of fields, but the useful ones to be aware of for troubleshooting purposes are described below.
+A message contains a number of fields. The useful ones to be aware of for troubleshooting purposes are described below.
 
 ===== Ident
 
-Each message has an _Ident_ field that specifies the worker type that the message is intended for. Messages with an Ident field of 'generic' can be processed by either MiqGenericWorkers or MiqPriorityWorkers, depending on priority.
+Each message has an _Ident_ field that specifies the worker type that the message is intended for. Messages with an Ident field of 'generic' can be processed by either _MiqGenericWorkers_ or _MiqPriorityWorkers_, depending on priority.
 
 ===== Role
 
-The message also has a _Role_ field that specifies the server role that the message is intended for. Some workers - the generic and priority workers for example - process the messages for several server roles such as automation engine or provider operations. Workers are aware of the active server roles on their CFME appliance, and only dequeue messages for the enabled server roles.
+The message also has a _Role_ field that specifies the server role that the message is intended for. Some workers - the Generic and Priority workers for example - process the messages for several server roles such as Automation Engine or Provider Operations. Workers are aware of the active server roles on their CFME appliance, and only dequeue messages for the enabled server roles.
 
 ===== Priority
 
-Messages each have a _Priority_ field such that lower priority messages for the same worker role are processed before higher priority messages (1 = highest, 200 = lowest). For example, priority 90 messages are processed before priority 100 messages regardless of order in which they were created. The default message priority is 100, but tasks that are considered of greater importance are queued using messages with lower priority numbers. These message priorities are generally hard-coded and not customizable.
+Messages each have a _Priority_ field such that lower priority messages for the same worker role are processed before higher priority messages (1 = highest, 200 = lowest). For example, priority 90 messages are processed before priority 100 messages regardless of the order in which they were created. The default message priority is 100, but tasks that are considered of greater importance are queued using messages with lower priority numbers. These message priorities are generally hard-coded and not customizable.
 
 ===== Zone
 
@@ -350,7 +356,7 @@ The messages have a _State_ field that describes the current processing status o
 
 ==== Tracing Messages in evm.log
 
-Message processing is so critical to the overall performance of a CloudForms installation, that understanding how to follow messages in _evm.log_ is an important skill to master when scaling CloudForms. There are generally four stages of message processing that can be followed in the log file. For this example a message will be traced that instructs for the automation engine (role "automate" in queue "generic") to run the method `AutomationTask.execute` on automation task ID 7829. 
+Message processing is so critical to the overall performance of a CloudForms installation, that understanding how to follow messages in _evm.log_ is an important skill to master when scaling CloudForms. There are generally four stages of message processing that can be followed in the log file. For this example a message will be traced that instructs the Automation Engine (role "automate" in queue "generic") to run the method `AutomationTask.execute` on automation task ID 7829. 
 
 ===== Stage 1 - Adding a message to the queue. 
 
@@ -358,48 +364,48 @@ A worker (or other Rails process) adds a message to the queue by calling `MiqQue
 
 [source,pypy] 
 ----
-... INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) \
-Message id: [32425368], \
-id: [], \
-Zone: [RHEV], \
-Role: [automate], \
-Server: [], \
-Ident: [generic], \
-Target id: [], \
-Instance id: [7829], \
-Task id: [automation_task_7829], \
-Command: [AutomationTask.execute], \
-Timeout: [600], \
-Priority: [100], \
-State: [ready], \
-Deliver On: [], \
-Data: [], \
-Args: []\
+... INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) ⏎
+Message id: [32425368], ⏎
+id: [], ⏎
+Zone: [RHEV], ⏎
+Role: [automate], ⏎
+Server: [], ⏎
+Ident: [generic], ⏎
+Target id: [], ⏎
+Instance id: [7829], ⏎
+Task id: [automation_task_7829], ⏎
+Command: [AutomationTask.execute], ⏎
+Timeout: [600], ⏎
+Priority: [100], ⏎
+State: [ready], ⏎
+Deliver On: [], ⏎
+Data: [], ⏎
+Args: []
 ----
 
 ===== Stage 2 - Retrieving a message from the queue. 
 
-A Generic worker calls `get_message_via_drb` to dequeue the next available message. This method searches the prefetched message queue in the memcache for the next available message with a state of "ready". The new message with ID 32425368 is found, so its state is changed to "dequeue" in the database __miq_queue__ table, and the message is dispatched to the worker. The line from _evm.log_ is as follows:
+A Generic worker calls `get_message_via_drb` to dequeue the next available message. This method searches the prefetched message queue in the memcache for the next available message with a state of "ready". The new message with ID 32425368 is found, so its state is changed to "dequeue" in the VMDB __miq_queue__ table, and the message is dispatched to the worker. The line from _evm.log_ is as follows:
 
 [source,pypy] 
 ----
-...  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) \
-Message id: [32425368], \
-MiqWorker id: [260305], \
-Zone: [RHEV], \
-Role: [automate], \
-Server: [], \
-Ident: [generic], \
-Target id: [], \
-Instance id: [7829], \
-Task id: [automation_task_7829], \
-Command: [AutomationTask.execute], \
-Timeout: [600], \
-Priority: [100], \
-State: [dequeue], \
-Deliver On: [], \
-Data: [], \
-Args: [], \
+...  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
+Message id: [32425368], ⏎
+MiqWorker id: [260305], ⏎
+Zone: [RHEV], ⏎
+Role: [automate], ⏎
+Server: [], ⏎
+Ident: [generic], ⏎
+Target id: [], ⏎
+Instance id: [7829], ⏎
+Task id: [automation_task_7829], ⏎
+Command: [AutomationTask.execute], ⏎
+Timeout: [600], ⏎
+Priority: [100], ⏎
+State: [dequeue], ⏎
+Deliver On: [], ⏎
+Data: [], ⏎
+Args: [], ⏎
 Dequeued in: [6.698342458] seconds
 ----
 
@@ -414,7 +420,7 @@ The MiqQueue class's `deliver` method writes to _evm.log_ to indicate that the m
 
 [source,pypy] 
 ----
-...  INFO -- : Q-task_id([automation_task_7829]) \
+...  INFO -- : Q-task_id([automation_task_7829]) ⏎
 MIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
 ----
 
@@ -424,10 +430,10 @@ Once the worker has finished processing the task associated with the message, th
 
 [source,pypy] 
 ----
-...  INFO -- : Q-task_id([automation_task_7829]) \
-MIQ(MiqQueue#delivered) \
-Message id: [32425368], \
-State: [ok], \
+...  INFO -- : Q-task_id([automation_task_7829]) ⏎
+MIQ(MiqQueue#delivered) ⏎
+Message id: [32425368], ⏎
+State: [ok], ⏎
 Delivered in [23.469068759] seconds
 ----
 
@@ -449,16 +455,17 @@ grep 'count for state=\["dequeue"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \
-MiqQueue count for state=["dequeue"] by zone and role: \
-{"RHEV"=>{nil=>1, "automate"=>1, "ems_metrics_coordinator"=>1, \
-"ems_metrics_collector"=>2, "ems_metrics_processor"=>2, "smartproxy"=>1, \
-"smartstate"=>2}, nil=>{"database_owner"=>1}}
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+[EVM Server (2768)] MiqQueue count for state=["dequeue"] ⏎
+by zone and role: {"RHEV"=>{nil=>1, "automate"=>1, ⏎
+"ems_metrics_coordinator"=>1, "ems_metrics_collector"=>2, ⏎
+"ems_metrics_processor"=>2, "smartproxy"=>1, "smartstate"=>2}, ⏎
+nil=>{"database_owner"=>1}}
 ---- 
 
 [TIP]
 ====
-Messages that appear to be in state 'dequeue' for longer than their timeout period were 'in-flight' when the worker process running them died or was terminated.  
+Messages that appear to be in state 'dequeue' for longer than their timeout period were probably 'in-flight' when the worker process running them died or was terminated.  
 ====
 
 To find the numbers of messages in state "error" in each zone, use the following bash command:
@@ -470,8 +477,10 @@ grep 'count for state=\["error"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \ MiqQueue count for state=["error"] by zone and role: \
-{"RHEV"=>{nil=>36}, "default"=>{nil=>16}, "UI Zone"=>{nil=>35}}
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+[EVM Server (2768)] MiqQueue count for state=["error"] ⏎
+by zone and role: {"RHEV"=>{nil=>36}, "default"=>{nil=>16}, ⏎
+"UI Zone"=>{nil=>35}}
 ---- 
 
 To find the numbers of messages in state "ready" that are waiting to be dequeued in each zone, use the following bash command:
@@ -483,11 +492,13 @@ grep 'count for state=\["ready"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) [EVM Server (2768)] \ MiqQueue count for state=["ready"] by zone and role: \
-{"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, nil=>4}, \
-"default"=>{"automate"=>2, nil=>21, "smartstate"=>1, "smartproxy"=>1}, \
-"RHEV"=>{"automate"=>6, "ems_inventory"=>1, nil=>19, "smartstate"=>2, \
-"ems_metrics_processor"=>1259, "ems_metrics_collector"=>641}}
+... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+[EVM Server (2768)] \ MiqQueue count for state=["ready"] ⏎
+by zone and role: {"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, ⏎
+nil=>4}, "default"=>{"automate"=>2, nil=>21, "smartstate"=>1, ⏎
+"smartproxy"=>1}, "RHEV"=>{"automate"=>6, "ems_inventory"=>1, ⏎
+nil=>19, "smartstate"=>2, "ems_metrics_processor"=>1259, ⏎
+"ems_metrics_collector"=>641}}
 ----
 
 [TIP]
@@ -497,28 +508,28 @@ The count for "ready" state elements in the MiqQueue table should not be greater
 
 === Summary of Roles, Workers and Messages
 
-The following table summarises the server roles, the workers performing the role tasks, the 'Role' field within the messages handled by those workers, whether the role is region or zone based, and the maximum number of concurrent instances of the role in the region or zone..
+The following table summarises the server roles, the workers performing the role tasks, the 'Role' field within the messages handled by those workers, and the maximum number of concurrent instances of the role per region or zone.
 
-[width="100%",cols="^17%,^23%,^23%,^12%,^13%",options="header",align="center"]
+[width="100%",cols="^20%,^30%,^30%,^20%",options="header",align="center"]
 |=======================================================================
-|Role |Worker |Message 'Role' |Region or Zone |Max Concurrent
-|Automation Engine |Generic or Priority |automate |Region |unlimited
-|C&U Coordinator |Generic or Priority |ems_metrics_coordinator |Zone |1
-|C&U Data Collector | provider-specific MetricsCollectorWorker |ems_metrics_collector |Zone |unlimited
-|C&U Data Processor | MiqEmsMetricsProcessorWorker |ems_metrics_processor |Zone |unlimited
-|Database Operations |Generic or Priority |database_owner |Region |unlimited
-|Embedded Ansible |EmbeddedAnsibleWorker |N/A |Region |1
-|Event Monitor | MiqEventHandler & provider-specific EventCatchers |event |Zone |1
-|Git Repositories Owner |N/A |N/A |Zone |1
-|Notifier |Generic or Priority | notifier |Region |1
-|Provider Inventory | provider-specific RefreshWorker |ems_inventory |Zone |1
-|Provider Operations |Generic or Priority |ems_operations |Zone |unlimited
-|RHN Mirror |N/A |N/A |Region |unlimited
-|Reporting |MiqReportingWorker |reporting |Region |unlimited 
-|Scheduler |MiqScheduleWorker | N/A |Region |1
-|SmartProxy |MiqSmartProxyWorker |smartproxy |Zone |unlimited
-|SmartState Analysis |Generic or Priority |smartstate |Zone |unlimited
-|User Interface |MiqUiWorker |N/A |Region |unlimited
-|Web Services |MiqWebServiceWorker |N/A |Region |unlimited
-|Web Socket |MiqWebsocketWorker |N/A |Region |unlimited
+|Role |Worker |Message 'Role' |Maximum Concurrent Workers
+|Automation Engine |Generic or Priority |automate |unlimited/region
+|C&U Coordinator |Generic or Priority |ems_metrics_coordinator |one/zone
+|C&U Data Collector | provider-specific MetricsCollectorWorker |ems_metrics_collector |unlimited/zone 
+|C&U Data Processor | MiqEmsMetricsProcessorWorker |ems_metrics_processor |unlimited/zone
+|Database Operations |Generic or Priority |database_owner |unlimited/region
+|Embedded Ansible |EmbeddedAnsibleWorker |N/A |one/region
+|Event Monitor | MiqEventHandler & provider-specific EventCatchers |event |one/zone & one/provider/zone
+|Git Repositories Owner |N/A |N/A |one/zone
+|Notifier |Generic or Priority | notifier |one/region
+|Provider Inventory | provider-specific RefreshWorker |ems_inventory |one/provider/zone
+|Provider Operations |Generic or Priority |ems_operations |unlimited/zone
+|RHN Mirror |N/A |N/A |unlimited/region
+|Reporting |MiqReportingWorker |reporting |unlimited/region 
+|Scheduler |MiqScheduleWorker | N/A |one/region
+|SmartProxy |MiqSmartProxyWorker |smartproxy |unlimited/zone
+|SmartState Analysis |Generic or Priority |smartstate |unlimited/zone
+|User Interface |MiqUiWorker |N/A |unlimited/region
+|Web Services |MiqWebServiceWorker |N/A |unlimited/region
+|Web Socket |MiqWebsocketWorker |N/A |unlimited/region
 |=======================================================================
