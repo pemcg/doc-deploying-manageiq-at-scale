@@ -82,7 +82,7 @@ Network latency between CFME appliances and the database plays a big factor in o
 
 [source,pypy] 
 ----
-vmdb; 
+vmdb
 bin/rails runner tools/db_ping.rb
 0.358361 ms
 1.058845 ms

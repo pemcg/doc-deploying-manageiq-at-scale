@@ -4,10 +4,9 @@
 
 Monitoring of the various components discussed in this Reference Architecture is essential for maintaining optimum performance of a large CloudForms installation.
 
-As mentioned in <<introduction>> the key to deploying CloudForms at scale is to monitor and tune at each stage of the scaling process. Once  confidence has been established that the instalation is working optimally at restricted scale, the scope of deployment can be enlarged and the CFME appliances tuned as required to handle the additional workload. 
+As mentioned in <<introduction>> the key to deploying CloudForms at scale is to monitor and tune at each stage of the scaling process. Once confidence has been established that the installation is working optimally at restricted scale, the scope of deployment can be enlarged and the CFME appliances tuned as required to handle the additional workload. 
 
-The VMDB and CFME worker appliances within a region have different monitoring requirements.
-
+The VMDB and CFME worker appliances within a region have different monitoring requirements, as described below.
 
 === Database Appliance
 
@@ -38,7 +37,7 @@ Operational limits for non-VMDB or "worker" appliances are usually established o
 
 ==== Workers
 
-* Rates and reasons for worker process restarts
+* Review rates and reasons for worker process restarts
 ** Increase allocated memory if workers are exceeding memory thresholds
 * Validate primary/secondary roles for workers in zones and region
 

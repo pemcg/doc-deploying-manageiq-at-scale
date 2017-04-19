@@ -110,7 +110,7 @@ Some provider events occur relatively frequently, but are either uninteresting t
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: ⏎
+... MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: ⏎
 Runner#after_initialize) EMS [rhevm.bit63.net] as [cfme@internal] ⏎
 Event Catcher skipping the following events:
 ... INFO -- :   - UNASSIGNED
@@ -125,46 +125,46 @@ These events are defined in the __blacklisted_events__ table in the VMDB. The de
 
 [source,pypy] 
 ----
-vmdb_production=# select event_name,provider_model,enabled ⏎
+vmdb_production=# select event_name,provider_model ⏎
 from blacklisted_events;
-               event_name               |    provider_model            | enabled
-----------------------------------------+---------------------------------------
- storageAccounts_listKeys_BeginRequest  | ...Azure::CloudManager       | t
- storageAccounts_listKeys_EndRequest    | ...Azure::CloudManager       | t
- identity.authenticate                  | ...Openstack::CloudManager   | t
- scheduler.run_instance.start           | ...Openstack::CloudManager   | t
- scheduler.run_instance.scheduled       | ...Openstack::CloudManager   | t
- scheduler.run_instance.end             | ...Openstack::CloudManager   | t
- ConfigurationSnapshotDeliveryCompleted | ...Amazon::CloudManager      | t
- ConfigurationSnapshotDeliveryStarted   | ...Amazon::CloudManager      | t
- ConfigurationSnapshotDeliveryFailed    | ...Amazon::CloudManager      | t
- UNASSIGNED                             | ...Redhat::InfraManager      | t
- USER_REMOVE_VG                         | ...Redhat::InfraManager      | t
- USER_REMOVE_VG_FAILED                  | ...Redhat::InfraManager      | t
- USER_VDC_LOGIN                         | ...Redhat::InfraManager      | t
- USER_VDC_LOGOUT                        | ...Redhat::InfraManager      | t
- USER_VDC_LOGIN_FAILED                  | ...Redhat::InfraManager      | t
- AlarmActionTriggeredEvent              | ...Vmware::InfraManager      | t
- AlarmCreatedEvent                      | ...Vmware::InfraManager      | t
- AlarmEmailCompletedEvent               | ...Vmware::InfraManager      | t
- AlarmEmailFailedEvent                  | ...Vmware::InfraManager      | t
- AlarmReconfiguredEvent                 | ...Vmware::InfraManager      | t
- AlarmRemovedEvent                      | ...Vmware::InfraManager      | t
- AlarmScriptCompleteEvent               | ...Vmware::InfraManager      | t
- AlarmScriptFailedEvent                 | ...Vmware::InfraManager      | t
- AlarmSnmpCompletedEvent                | ...Vmware::InfraManager      | t
- AlarmSnmpFailedEvent                   | ...Vmware::InfraManager      | t
- AlarmStatusChangedEvent                | ...Vmware::InfraManager      | t
- AlreadyAuthenticatedSessionEvent       | ...Vmware::InfraManager      | t
- EventEx                                | ...Vmware::InfraManager      | t
- UserLoginSessionEvent                  | ...Vmware::InfraManager      | t
- UserLogoutSessionEvent                 | ...Vmware::InfraManager      | t
- scheduler.run_instance.start           | ...Openstack::NetworkManager | t
- scheduler.run_instance.scheduled       | ...Openstack::NetworkManager | t
- scheduler.run_instance.end             | ...Openstack::NetworkManager | t
- ConfigurationSnapshotDeliveryCompleted | ...Amazon::NetworkManager    | t
- ConfigurationSnapshotDeliveryStarted   | ...Amazon::NetworkManager    | t
- ConfigurationSnapshotDeliveryFailed    | ...Amazon::NetworkManager    | t
+               event_name               |    provider_model            
+----------------------------------------+------------------------------
+ storageAccounts_listKeys_BeginRequest  | ...Azure::CloudManager       
+ storageAccounts_listKeys_EndRequest    | ...Azure::CloudManager       
+ identity.authenticate                  | ...Openstack::CloudManager   
+ scheduler.run_instance.start           | ...Openstack::CloudManager   
+ scheduler.run_instance.scheduled       | ...Openstack::CloudManager   
+ scheduler.run_instance.end             | ...Openstack::CloudManager   
+ ConfigurationSnapshotDeliveryCompleted | ...Amazon::CloudManager      
+ ConfigurationSnapshotDeliveryStarted   | ...Amazon::CloudManager      
+ ConfigurationSnapshotDeliveryFailed    | ...Amazon::CloudManager      
+ UNASSIGNED                             | ...Redhat::InfraManager      
+ USER_REMOVE_VG                         | ...Redhat::InfraManager      
+ USER_REMOVE_VG_FAILED                  | ...Redhat::InfraManager      
+ USER_VDC_LOGIN                         | ...Redhat::InfraManager      
+ USER_VDC_LOGOUT                        | ...Redhat::InfraManager      
+ USER_VDC_LOGIN_FAILED                  | ...Redhat::InfraManager      
+ AlarmActionTriggeredEvent              | ...Vmware::InfraManager      
+ AlarmCreatedEvent                      | ...Vmware::InfraManager      
+ AlarmEmailCompletedEvent               | ...Vmware::InfraManager      
+ AlarmEmailFailedEvent                  | ...Vmware::InfraManager      
+ AlarmReconfiguredEvent                 | ...Vmware::InfraManager      
+ AlarmRemovedEvent                      | ...Vmware::InfraManager      
+ AlarmScriptCompleteEvent               | ...Vmware::InfraManager      
+ AlarmScriptFailedEvent                 | ...Vmware::InfraManager      
+ AlarmSnmpCompletedEvent                | ...Vmware::InfraManager      
+ AlarmSnmpFailedEvent                   | ...Vmware::InfraManager      
+ AlarmStatusChangedEvent                | ...Vmware::InfraManager      
+ AlreadyAuthenticatedSessionEvent       | ...Vmware::InfraManager      
+ EventEx                                | ...Vmware::InfraManager      
+ UserLoginSessionEvent                  | ...Vmware::InfraManager      
+ UserLogoutSessionEvent                 | ...Vmware::InfraManager      
+ scheduler.run_instance.start           | ...Openstack::NetworkManager 
+ scheduler.run_instance.scheduled       | ...Openstack::NetworkManager 
+ scheduler.run_instance.end             | ...Openstack::NetworkManager 
+ ConfigurationSnapshotDeliveryCompleted | ...Amazon::NetworkManager    
+ ConfigurationSnapshotDeliveryStarted   | ...Amazon::NetworkManager    
+ ConfigurationSnapshotDeliveryFailed    | ...Amazon::NetworkManager    
 (36 rows)
 ----
 
@@ -262,8 +262,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router| ⏎
-             subnet|security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway| ⏎
+          net|port|router|subnet|security_group|vpn)"
       :event_catcher_openstack_infra:
         :poll: 15.seconds
         :topics:
@@ -278,8 +278,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router| ⏎
-             subnet|security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway| ⏎
+          net|port|router|subnet|security_group|vpn)"
       :event_catcher_openstack_network:
         :poll: 15.seconds
         :topics:
@@ -290,8 +290,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router| ⏎
-             subnet|security_group|vpn)"
+          :event_types_regex: "\\A(firewall|floatingip|gateway| ⏎
+          net|port|router|subnet|security_group|vpn)"
       :event_catcher_amazon:
         :poll: 15.seconds
       :event_catcher_azure:

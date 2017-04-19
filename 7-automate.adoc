@@ -106,16 +106,17 @@ The timeout mechanism can be observed in _evm.log_, as follows:
 
 [source,pypy] 
 ----
-... ERROR -- : <AutomationEngine> Terminating non responsive method with ⏎
-pid 29188
+... ERROR -- : <AutomationEngine> Terminating non responsive method ⏎
+with pid 29188
 
 ... ERROR -- : <AutomationEngine> <AEMethod test> The following error ⏎
 occurred during method evaluation:
 
-... ERROR -- : <AutomationEngine> <AEMethod test> SignalException: SIGTERM
+... ERROR -- : <AutomationEngine> <AEMethod test> SignalException: ⏎
+SIGTERM
 
-... ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed out after ⏎
-600.03190583 seconds.  Timeout threshold [600]
+... ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed ⏎
+out after 600.03190583 seconds.  Timeout threshold [600]
 
 ... INFO -- : MIQ(MiqQueue#delivered) Message id: [1054092], ⏎
 State: [timeout], Delivered in [600.047235602] seconds
