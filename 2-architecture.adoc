@@ -24,7 +24,7 @@ CloudForms is a Ruby on Rails application. The main __miq_server.rb__ Rails appl
 
 CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is often referred to as an External Management System or EMS.
 
-Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Network, Middleware and Storage.
+Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.
 
 ==== Cloud Providers
 
@@ -40,7 +40,11 @@ CloudForms 4.5 supports OpenShift Container Platform as a Docker container manag
 
 ==== Configuration Management Providers
 
-CloudForms 4.5 supports two configuration management providers: Red Hat Satellite and Ansible Tower. The Satellite provider exposes the Foreman host groups to CloudForms, and extends the provisioning capability to include bare-metal (i.e. non-virtual) servers. The Ansible Tower provider allows Ansible jobs to be run as part of an Automate workflow.
+CloudForms 4.5 supports Red Hat Satellite as a configuration management provider. The Satellite provider exposes the Foreman host groups to CloudForms, and extends the provisioning capability to include bare-metal (i.e. non-virtual) servers. 
+
+==== Automation Providers
+
+CloudForms 4.5 supports Ansible Tower as an automation provider. The Tower provider allows Ansible jobs to be run on an external Tower server as part of an Automate workflow.
 
 ==== Network Providers
 
@@ -271,7 +275,7 @@ image::images/workers_webui_page.png[Screenshot,600,align="center"]
 
 For other workers not listed in this page, the memory threshold settings can be tuned (with caution) in the *Configuration -> Advanced* settings by directly editing the YAML, for example:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :workers:
   :worker_base:
@@ -448,7 +452,7 @@ The overall performance of any multi-appliance CloudForms installation is largel
 
 To find the numbers of messages currently being processed (in state "dequeue") in each zone, use the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'count for state=\["dequeue"\]' evm.log
 ----
@@ -470,7 +474,7 @@ Messages that appear to be in state 'dequeue' for longer than their timeout peri
 
 To find the numbers of messages in state "error" in each zone, use the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'count for state=\["error"\]' evm.log
 ----
@@ -485,7 +489,7 @@ by zone and role: {"RHEV"=>{nil=>36}, "default"=>{nil=>16}, ⏎
 
 To find the numbers of messages in state "ready" that are waiting to be dequeued in each zone, use the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'count for state=\["ready"\]' evm.log
 ----

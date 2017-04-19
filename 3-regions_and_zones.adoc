@@ -80,7 +80,7 @@ With a distributed or large infrastructure the most obvious choice of region des
 
 Network latency between CFME appliances and the database plays a big factor in overall CloudForms "system" responsiveness. There are two utilities supplied on each CFME appliance that can check the latency to a database. The first, db_ping, is designed to check intra-region latency between an existing appliance and its own regional database. The second, db_ping_remote, is designed to check inter-region latency, and so requires external PostgreSQL server details and credentials. The are run as follows:
 
-[source,bash] 
+[source,pypy] 
 ----
 vmdb; 
 bin/rails runner tools/db_ping.rb

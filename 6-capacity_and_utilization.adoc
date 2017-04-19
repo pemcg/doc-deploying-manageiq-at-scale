@@ -45,21 +45,24 @@ The following table shows the metrics sources for the supported providers.
 |OpenShift | Hawkular
 |=======================================================================
 
-A successful capture is written to _evm.log_, as follows.footnote:[As with the EMS collection timings, the C&U timings are incorrect until https://bugzilla.redhat.com/show_bug.cgi?id=1424716 is fixed. In the meantime the correct times can be calculated by subtracting the previous counter values from the current]:
+A successful capture is written to _evm.log_, as follows.footnote:[As with the EMS collection timings, the C&U timings are sometimes incorrect until https://bugzilla.redhat.com/show_bug.cgi?id=1424716 is fixed. When incorrect the correct times can be calculated by subtracting the previous counter values from the current]:
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm# ⏎
-perf_capture) [realtime] Capture for ManageIQ::Providers::Redhat:: ⏎
-InfraManager::Vm name: [jst-db01], id: [10]...Complete - Timings: ⏎
-{:server_dequeue=>0.0034334659576416016, :capture_state=>11.9432852268219, ⏎
-:rhevm_connect=>2.576853036880493, :collect_data=>20.8149151802063, ⏎
-:total_time=>788.3716766834259, :process_counter_values=> ⏎
-1.6096689701080322, :db_find_prev_perfs=>2.439769744873047, ⏎
-:process_perfs=>162.7385015487671, :process_perfs_db=>498.7169578075409, ⏎
-:db_find_storage_files=> 1.4817078113555908, :init_attrs=> ⏎
-1.6018922328948975, :process_perfs_tag=> ⏎
-0.13536739349365234, :process_bottleneck=> 61.32632827758789}
+... MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_capture) ⏎
+[realtime] Capture for ⏎
+ManageIQ::Providers::Vmware::InfraManager::Vm name: [VP23911], ⏎
+id: [1000000000789]...Complete - Timings: ⏎
+{:capture_state=>0.08141517639160156, ⏎
+:vim_connect=>0.06982016563415527, ⏎
+:capture_intervals=>0.014894962310791016, ⏎
+:capture_counters=>0.20465683937072754, ⏎
+:build_query_params=>0.0009250640869140625, ⏎
+:num_vim_queries=>1, ⏎
+:vim_execute_time=>0.2935605049133301, ⏎
+:perf_processing=>0.10299563407897949, ⏎
+:num_vim_trips=>1, ⏎
+:total_time=>0.7732744216918945}
 ----
 
 ===== Initial Processing & Storage
@@ -70,19 +73,17 @@ The successful completion of this initial processing stage can be seen in _evm.l
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm# ⏎
-perf_process) [realtime] Processing for ManageIQ::Providers::Redhat ⏎
-::InfraManager::Vm name: [jst-db01], id: [10], for range ⏎
-[2017-03-09T17:52:40Z - 2017-03-09T18:43:21Z]...Complete - ⏎
-Timings: {:server_dequeue=>0.0034334659576416016, ⏎
-:capture_state=>11.9432852268219, :rhevm_connect=>2.576853036880493, ⏎
-:collect_data=>20.8149151802063, :total_time=>793.7132942676544, ⏎
-:process_counter_values=>1.6245880126953125, :db_find_prev_perfs=> ⏎
-2.452284097671509, :process_perfs=>163.0625307559967, ⏎
-:process_perfs_db=>503.6072528362274, :db_find_storage_files=> ⏎
-1.4817078113555908, :init_attrs=>1.6018922328948975, ⏎
-:process_perfs_tag=>0.13536739349365234, ⏎
-:process_bottleneck=>61.32632827758789}
+... MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) ⏎
+[realtime] Processing for ⏎
+ManageIQ::Providers::Vmware::InfraManager::Vm name: [VR11357], ⏎
+id: [1000000000043], ⏎
+for range [2017-01-25T05:59:00Z - 2017-01-25T06:50:20Z]... ⏎
+Complete - Timings:  ⏎
+{:process_counter_values=>0.019364118576049805, ⏎
+:db_find_prev_perfs=>0.015059232711791992, ⏎
+:process_perfs=>0.2053236961364746, ⏎
+:process_perfs_db=>1.8572983741760254, ⏎
+:total_time=>2.1722793579101562}
 ----
 
 ==== Data Processing
@@ -111,7 +112,7 @@ InfraManager::Vm name: [ranj001], id: [1000000000752] for time: ⏎
 
 Capacity and Utilization data is not retained indefinitely in the VMDB. By default hourly and daily rollup data is kept for 6 months after which it is purged, and realtime data samples are purged after 4 hours. These retention periods for C&U data are defined in the `:performance` section of the *Configuration -> Advanced* settings, as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :performance:
   ...
@@ -228,7 +229,7 @@ timed out after 600.002976954 seconds.  Timeout threshold [600]
 
 Such problems can be detected by looking for message timeouts in the log using a command such as the following:
 
-[source,bash] 
+[source,pypy] 
 ----
 egrep "Message id: \[\d+\], timed out after" evm.log
 ----
@@ -290,7 +291,7 @@ For VMware this should be less than 180 per collection interval (180 points is t
 
 In some cases the CloudForms processes are working as expected, but the provider EMS is overloaded and not responding to API requests. To determine the relative EMS connection and query times for a VMware provider, the ':vim_connect' and ':vim_execute_time' timing counters from _evm.log_ can be plotted. For this example the perf_process_timings.rb script can be used, as follows:
 
-[source,bash] 
+[source,pypy] 
 ----
 ruby ~/git/cfme_log_parsing/perf_process_timings.rb ⏎
 -i evm.log -o perf_process_timings.out
@@ -319,7 +320,7 @@ With a very large number of managed objects and insufficient worker processes, t
 
 The count of messages queued for processing by the Data Processor can be extracted from _evm.log_, as follows:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'count for state=\["ready"\]' evm.log | ⏎
 egrep -o "\"ems_metrics_processor\"=>[[:digit:]]+"
@@ -356,7 +357,7 @@ When C&U is operating correctly, for each time-profile instance there should be 
 
 The following SQL query can be used to detect this where the VM rollups are suspected of not being complete.
 
-[source,sql] 
+[source,pypy] 
 ----
 select resource_id, date_trunc('day',timestamp) as collect_date, ⏎
 resource_type, capture_interval_name, count(*) 
@@ -412,7 +413,7 @@ For larger CloudForms installations it can be beneficial to separate the C&U Dat
 
 The collection interval can be reduced from 50 minutes to a smaller value (for example 20-30 minutes) allowing more time for collection scheduling and for queuing wait time. The delay or "capture threshold" is defined in the `:performance` section of the *Configuration -> Advanced* settings, as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :performance:
   :capture_threshold:

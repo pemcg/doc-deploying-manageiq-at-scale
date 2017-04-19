@@ -18,7 +18,9 @@ It can be seen from the table in Appendix A that a region containing 10 idle CFM
 
 === Sizing the Database Partition Before Installation
 
-The disk used for the database partition should be presented to the database appliance from the fastest available block storage (solid-state disk if possible). A rough estimate of database size in GBytes can be made by approximating the number of managed VMs, hosts and storage devices in the region over a one and two year period.
+The disk used for the database partition should be presented to the database appliance from the fastest available block storage (solid-state disk if possible). Sparsely allocated, thin provisioned or file-backed storage such as NFS are not recommended for optimum performance.. 
+
+A rough estimate of database size in GBytes can be made by approximating the number of managed VMs, hosts and storage devices in the region over a one and two year period.
 
 The following guidelines can be used:
 
@@ -42,21 +44,26 @@ The first CFME appliance in a region can be configured as a database appliance w
 
 [source,pypy] 
 ----
- 8) Configure Database
+ 5) Configure Database
 ----
 
 After creating a new encryption key and selecting to create an internal database, the following question is asked:
 
 [source,pypy] 
 ----
-Configure this server as a dedicated database instance?
+Should this appliance run as a standalone database server?
+
+NOTE:
+* The CFME application will not be running.
+* This is required when using highly available database deployments.
+* CAUTION: This is not reversible.
 ----
 
 Selecting 'Y' to this option configures the appliance without Rails or the `evmserverd` application, and allows the server to be configured optimally as a pure PostgreSQL server. This configuration also allows for PostgreSQL high availability to be configured at any time in the future using the following *appliance_console* option:
 
 [source,pypy] 
 ----
-9) Configure Database Replication
+6) Configure Database Replication
 ----
 
 [NOTE]
@@ -64,7 +71,7 @@ Selecting 'Y' to this option configures the appliance without Rails or the `evms
 
 Although configuring a CFME appliance as a dedicated database instance will result in optimum database performance, the absence of Rails and the `evmserverd` service and workers means that the server will not appear in the CloudForms WebUI as a CFME appliance in the region.
 
-If it is known that PostgreSQL high availability will never be required (and at the expense of some loss of memory and CPU utilisation), the answer 'N' can be given to the question `Configure this server as a dedicated database instance?`. In this case the VMDB appliance will be configured to run Rails and the `evmserverd` service as normal, and will appear as a CloudForms appliance in the region. 
+If it is known that PostgreSQL high availability will never be required (and at the expense of some loss of memory and CPU utilisation), the answer 'N' can be given to the question `Should this appliance run as a standalone database server?`. In this case the VMDB appliance will be configured to run Rails and the `evmserverd` service as normal, and will appear as a CloudForms appliance in the region. 
 
 It is recommended to add this type of VMDB appliance to its own dedicated zone, and disable any unnecessary server roles.
 ====
@@ -101,14 +108,14 @@ Although this default value allows for 1000 connections, under certain extreme l
 ====
 The number of open connections to the database can be seen using the following psql command:
 
-[source,sql] 
+[source,pypy] 
 ----
 SELECT datname,application_name,client_addr FROM pg_stat_activity;
 ----
 
 The number of outbound database connections from a CFME appliance can be seen using the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 netstat -tp | grep postgres 
 ----
@@ -137,7 +144,7 @@ log_directory = '/var/www/miq/vmdb/log'
 
 For VMDB appliances configured as dedicated database instances, some performance gain can be achieved by creating sufficient kernel huge pages for PostgreSQL and the configured shared_buffers region. The following bash commands allocate 600 huge pages (1.2 GBytes):
 
-[source,bash] 
+[source,pypy] 
 ----
 sysctl -w vm.nr_hugepages=600
 echo "vm.nr_hugepages=600" >> /etc/sysctl.d/rh-postgresql95.conf
@@ -151,7 +158,7 @@ Several of the database tables benefit greatly from regular vacuuming and freque
 
 [source,pypy] 
 ----
- 10) Configure Database Maintenance
+ 7) Configure Database Maintenance
 ----
 
 The scripts perform hourly reindexing of the following tables:

@@ -49,7 +49,7 @@ An EMS refresh operation has two significant phases that each contribute to the 
 ** Network latency to the database
 ** Database appliance CPU, memory and I/O resources
 
-Fortunately the line printed to _evm.log_ at the completion of the operation contains detailed timings of each stage of the operation, and these can be used to determine bottlenecks.footnote:[Unfortunately the timings are incorrect until https://bugzilla.redhat.com/show_bug.cgi?id=1424716 is fixed. In the meantime the correct times can be calculated by subtracting the previous counter values from the current]. A typical log line is as follows:
+Fortunately the line printed to _evm.log_ at the completion of the operation contains detailed timings of each stage of the operation, and these can be used to determine bottlenecks.footnote:[Unfortunately the timings are often incorrect until https://bugzilla.redhat.com/show_bug.cgi?id=1424716 is fixed. The correct times can ususally be calculated by subtracting the previous counter values from the current]. A typical log line is as follows:
 
 [source,pypy] 
 ----
@@ -113,7 +113,7 @@ This shows that the two significant time components to this operation were extra
 
 Refresh problems are best identified by establishing baseline timings when the managed EMS is least busy. To determine the relative EMS collection and database load times, the ':collect_inventory_for_targets' and ':db_save_inventory' timing counters from _evm.log_ can be plotted. For this example the cfme_log_parsing/ems_refresh_timings.rb script is used, as follows:
 
-[source,bash] 
+[source,pypy] 
 ----
 ruby ~/git/cfme_log_parsing/ems_refresh_timings.rb ⏎
  -i evm.log -o ems_refresh_timings.out
@@ -154,7 +154,7 @@ There is a global setting in the region's configuration YAML (accessible in the 
 
 The `:ems_refresh` section of the *Configuration -> Advanced* settings is listed as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :ems_refresh:
   :capture_vm_created_on_date: false
@@ -192,7 +192,7 @@ The `:ems_refresh` section of the *Configuration -> Advanced* settings is listed
 
 As can be seen, the default `:full_refresh_threshold` value is 100, and is provider-independent. The value can however be modified or overridden by provider type. For example to override the setting for all RH(E)V providers in the region, the following lines could be added to the `:ems_refresh` section:
 
-[source,yaml] 
+[source,pypy] 
 ----
   :rhevm:
     :full_refresh_threshold: 200

@@ -60,7 +60,7 @@ The CloudForms *Configuration -> Advanced* settings contain a section entitled `
 The name `:scan_via_host` is slightly misleading. Setting this value to `false` only enables VDDK authentication via the vCenter. The actual scan is still performed by the SmartProxy server connecting directly to the ESXi host using port 902.
 ====
 
-[source,yaml] 
+[source,pypy] 
 ----
 :coresident_miqproxy:
 ...
@@ -85,7 +85,7 @@ To ensure that this storage area is large enough to receive large image snapshot
 
 [source,pypy] 
 ----
- 13) Extend Temporary Storage
+ 10) Extend Temporary Storage
 ----
 
 This option will format an unpartitioned disk attached to the CFME appliance and mount it as _/var/www/miq_tmp_
@@ -100,7 +100,7 @@ SmartState scanning of OpenShift containers is performed by an __image_inspector
 
 With CloudForms 4.5 the registry and repository are configurable in *Configuration -> Advanced* settings, as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :ems_kubernetes:
 ...
@@ -135,7 +135,7 @@ This time includes the scan pre-processing by the Generic worker, the handoff by
 
 More granular timings are logged to _evm.log_ and these can be examined if required to determine the source of bottlenecks. For example the time taken for the __MiqSmartProxyWorker__ process to extract each part of the profile is logged, and can be extracted using the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'information ran for' evm.log
 ----
@@ -178,7 +178,7 @@ Virtual machines running stateful workloads can be tagged accordingly to prevent
 
 Problems with SmartState Analysis are logged to _evm.log_, and can be identified using the following bash command:
 
-[source,bash] 
+[source,pypy] 
 ----
 grep 'VmScan#process_abort' evm.log
 ----
@@ -222,7 +222,7 @@ Reason:[mount.nfs: Connection timed out
 
 SmartState Analysis settings are stored in the `:coresident_miqproxy` section of the *Configuration->Advanced* settings, as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :coresident_miqproxy:
   :concurrent_per_ems: 1

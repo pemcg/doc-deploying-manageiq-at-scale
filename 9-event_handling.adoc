@@ -123,7 +123,7 @@ Event Catcher skipping the following events:
 
 These events are defined in the __blacklisted_events__ table in the VMDB. The default rows in the table are as follows: 
 
-[source,sql] 
+[source,pypy] 
 ----
 vmdb_production=# select event_name,provider_model,enabled ⏎
 from blacklisted_events;
@@ -172,7 +172,7 @@ If processing of any of the events in the blacklisted_events table _is_ required
 
 An EMS can also report some minor object property changes as events, even though these not modelled in the CloudForms VMDB. For VMware providers such event types can be added to the "Vim Broker Exclude List" so that they can be discarded without processing. The exclude list is found under `:broker_notify_properties` in the *Configuration->Advanced* settings, as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :broker_notify_properties:
   :exclude:
@@ -184,7 +184,8 @@ An EMS can also report some minor object property changes as events, even though
     - summary
     - summary.overallStatus
     - summary.runtime.bootTime
-    - summary.runtime.healthSystemRuntime.systemHealthInfo.numericSensorInfo
+    - summary.runtime.healthSystemRuntime.systemHealthInfo. ⏎
+         numericSensorInfo
     :VirtualMachine:
     - config.locationId
     - config.memoryAllocation.overheadLimit
@@ -224,7 +225,7 @@ Flood monitoring is a generic concept for event processing, but requires the app
 
 The __event_catcher__ section is one of the largest of the *Configuration->Advanced* settings. It defines the polling frequency of each type of event catcher
 
-[source,yaml] 
+[source,pypy] 
 ----
     :event_catcher:
       :defaults:
@@ -261,8 +262,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet| ⏎
-          security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router| ⏎
+             subnet|security_group|vpn)"
       :event_catcher_openstack_infra:
         :poll: 15.seconds
         :topics:
@@ -277,8 +278,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router|subnet| ⏎
-          security_group|vpn)"
+          :event_types_regex: "\\A(?!firewall|floatingip|gateway|net|port|router| ⏎
+             subnet|security_group|vpn)"
       :event_catcher_openstack_network:
         :poll: 15.seconds
         :topics:
@@ -289,8 +290,8 @@ The __event_catcher__ section is one of the largest of the *Configuration->Advan
         :amqp_heartbeat: 30
         :amqp_recovery_attempts: 4
         :ceilometer:
-          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router|subnet| ⏎
-          security_group|vpn)"
+          :event_types_regex: "\\A(firewall|floatingip|gateway|net|port|router| ⏎
+             subnet|security_group|vpn)"
       :event_catcher_amazon:
         :poll: 15.seconds
       :event_catcher_azure:

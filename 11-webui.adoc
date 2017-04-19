@@ -38,7 +38,7 @@ By default the CloudForms UI workers store session data in the local appliance's
 
 The location of the session store is defined in the *Configuration -> Advanced* settings. The default value for `session_store` is as follows:
 
-[source,yaml] 
+[source,pypy] 
 ----
 :server:
 ...
@@ -47,7 +47,7 @@ The location of the session store is defined in the *Configuration -> Advanced* 
 
 This should be changed to:
 
-[source,yaml] 
+[source,pypy] 
 ----
   :session_store: sql
 ----
