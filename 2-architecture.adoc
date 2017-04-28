@@ -68,8 +68,8 @@ Some examples of this are as follows:
 A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 different server roles. These are enabled or disabled in the server *Configuration* section of the WebUI (see <<i2-1>>).
 
 [[i2-1]]
-image::images/server_roles.png[Screenshot,300,align="center"]
 .Server Roles
+image::images/server_roles.png[Screenshot,300,align="center"]
 {zwsp} +
 
 Server roles are implemented by worker processes (see <<workers>>), many of which receive work instructions from messages (see <<messages>>). 
