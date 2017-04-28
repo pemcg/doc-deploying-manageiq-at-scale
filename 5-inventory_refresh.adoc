@@ -6,7 +6,9 @@ One of the biggest factors that affects the perceived performance of operations 
 
 [NOTE]
 ====
-A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for selected providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in CFME 5.7
+A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for selected providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. 
+
+The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in CFME 5.7
 ====
 
 === Refresh Overview

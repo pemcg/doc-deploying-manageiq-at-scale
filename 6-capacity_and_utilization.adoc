@@ -385,7 +385,7 @@ order by resource_id, collect_date, resource_type, capture_interval_name, count
 
 === Recovering From Capacity and Utilization Problems
 
-If C&U realtime data is not collected it is generally lost. Some historical information is retrievable using C&U gap collection (see <<i6-2>>), but this is of a lower granularity than the realtime metrics that are usually collected. Gap collection is fully supported with VMware providers, but also works in a more limited capacity with some other providers such as OpenShift Enterprise.
+If C&U realtime data is not collected it is generally lost. Some historical information is retrievable using C&U gap collection (see <<i6-2>>), but this is of a lower granularity than the realtime metrics that are usually collected. Gap collection is fully supported with VMware providers, but also works in a more limited capacity with some other providers such as OpenShift.
 
 [[i6-2]]
 .C&U Gap Collection

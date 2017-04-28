@@ -84,7 +84,7 @@ Capacity and utilization (C&U) metrics processing is a relatively resource-inten
 
 * The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one CFME appliance in a zone has this role enabled, only one will be active at a time. This role does not have a dedicated worker, the C&U coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
-* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a RHEV provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U Data Collector server role was enabled.
+* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a Red Hat Virtualization provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U Data Collector server role was enabled.
 
 * The _Capacity & Utilization Data Processor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_. There can be more than one CFME appliance with this role in a zone. 
 
@@ -460,7 +460,9 @@ The "Dequeued in" value is particularly useful to monitor when scaling CloudForm
 
 [source,pypy] 
 ----
-... State: [dequeue], Deliver On: [2017-04-27 09:00:00 UTC], Data: [], Args: ["2017-04-27T08:00:00Z", "hourly"], Dequeued in: [2430.509191336] seconds
+... State: [dequeue], Deliver On: [2017-04-27 09:00:00 UTC], ⏎
+Data: [], Args: ["2017-04-27T08:00:00Z", "hourly"], ⏎
+Dequeued in: [2430.509191336] seconds
 ----
 ====
 
