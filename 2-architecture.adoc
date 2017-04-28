@@ -6,15 +6,31 @@ In order to understand how to deploy CloudForms at scale, it is important to und
 
 === Appliances
 
-To simplify installation, CloudForms Management Engine (CFME) is distributed as a fully installed virtual machine template. CFME virtual machines created from these templates are often referred to as _appliances_, and an appliance template comes pre-configured with all required components. A CFME 5.8 appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.1, the CloudForms evmserverd service, and all associated Ruby gems installed. 
+To simplify installation, the Red Hat CloudForms product is distributed as a self-contained virtual machine template, which when cloned is called a CloudForms Management Engine (CFME) _appliance_. Each release of the Red Hat CloudForms product since v2.0 has had a corresponding CloudForms Management Engine release, although the version numbers are not the same (for historical reasons). The following table summarizes the relative CFME and CloudForms product versions.
+
+.Summary of the relative CFME and CloudForms product versions
+[width="50%",cols="^25%,^25%",options="header",align="center"]
+|=======
+|CloudForms Management Engine version|CloudForms (Product) version
+|5.1|2.0
+|5.2|3.0
+|5.3|3.1
+|5.4|3.2
+|5.5|4.0
+|5.6|4.1
+|5.7|4.2
+|5.8|4.5
+|=======
+
+A CFME 5.8 (CloudForms 4.5) appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.2, the CloudForms evmserverd service, and all associated Ruby gems installed. A new addition with CFME 5.8 is the Embedded Ansible 3.1 automation manager, also packaged with the appliance.
 
 The self-contained nature of appliances makes them ideal for horizontally scaling a CloudForms deployment to handle the increased load that larger clouds or virtual infrastructures present. 
 
-Appliances are downloadable as images or templates in formats suitable for VMware, Red Hat Enterprise Virtualization, OpenStack, Amazon EC2, Microsoft's System Center Virtual Machine Manager or Azure cloud, and Google Compute Engine. CFME 5.6 and later can also be installed as a Docker container image as a technology preview.
+Appliances are downloadable as images or templates in formats suitable for VMware, Red Hat Virtualization, OpenStack, Amazon EC2, Microsoft's System Center Virtual Machine Manager or Azure cloud, and Google Compute Engine. The most recent versions can also be installed as an OpenShift 3.x container image (although this platform is a technology preview).
 
 === Database
 
-A CloudForms region stores all of its data in a PostgreSQL 9.5 database. This is known as the _VMDB_, although the term "database" and "VMDB" are often used interchangeably. The database can be internal and integral with an appliance running several other roles (typical for smaller CloudForms deployments), but for larger CloudForms deployments it is typically a dedicated database server or cluster configured for high availability and disaster recovery.
+A CloudForms region stores all of its data in a PostgreSQL database. This is known as the _Virtual Management Database_ or _VMDB_, although the terms "database" and "VMDB" are often used interchangeably. The database can be internal and integral with an appliance running several other roles (typical for smaller CloudForms deployments), but for larger CloudForms deployments it is typically a dedicated database server or cluster configured for high availability and disaster recovery.
 
 === Application
 
@@ -22,41 +38,9 @@ CloudForms is a Ruby on Rails application. The main __miq_server.rb__ Rails appl
 
 === Providers
 
-CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is often referred to as an External Management System or EMS.
+CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is often referred to as an _External Management System_ or _EMS_.
 
-Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.
-
-==== Cloud Providers
-
-CloudForms 4.5 supports three public cloud providers: Amazon EC2, Google Compute Engine, and Microsoft Azure. There is also a cloud provider that can connect to and manage a private or on-premise Red Hat OpenStack Platform (OSP) cloud (this is the OverCloud in the case that OSP is managed by the Red Hat OpenStack Platform Director). 
-
-==== Infrastructure Providers
-
-CloudForms 4.5 supports three traditional infrastructure providers: VMware vCenter Server, Red Hat (Enterprise) Virtualization Manager, and Microsoft System Center Virtual Machine Manager. There is also an infrastructure provider that can connect to and manage a private or on-premise Red Hat OpenStack Platform Director UnderCloud.
-
-==== Container Providers
-
-CloudForms 4.5 supports OpenShift Container Platform as a Docker container manager.
-
-==== Configuration Management Providers
-
-CloudForms 4.5 supports Red Hat Satellite as a configuration management provider. The Satellite provider exposes the Foreman host groups to CloudForms, and extends the provisioning capability to include bare-metal (i.e. non-virtual) servers. 
-
-==== Automation Providers
-
-CloudForms 4.5 supports Ansible Tower as an automation provider. The Tower provider allows Ansible jobs to be run on an external Tower server as part of an Automate workflow.
-
-==== Network Providers
-
-CloudForms 4.5 supports network providers that allow the visualisation and management of the software-defined network components for Amazon EC2, Google Compute Engine, Microsoft Azure, or OpenStack clouds. Network providers are automatically configured when any of the public or private cloud providers, or OSP Director infrastructure provider are added.
-
-==== Storage Providers
-
-Storage providers allow CloudForms to manage the software-defined storage components in an OpenStack cloud. CloudForms 4.5 has introduced support for the OpenStack Cinder (block) and Swift (object) storage modules.
-
-==== Middleware Providers
-
-CloudForms 4.2 introduced a new Middleware provider type as a technology preview. This provides inventory, metrics and events for JBoss application servers and EAP databases, by connecting to a suitably configured Hawkular instance.
+Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the CloudForms Support Matrix document. The most recent Support Matrix document is here: https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/support_matrix/]
 
 ==== Provider Namespaces
 
@@ -66,7 +50,7 @@ Many provider components are named according to a name-spacing schema that follo
 
 Some examples of this are as follows:
 
-* ManageIQ::Providers::AnsibleTower::ConfigurationManager
+* ManageIQ::Providers::EmbeddedAnsible::AutomationManager
 * ManageIQ::Providers::OpenshiftEnterprise::ContainerManager
 * ManageIQ::Providers::Openstack::CloudManager
 * ManageIQ::Providers::Openstack::InfraManager
@@ -83,21 +67,26 @@ A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 d
 image::images/server_roles.png[Screenshot,300,align="center"]
 {zwsp} +
 
-Roles are implemented by worker processes, many of which communicate via messages. The roles are described as follows:
+Server roles are implemented by worker processes (see <<workers>>), many of which receive work instructions from messages (see <<messages>>). 
 
 ==== Automation Engine
 
-The _automation engine_ role enables the CFME appliance to handle automation tasks, which includes the processing of events. There should be at least one CFME appliance with this role set in each zone. This role does not have a dedicated worker, automate tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+The _Automation Engine_ role enables the CFME appliance to handle automation tasks. There should be at least one CFME appliance with this role set in each zone. The role does not have a dedicated worker, automate tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+
+[NOTE]
+====
+The Automation Engine also handles the processing of events through the automate _event switchboard_
+====
 
 ==== Capacity and Utilization
 
 Capacity and utilization (C&U) metrics processing is a relatively resource-intensive operation, and there are three roles associated with its operation.
 
-* The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one CFME appliance in a zone has this role, only one will be active at a time. This role does not have a dedicated worker, the C&U coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+* The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one CFME appliance in a zone has this role enabled, only one will be active at a time. This role does not have a dedicated worker, the C&U coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
-* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a RHEV provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U Data Collector server role was enabled.. 
+* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there can be more than one CFME appliance with this role in a zone. Setting this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a RHEV provider would contain the _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ process if the C&U Data Collector server role was enabled.
 
-* The _Capacity & Utilization Data Drocessor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_. There can be more than one CFME appliance with this role in a zone. 
+* The _Capacity & Utilization Data Processor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_. There can be more than one CFME appliance with this role in a zone. 
 
 ==== Database Operations
 
@@ -105,10 +94,15 @@ The _Database Operations_ role enables the CFME appliance to run certain databas
 
 ==== Embedded Ansible
 
-The _Embedded Ansible_ role enables the use of the built-in Ansible manager, which allows service catalog items of type _Ansible Playbook_ to be created and run. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but also enables the following event catcher and refresh workers:
+The _Embedded Ansible_ role enables the use of the built-in Ansible automation manager, which allows Ansible playbooks to be run from service catalogs, or from control actions and alerts. If more than one CFME appliance in a region has this role enabled, only one will be active at a time. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but enabling the role also starts the following event catcher and refresh workers:
 
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::EventCatcher_
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::RefreshWorker_ 
+
+[NOTE]
+====
+Enabling the Embedded Ansible role adds approximately 2GBytes to the memory requirements of a CFME appliance
+====
 
 ==== Event Monitor
 
@@ -132,11 +126,13 @@ A CFME appliance with the _Git Repositories Owner_ role enabled is responsible f
 
 ==== Notifier
 
-The _Notifier_ role is required if CloudForms _control_ or automate is required to forward SNMP traps to a monitoring system, or to send e-mails. If more than one CFME appliance in a specific region has this role, only one will be active at a time. This role does not have a dedicated worker; notification tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+The _Notifier_ role should be enabled if CloudForms is required to forward SNMP traps to a monitoring system, or to send e-mails. These might be initiated by an automate method or from a control policy, for example.
+
+If more than one CFME appliance in a region has this role enabled, only one will be active at a time. This role does not have a dedicated worker, notifications are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
 ==== Provider Inventory
 
-The _Provider Inventory_ role is responsible for refreshing provider inventory data for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one CFME appliance in a specific zone has this role, only one will be active at a time. 
+The _Provider Inventory_ role is responsible for refreshing provider inventory data for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one CFME appliance in a zone has this role enabled, only one will be active at a time. 
 
 Setting this role starts the provider-specific refresh workers for any providers in the appliance's zone; a zone containing a RHV provider would contain a _ManageIQ::Providers::Redhat::InfraManager::RefreshWorker_ worker, for example. 
 
@@ -145,21 +141,32 @@ VMware providers add an additional _MiqEmsRefreshCoreWorker_, while cloud provid
 * _ManageIQ::Providers::Azure::CloudManager::RefreshWorker_
 * _ManageIQ::Providers::Azure::NetworkManager::RefreshWorker_
 
+[[provider_operations_role]]
 ==== Provider Operations
 
-A CFME appliance with the _Provider Operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. More than one CFME appliance can have this role active in a zone. The role does not have a dedicated worker, provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+A CFME appliance with the _Provider Operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. More than one CFME appliance can have this role active in a zone. The role does not have a dedicated worker, provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+
+[NOTE]
+====
+The Provider Operations role is often required in zones that don't necessarily contain providers.
+
+For example, enabling the Provider Operations role in a WebUI zone can improve performance by reducing the number of individual EMS connections required for user-initiated VM operations, in favour of a single brokered connection. The Provider Operations role is also required in any zone that may run service-initiated VM provisioning operations.
+====
 
 ==== RHN Mirror
 
 A CFME appliance with the _RHN Mirror_ role acts as a repository server for the latest CloudForms RPM packages. It also configures other appliances within the same region to point to itself for updates. This provides a low bandwidth method to update environments with multiple appliances. The role does not have a dedicated worker.
 
+[[reporting_role]]
 ==== Reporting
 
-The _Reporting_ role allows a CFME appliance to generate reports. There should be at least one CFME appliance with this role in any zone where report generation is required, and the role can be active on more than one appliance. Enabling this server role starts one or more _MiqReportingWorker_ workers.
+The _Reporting_ role allows a CFME appliance to generate reports. There should be at least one CFME appliance with this role in any zone in which reports are automatically scheduled or manually requested/queued.footnote:[See also https://bugzilla.redhat.com/show_bug.cgi?id=1422943] (such as from a WebUI zone).
+
+Enabling this server role starts one or more _MiqReportingWorker_ workers.
 
 ==== Scheduler
 
-The _Scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled CloudForms events will not occur. If more than one CFME appliance in a specific region has this role, only one will be active at a time. Enabling this server role starts the _MiqScheduleWorker_ worker.
+The _Scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled CloudForms events will not occur. If more than one CFME appliance in a region has this role enabled, only one will be active at a time. Enabling this server role starts the _MiqScheduleWorker_ worker.
 
 [NOTE]
 ====
@@ -174,11 +181,21 @@ Enabling the _SmartProxy_ role turns on the embedded SmartProxy on the CFME appl
 
 ==== SmartState Analysis
 
-The _SmartState Analysis_ role controls which CFME appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker, SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on priority.
+The _SmartState Analysis_ role controls which CFME appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker, SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+
+[NOTE]
+====
+The SmartProxy and SmartState Analysis roles are described in more detail in <<smartstate_analysis>>
+====
 
 ==== User Interface
 
 This role enables access to a CFME appliance using the Red Hat CloudForms WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
+
+[NOTE]
+====
+The use of multiple WebUI appliances in conjunction with load balancers is described in more detail in <<web-user-interface>>
+====
 
 ==== Web Services
 
@@ -191,8 +208,30 @@ Both the User Interface and Web Services roles must be enabled on a CFME applian
 
 ==== Websocket
 
-This role enables a CFME appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the WebUI notification service in CloudForms 4.2 and later. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
+This role enables a CFME appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the WebUI notification service. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
 
+==== Server Role Zone Affinity
+
+Many server roles - or more accurately their worker processes - have an affinity to the zone with which the hosting CFME appliance is associated. For example messages intended for zone "A" will generally not be processed by worker processes in zone "B".
+
+The following server roles have zone affinity:
+
+* C&U Metrics Coordinator
+* C&U Metrics Collector
+* C&U Metrics Processor
+* Event Monitor
+* Git Repositories Owner
+* Provider Inventory
+* Provider Operations
+* SmartProxy
+* SmartState Analysis
+
+[NOTE]
+====
+Some server roles such as Automation Engine have optional zone affinity. In an automate message specifies the zone to be run in, the task will only be processed in that zone. If an automate message doesn't specify the zone, the task can run anywhere.
+====
+
+[[workers]]
 === Workers
 
 As can be seen, many of the server roles start worker processes. The currently running worker processes on a CFME appliance can be viewed using the following commands in a root bash shell on an appliance:
@@ -221,6 +260,7 @@ Generic and Priority workers process tasks for the following server roles:
 * Provider Operations
 * SmartState Analysis
 
+[[worker_validation]]
 ==== Worker Validation
 
 Monitoring the health status of workers becomes important as a CloudForms installation is scaled. A server thread called __validate_worker__ checks that workers are alive (they have recently issued a 'heartbeat' ping.footnote:[Worker processes issue a heartbeat ping every 10 seconds]), and are within their time limits and memory thresholds. Some workers such as Refresh and SmartProxy workers have a maximum lifetime of 2 hours to restrict their resource consumption.footnote:[The time limit for Refresh workers sometimes needs to be increased in very large environments where a full refresh can take longer than 2 hours]. If this time limit is exceeded, the validate_worker thread will instruct the worker to exit at the end of its current message processing, and spawn a new replacement. 
@@ -257,7 +297,7 @@ Use this command to check for workers exceeding their memory allocation.
 
 ==== Tuning Workers
 
-It often a requirement to tune the number of per appliance workers and their memory thresholds when CloudForms is deployed to manage larger clouds or virtual infrastructures. This can prevent CPU intensive worker processes from adversely affecting other workers on the same appliance.
+It is often a requirement to tune the number of per appliance workers and their memory thresholds when CloudForms is deployed to manage larger clouds or virtual infrastructures. This can prevent CPU intensive worker processes from adversely affecting other workers on the same appliance.
 
 [[worker_memory_thresholds]]
 ===== Worker Memory Thresholds
@@ -311,13 +351,14 @@ Tasks are dispatched to the various workers in one of three ways:
 ** SmartProxy workers
 ** Reporting workers
 
-Many of the queued messages are created by workers dispatching work to other workers. For example the Schedule worker will queue a message for the SmartProxy workers to initiate a SmartState Analysis. An Event Catcher worker will queue a message for an Event Handler worker to process the event. This will in turn queue a message for a Priority worker to process the event through the automate event switchboard.
+Many of the queued messages are created by workers dispatching work to other workers. For example, the Schedule worker will queue a message for the SmartProxy workers to initiate a SmartState Analysis. An Event Catcher worker will queue a message for an Event Handler worker to process the event. This will in turn queue a message for a Priority worker to process the event through the automate event switchboard.
 
 [TIP]
 ====
 Queue workers process messages in a serial fashion. A worker processes one and only one message at a time.
 ====
 
+[[messages]]
 === Messages
 
 The queue workers receive work instructions from messages, delivered via a VMDB table called __miq_queue__, and modelled by the Rails class `MiqQueue`. Each queue worker queries the __miq_queue__ table to look for work for any of its roles. If a message is claimed by a worker, the message state is changed from "ready" to "dequeue" and the worker starts processing the message. When the message processing is completed the message state is updated to indicate "ok", "error" or "timeout". Messages that have completed processing are purged on a regular basis. 
@@ -364,14 +405,14 @@ Message processing is so critical to the overall performance of a CloudForms ins
 
 ===== Stage 1 - Adding a message to the queue. 
 
-A worker (or other Rails process) adds a message to the queue by calling `MiqQueue.put`, passing all associated arguments that the receiving worker needs to process the task. For this example the message should be processed in zone 'RHEV', and has a timeout of 600 seconds (automation tasks typically have a 10 minute time period in which to run). The message priority is 100, indicating that a Generic worker rather than Priority worker should process the message (both workers monitor the "generic" queue). The line from _evm.log_ is as follows:
+A worker (or other Rails process) adds a message to the queue by calling `MiqQueue.put`, passing all associated arguments that the receiving worker needs to process the task. For this example the message should be processed in zone 'RHV', and has a timeout of 600 seconds (automation tasks typically have a 10 minute time period in which to run). The message priority is 100, indicating that a Generic worker rather than Priority worker should process the message (both workers monitor the "generic" queue). The line from _evm.log_ is as follows:
 
 [source,pypy] 
 ----
 ... INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) ⏎
 Message id: [32425368], ⏎
 id: [], ⏎
-Zone: [RHEV], ⏎
+Zone: [RHV], ⏎
 Role: [automate], ⏎
 Server: [], ⏎
 Ident: [generic], ⏎
@@ -393,10 +434,10 @@ A Generic worker calls `get_message_via_drb` to dequeue the next available messa
 
 [source,pypy] 
 ----
-...  INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
+... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
 Message id: [32425368], ⏎
 MiqWorker id: [260305], ⏎
-Zone: [RHEV], ⏎
+Zone: [RHV], ⏎
 Role: [automate], ⏎
 Server: [], ⏎
 Ident: [generic], ⏎
@@ -415,7 +456,12 @@ Dequeued in: [6.698342458] seconds
 
 [TIP]
 ====
-The "Dequeued in" value is particularly useful to monitor when scaling CloudForms as this shows the length of time that the message was in the queue before being processed. 
+The "Dequeued in" value is particularly useful to monitor when scaling CloudForms as this shows the length of time that the message was in the queue before being processed. Although most messages are dequeued within a small number of seconds, a large value does not necessarily indicate a problem. Some messages are queued with a 'Deliver On' time which may be many minutes or hours in the future. The message will not be dequeued until the 'Deliver On' time has expired. An example of this can be seen in the message to schedule a C&U hourly rollup, as follows:
+
+[source,pypy] 
+----
+... State: [dequeue], Deliver On: [2017-04-27 09:00:00 UTC], Data: [], Args: ["2017-04-27T08:00:00Z", "hourly"], Dequeued in: [2430.509191336] seconds
+----
 ====
 
 ===== Stage 3 - Delivering the message to the worker.
@@ -424,7 +470,7 @@ The MiqQueue class's `deliver` method writes to _evm.log_ to indicate that the m
 
 [source,pypy] 
 ----
-...  INFO -- : Q-task_id([automation_task_7829]) ⏎
+... INFO -- : Q-task_id([automation_task_7829]) ⏎
 MIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
 ----
 
@@ -434,7 +480,7 @@ Once the worker has finished processing the task associated with the message, th
 
 [source,pypy] 
 ----
-...  INFO -- : Q-task_id([automation_task_7829]) ⏎
+... INFO -- : Q-task_id([automation_task_7829]) ⏎
 MIQ(MiqQueue#delivered) ⏎
 Message id: [32425368], ⏎
 State: [ok], ⏎
@@ -461,7 +507,7 @@ grep 'count for state=\["dequeue"\]' evm.log
 ---- 
 ... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
 [EVM Server (2768)] MiqQueue count for state=["dequeue"] ⏎
-by zone and role: {"RHEV"=>{nil=>1, "automate"=>1, ⏎
+by zone and role: {"RHV"=>{nil=>1, "automate"=>1, ⏎
 "ems_metrics_coordinator"=>1, "ems_metrics_collector"=>2, ⏎
 "ems_metrics_processor"=>2, "smartproxy"=>1, "smartstate"=>2}, ⏎
 nil=>{"database_owner"=>1}}
@@ -483,7 +529,7 @@ grep 'count for state=\["error"\]' evm.log
 ---- 
 ... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
 [EVM Server (2768)] MiqQueue count for state=["error"] ⏎
-by zone and role: {"RHEV"=>{nil=>36}, "default"=>{nil=>16}, ⏎
+by zone and role: {"RHV"=>{nil=>36}, "default"=>{nil=>16}, ⏎
 "UI Zone"=>{nil=>35}}
 ---- 
 
@@ -500,7 +546,7 @@ grep 'count for state=\["ready"\]' evm.log
 [EVM Server (2768)] \ MiqQueue count for state=["ready"] ⏎
 by zone and role: {"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, ⏎
 nil=>4}, "default"=>{"automate"=>2, nil=>21, "smartstate"=>1, ⏎
-"smartproxy"=>1}, "RHEV"=>{"automate"=>6, "ems_inventory"=>1, ⏎
+"smartproxy"=>1}, "RHV"=>{"automate"=>6, "ems_inventory"=>1, ⏎
 nil=>19, "smartstate"=>2, "ems_metrics_processor"=>1259, ⏎
 "ems_metrics_collector"=>641}}
 ----

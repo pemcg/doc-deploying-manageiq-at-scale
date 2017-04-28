@@ -25,7 +25,7 @@ All CFME appliances in a region access the same PostgreSQL database, and so the 
 Database load is determined by many factors including:
 
 * The number of managed objects (VMs, hosts, datastores, etc.) in the region
-* The number and type of providers added to the region; the more fully-featured providers such as VMware or RHEV have more out-of-the-box events to detect and handle
+* The number and type of providers added to the region (for example providers such as VMware or RHV have more out-of-the-box events that can be detected and processed).
 * The overall "busyness" of the external management systems (such as vCenters), which determines the rate at which events are received and processed, and thus the rate at which inventory refreshes are requested and loaded.footnote:[With VMware providers relatively minor changes such as VM and Host property updates are detected by the Vim Broker and also cause EMS refreshes to be scheduled] (see <<inventory_refresh>>)
 * The frequency of "event storms" (see <<event_handling>>) from the external management systems
 * Whether or not Capacity and Utilization (C&U) metric collection is enabled for the region
@@ -83,7 +83,7 @@ Network latency between CFME appliances and the database plays a big factor in o
 [source,pypy] 
 ----
 vmdb
-bin/rails runner tools/db_ping.rb
+tools/db_ping.rb
 0.358361 ms
 1.058845 ms
 0.996966 ms
@@ -92,7 +92,7 @@ bin/rails runner tools/db_ping.rb
 
 Average: 0.898454 ms
 
-bin/rails runner tools/db_ping_remote.rb 10.3.0.22 5432 root vmdb_production
+tools/db_ping_remote.rb 10.3.0.22 5432 root vmdb_production
 Enter the password for database user root on host 10.3.0.22
 Password:
 0.874407 ms
@@ -103,6 +103,17 @@ Password:
 
 Average: 1.010198 ms
 ----
+
+[NOTE]
+====
+On CFME versions prior to 5.8, these tools should be prefixed by `bin/rails runner`, for example:
+
+[source,pypy] 
+----
+bin/rails runner tools/db_ping.rb
+bin/rails runner tools/db_ping_remote.rb
+----
+====
 
 The architecture of CloudForms assumes LAN-speed latency (≈ 1 ms) between CFME appliances and the database for optimal performance. As latency increases, so overall system responsiveness decreases.
 
@@ -163,11 +174,11 @@ Global regions are often allocated a higher region number (99 is frequently used
 
 The following guidelines can be used when designing a region topology:
 
-* Beware of over-sizing regions. A greater number of smaller interconnected regions will generally perform better than a single large region
+* Beware of over-sizing regions. Several slightly smaller interconnected regions will generally perform better than a single very large region
 * Network latency from CFME appliances to the VMDB within the region should be close to LAN speed
 * Database performance is critical to the overall performance of the region
 * All CFME appliances in a region should be NTP synchronized to the same time source
-* Identify all EMS host instances where steady-state or peak utilization > 50%, and avoid these hosts for placement of CFME appliances, especially the VMDB appliance.
+* Identify all external management system (EMS) host or hypervisor instances where steady-state or peak utilization > 50%, and avoid these hosts for placement of CFME appliances, especially the VMDB appliance.
 
 === Zones
 
@@ -243,5 +254,5 @@ The following guidelines can be used when designing a zone topology:
 * At least one CFME appliance in each zone should have the 'Automate Engine' role enabled, to process zone-specific events
 ** If services will be created that provision VMs using the /ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template class, at least once CFME appliance in each zone should have the 'Provider Operations' role enabled to ensure that the service provision request tasks are processed correctly
 * Isolating the CFME appliances that general users interact with (running the User Interface and Web Services workers) into their own zone can allow for additional security measure to be taken to protect these servers
-** At least one CFME appliance in a WebUI zone should have the 'Reporting' role enabled to ensure that reports interactively scheduled by users are correctly processed
-** At least one CFME appliance in a WebUI zone should have the 'Provider Operations' role enabled to ensure that VM provisioning services are run correctly
+** At least one CFME appliance in a WebUI zone should have the 'Reporting' role enabled to ensure that reports interactively scheduled by users are correctly processed (see <<reporting_role>> for more details)
+** At least one CFME appliance in a WebUI zone should have the 'Provider Operations' role enabled to ensure that VM provisioning services are run correctly (see <<provider_operations_role>> for more details)

@@ -120,3 +120,10 @@ Entity: (MiqServer) cfmesrv06
 ----
 
 To determine more information - such as the actual worker type that was killed - it may be necessary to search _evm.log_ on the appliance mentioned.
+
+=== Consolidated Logging
+
+The distributed nature of the worker/message architecture means that it is often impossible to predict which CFME appliance will run a particular action. This can add to the troubleshooting challenge of examining log files, as the correct appliance hosting the relevant log file must first be located.
+
+Although there is no out-of-the-box consolidated logging architecture for CloudForms at the time of writing, it is possible to add CloudForms logs as a source to an ELK/EFK stack. This can bring a number of benefits, and greatly simplifies the task of log searching in a CloudForms deployment comprising many CFME appliances.
+

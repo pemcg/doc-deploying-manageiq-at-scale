@@ -21,7 +21,9 @@ As can be seen, many of the fields are empty "placeholder" states such as *Acqui
 
 ==== Internal State Machine
 
-The internal state machine runs asynchronously at the *Provision* state of the VM provision state machine. Internal provision state machines are provider-specific. They perform the granular steps of creating the virtual machine; communicating with the EMS using its native API, and customizing the VM using the parameters defined in the provisioning options hash. A typical set of internal state machine steps to provision a VMware virtual machine are as follows:
+The internal state machine is a nested state machine that is launched asynchronously at the *Provision* state of the VM provision state machine. The subsequent *CheckProvisioned* state of the VM provision state machine performs a check-and-retry loop until the internal state machine completes.
+
+Internal provision state machines are provider-specific, and are not exposed to automate (they are not designed to be user-customizable). They perform the granular steps of creating the virtual machine; communicating with the EMS using its native API, and customizing the VM using the parameters defined in the provisioning options hash. A typical set of internal state machine steps to provision a VMware virtual machine are as follows:
 
 * Determine placement
 * Start VMware clone from template

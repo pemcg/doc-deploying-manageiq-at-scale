@@ -31,11 +31,12 @@ Upon dequeue of a new message the Data Collector makes a connection to the provi
 
 The following table shows the metrics sources for the supported providers.
 
+.Metrics Sources
 [width="86%",cols="^50%,^50%",options="header",align="center"]
 |=======================================================================
 |Provider |Metrics source 
 |VMware |vCenter Server statistics
-|RHEV | ovirt_engine_history database
+|Red Hat Virtualization |  Data Warehouse database (default: ovirt_engine_history)
 |OpenStack CloudManager (OSP 6-9) | Ceilometer
 |OpenStack CloudManager (OSP 10+) | Gnocchi
 |OpenStack InfraManager (Director) | Ceilometer
@@ -88,7 +89,7 @@ Complete - Timings:  ⏎
 
 ==== Data Processing
 
-The C&U Data Processors periodically perform the task of 'rolling up' the realtime data. Rollups are performed hourly and daily, and counters for more granular objects such as virtual machines are aggregated into the counters for their parent objects. For example for a virtual infrastructure such as VMware or RH(E)V, the parent rollup process would include the following objects:
+The C&U Data Processors periodically perform the task of 'rolling up' the realtime data. Rollups are performed hourly and daily, and counters for more granular objects such as virtual machines are aggregated into the counters for their parent objects. For example for a virtual infrastructure such as VMware or Red Hat Virtualization, the parent rollup process would include the following objects:
 
 VM {hourly,daily} -> Host {realtime,hourly,daily} -> Cluster {hourly,daily} -> Provider {hourly,daily} -> Region {hourly,daily} -> Enterprise
 
@@ -120,11 +121,10 @@ Capacity and Utilization data is not retained indefinitely in the VMDB. By defau
 :performance:
   ...
   :history:
-    :initial_capture_days: 0
+    ...
     :keep_daily_performances: 6.months
     :keep_hourly_performances: 6.months
     :keep_realtime_performances: 4.hours
-    :purge_window_size: 1000
 ----
 
 === Challenges of Scale
@@ -151,7 +151,7 @@ As with EMS refresh, C&U data collection has two significant phases that each co
 ** Network latency to the database
 ** Database appliance CPU, memory and I/O resources
 
-The line printed to _evm.log_ at the completion of each stage of the operation contains detailed timings, and these can be used to determine bottlenecks. The typical log lines for VMware C&U capture and initial processing can be parsed using a script such as perf_process_timings.rb.footnote:[From https://github.com/pemcg/cfme_log_parsing], for example:
+The line printed to _evm.log_ at the completion of each stage of the operation contains detailed timings, and these can be used to determine bottlenecks. The typical log lines for VMware C&U capture and initial processing can be parsed using a script such as perf_process_timings.rb.footnote:[From https://github.com/RHsyseng/cfme-log-parsing], for example:
 
 [source,pypy] 
 ----
@@ -296,7 +296,7 @@ In some cases the CloudForms processes are working as expected, but the provider
 
 [source,pypy] 
 ----
-ruby ~/git/cfme_log_parsing/perf_process_timings.rb ⏎
+ruby ~/git/cfme-log-parsing/perf_process_timings.rb ⏎
 -i evm.log -o perf_process_timings.out
 
 egrep -A 22 "Worker PID:\s+10563" perf_process_timings.out | ⏎

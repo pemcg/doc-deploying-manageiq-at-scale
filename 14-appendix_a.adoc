@@ -1,4 +1,6 @@
+
 :numbered!:
+[[appendix_a]]
 [appendix]
 == Database Appliance CPU Count
 
@@ -9,3 +11,16 @@ The following table shows the anticipated CPU load on the VMDB appliance for a v
 image::images/database_cpu_count.png[Screenshot,800,align="center"]
 {zwsp} +
 
+
+[appendix]
+== Contributors
+
+|===
+| *Contributor*|*Title*|*Contribution*                              
+| Peter McGowan|Principal Software Engineer|Author
+| Tom Hennessy|Principal Software Engineer|Content, Review
+| Bill Helgeson|Principal Domain Architect|Content
+| Brett Thurber|Engineering Manager|Review
+| Christian Jung|Senior Specialist Solution Architect|Review
+| Chandler Wilkerson|Senior Software Engineer|Review
+|===

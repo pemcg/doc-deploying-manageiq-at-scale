@@ -2,7 +2,12 @@
 [[inventory_refresh]]
 == Inventory Refresh
 
-One of the biggest factors that affects the perceived performance of operations in a large CloudForms installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In CloudForms 4.5 only the VMware and RH(E)V providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
+One of the biggest factors that affects the perceived performance of operations in a large CloudForms installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In CloudForms Management Engine 5.8 only the VMware and Red Hat Virtualization providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
+
+[NOTE]
+====
+A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for selected providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in CFME 5.7
+====
 
 === Refresh Overview
 
@@ -72,30 +77,38 @@ Timings {:server_dequeue=>0.006215572357177734, ⏎
 
 The actual realtime values displayed vary with provider type. All providers report one or more of the following timings:
 
-*  :ems_refresh (the total time to perform the refresh)
+*  *:ems_refresh* (total time to perform the refresh)
+*  *:collect_inventory_for_targets* (for VMware and RHV providers this is the time to extract data from the EMS)
+*  *:parse_targeted_inventory* (for VMware and RHV providers this is the time to parse the inventory. For all other providers this is the time taken to extract and parse data from the EMS)
+*  *:save_inventory* (time saving the inventory into the VMDB)
+
+VMware providers additionally report one or more of the following sub-timings:
+
 *  :collect_inventory_for_targets
+**  *:get_ems_data* (time retrieving EMS information)
+**  *:get_vc_data* (time retrieving vCenter inventory such as VMs, dvportgroups, hosts, clusters etc.)
+**  *:filter_vc_data* (time filtering vCenter inventory)
+**  *:get_vc_data_ems_customization_spec* (time retrieving customization spec inventory)
+**  *:get_vc_data_host_scsi* (time retrieving storage device inventory)
 *  :parse_targeted_inventory
+**  *:parse_vc_data* (time parsing vCenter inventory)
 *  :save_inventory
-*  :parse_legacy_inventory
+**  *:db_save_inventory* (time saving the inventory to the VMDB)
 
-VMware providers additionally report one or more of the following timings:
+RHV providers additionally report one or more of the following sub-timings:
 
-*  :get_ems_data
-*  :get_vc_data
-*  :get_vc_data_ems_customization_spec
-*  :filter_vc_data
-*  :get_vc_data_host_scsi
-*  :parse_vc_data
-*  :db_save_inventory
+*  :collect_inventory_for_targets
+**  *:fetch_host_data* (retrieval time when targeted refresh is to a host)
+**  *:fetch_vm_data* (retrieval time when targeted refresh is to a VM)
+**  *:fetch_all* (retrieval time for any other refresh)
+*  :parse_targeted_inventory
+**  *:parse_inventory*
 
-RH(E)V providers additionally report one or more of the following timings:
+'Legacy' providers additionally report the following timing:
 
-*  :fetch_host_data
-*  :fetch_vm_data
-*  :fetch_all
-*  :parse_inventory
+*  *:parse_legacy_inventory*
 
-Performing the required calculation.footnote:[Example scripts to perform the calculations are available from https://github.com/pemcg/cfme_log_parsing] on the log line shown above reveals the following performance values:
+Performing the required calculation.footnote:[Example scripts to perform the calculations are available from https://github.com/RHsyseng/cfme-log-parsing] on the log line shown above reveals the following performance values:
 
 [source,pypy] 
 ----
@@ -120,7 +133,7 @@ Refresh problems are best identified by establishing baseline timings when the m
 
 [source,pypy] 
 ----
-ruby ~/git/cfme_log_parsing/ems_refresh_timings.rb ⏎
+ruby ~/git/cfme-log-parsing/ems_refresh_timings.rb ⏎
  -i evm.log -o ems_refresh_timings.out
  
 grep -A 13 "Vm: 1$" ems_refresh_timings.out | ⏎
@@ -151,11 +164,7 @@ There is little CloudForms tuning that can be done to improve the data extractio
 
 If database load times are high, then CPU, memory and I/O load on the database appliance should be investigated and if necessary tuned. The __top_output.log__ and __vmstat_output.log__ files in _/var/www/miq/vmdb/log_ on the database appliance can be used to correlate the times of high CPU and memory demand against the long database load times.
 
-==== Refresh Threshold
-
-Although targeted refreshes are generally considerably faster than full refreshes, there is a break-even point after which a full refresh becomes more efficient to perform than many tens or hundreds of merged targeted requests. This point unfortunately varies between different CloudForms installations, and is dependant on the provider EMS type and API responsiveness, VMDB database I/O and CPU performance, and the number of managed objects within each provider.
-
-There is a global setting in the region's configuration YAML (accessible in the WebUI from *Configuration -> Settings -> Server -> Advanced*) called `:full_refresh_threshold`. This specifies the maximum number of concurrent targeted refreshes that should be attempted before being replaced by a single full request, by any provider in the region. 
+==== Configuration
 
 The `:ems_refresh` section of the *Configuration -> Advanced* settings is listed as follows:
 
@@ -195,7 +204,35 @@ The `:ems_refresh` section of the *Configuration -> Advanced* settings is listed
     :get_public_images: false
 ----
 
-As can be seen, the default `:full_refresh_threshold` value is 100, and is provider-independent. The value can however be modified or overridden by provider type. For example to override the setting for all RH(E)V providers in the region, the following lines could be added to the `:ems_refresh` section:
+===== Refresh Interval
+
+The `:refresh_interval` defines a base frequency that a full refresh will be performed for a provider. The default value is 24 hours, although as can be seen this is overridden for several providers. 
+
+Refresh workers also however have a *Configuration -> Advanced* setting called `:restart_interval` which by default is set as `2.hours` (see <<worker_validation>>). Unless a provider connection broker is being used, each time a new refresh worker starts it queues a messages for itself to perform an initial full refresh. The following line from _evm.log_ illustrates this behaviour:
+
+[source,pypy] 
+----
+... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager:: ⏎
+RefreshWorker::Runner#do_before_work_loop) EMS [rhvm] as [admin] ⏎
+Queueing initial refresh for EMS
+----
+
+[NOTE]
+====
+Currently only the VMware provider uses a connection broker, called the _VIM Broker_
+====
+
+The net result is that even though a provider may have a `:refresh_interval` setting of 24 hours, in practice a full refresh is often performed at the frequency of the worker's `:restart_interval` value.
+
+===== Refresh Threshold
+
+Although targeted refreshes are generally considerably faster than full refreshes, there is a break-even point after which a full refresh becomes more efficient to perform than many tens or hundreds of merged targeted requests. This point unfortunately varies between different CloudForms installations, and is dependant on the provider EMS type and API responsiveness, VMDB database I/O and CPU performance, and the number of managed objects within each provider.
+
+There is a global setting in the region's configuration YAML (accessible in the WebUI from *Configuration -> Settings -> Server -> Advanced*) called `:full_refresh_threshold`. This specifies the maximum number of concurrent targeted refreshes that should be attempted before being replaced by a single full request, by any provider in the region. 
+
+
+
+As can be seen, the default `:full_refresh_threshold` value is 100, and is provider-independent. The value can however be modified or overridden by provider type. For example to override the setting for all RHV providers in the region, the following lines could be added to the `:ems_refresh` section:
 
 [source,pypy] 
 ----
@@ -214,7 +251,7 @@ id: [1000000000002].
 
 Such escalations can happen if too many events are received in a short period of time. Section <<event_handling>> discusses blacklisting events.
 
-===== Calculating a Suitable Refresh Threshold
+====== Calculating a Suitable Refresh Threshold
  
 Finding the correct value for the refresh threshold for each CloudForms installation is important. The duration of the refresh process should be as short as possible for several reasons, including the following:
 

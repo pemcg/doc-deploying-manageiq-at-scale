@@ -1,0 +1,28 @@
+
+== Conclusion
+
+As can be seen, the architecture of CloudForms is inherently scalable. 
+
+* The role/worker/message model allows server roles to be distributed throughout CFME appliances in a region.
+
+* The appliance model allows for both horizontal and vertical scaling
+** The number of worker processes can be increased on each CFME appliance (scaling out workers)
+** The appliance vCPU count and memory can be increased (scaling up each appliance)
+** Additional CFME appliances can be added to a region (scaling out appliances)
+
+* The zone model allows containment of provider-specific workers, appliances and workflow processing
+
+* The region model allows many regions to be grouped together under a single master region
+
+The unique performance and load characteristics of individual virtual infrastructure, container or cloud platforms, and the many permutations of provider mean that there is no "magic formula" for tuning. Deploying CloudForms at scale involves careful monitoring and tuning of the various components; detecting low memory or high CPU conditions for workers and appliances, identifying the conditions that trigger message timeouts, for example.
+
+The scaling process is made easier by starting with a minimal set of server roles enabled to support the configured providers - inventory and event handling, for example - and establishing performance baselines once the CloudForms installation is optimally tuned for average and peak EMS load. Additional features such as capacity & utilization metrics collection, SmartState Analysis, provisioning, and automate workflows can then be enabled as required, with performance being monitored and appliances tuned at each step.
+
+Before this can be done however, an understanding of the components and how they fit together is necessary. The architectural and troubleshooting descriptions presented in this guide should help the reader determine the current performance level of each component in a CloudForms installation, and identify what tuning can be performed.
+
+
+
+
+
+
+

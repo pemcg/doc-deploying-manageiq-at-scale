@@ -67,9 +67,9 @@ The name `:scan_via_host` is slightly misleading. Setting this value to `false` 
   :scan_via_host: false
 ----  
  
-==== Red Hat Enterprise Virtualization
+==== Red Hat Virtualization
 
-For SmartState Analysis of RHEV virtual machines to complete successfully, the CFME appliances running the SmartProxy server roles must be in the same RHEV datacenter as the VM being scanned. The storage domains much also be accessible to the SmartProxy appliances. Fibre channel or iSCSI storage domains should be presented to each SmartProxy appliance as shareable direct LUNs. NFS datastores must be mountable by each SmartProxy appliance, which may mean adding secondary network interfaces to the CFME appliances, connected to the storage network.
+For SmartState Analysis of Red Hat Virtualization (RHV) virtual machines to complete successfully, the CFME appliances running the SmartProxy server roles must be in the same RHV datacenter as the VM being scanned. The storage domains much also be accessible to the SmartProxy appliances. Fibre channel or iSCSI storage domains should be presented to each SmartProxy appliance as shareable direct LUNs. NFS datastores must be mountable by each SmartProxy appliance, which may mean adding secondary network interfaces to the CFME appliances, connected to the storage network.
 
 The _management engine relationship_ must also be set for each CFME appliance. This enables the VM SmartState Analysis job to determine the datacenter where the CFME appliance is running and thus to identify which storage it has access to.
 
@@ -158,7 +158,9 @@ Periodic scans of a complete VM inventory should be scheduled with a frequency t
 
 ==== Virtual Machines Running Stateful Applications
 
-A virtual machine SmartState Analysis is always performed on a snapshot of the VM. Virtual machine snapshots aren't application aware however, and using them can have unintended and unexpected consequences for some applications that maintain state data such as Microsoft Exchange Server.footnote:[Further information can be found in the following Microsoft Technet article: https://technet.microsoft.com/en-us/library/jj126252%28v=exchg.141%29.aspx?f=255&MSPPError=-2147217396#BKMK_ExchangeStor ]. Virtual machines running such applications should not be SmartState Analyzed.
+A virtual machine SmartState Analysis is always performed on a temporary snapshot of the VM. The snaphot is taken using the native means exposed by the provider, however most snapshotting technology does not take into account the requirements of any application running in the virtual machine. Taking a virtual machine snapshot can have unintended and unexpected consequences for some applications that maintain state data such as Microsoft Exchange Server.footnote:[Further information can be found in the following Microsoft Technet article: https://technet.microsoft.com/en-us/library/jj126252%28v=exchg.141%29.aspx?f=255&MSPPError=-2147217396#BKMK_ExchangeStor ]. 
+
+Virtual machines running such applications must not be snapshotted, and should therefore be excluded from SmartState Analysis.
 
 [NOTE]
 ====
@@ -210,7 +212,7 @@ Host to perform SmartState Analysis], aborting job ⏎
 
 ===== Unable to mount filesystem
 
-If a CFME appliance running the SmartProxy server role does not have access to the storage network of a RHEV provider, an attempted scan of a virtual machine on an NFS storage domain will timeout.
+If a CFME appliance running the SmartProxy server role does not have access to the storage network of a RHV provider, an attempted scan of a virtual machine on an NFS storage domain will timeout.
 
 [source,pypy] 
 ----

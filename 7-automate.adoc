@@ -19,7 +19,7 @@ Generic workers dequeue all priorities of messages for the server roles that the
 
 An automate message's "Args" list is passed to the automation engine which instantiates the requested automate entry point instance (usually under _/System/Process_ in the automate datastore). The Generic worker does not process any further messages until the automate instance, its children, and any associated methods have completed, or a state machine method exits with `$evm.root['ae_result'] = 'retry'`.
 
-This process can be observed in _evm.log_ by following the message (Message id: [1038885]) that initiated a virtual machine provisioning operation to a RHEV provider. The message is dequeued and passed to the automation engine, as follows:
+This process can be observed in _evm.log_ by following the message (Message id: [1038885]) that initiated a virtual machine provisioning operation to a Red Hat Virtualization provider. The message is dequeued and passed to the automation engine, as follows:
 
 [source,pypy] 
 ----
@@ -84,7 +84,7 @@ All zones should have at least one CFME appliance with the Automation Engine rol
 
 Most automate messages specify the zone that the automate action should be performed in, however an exception to this is found in the messages that initiate service template provision requests and tasks. These messages don't specify a zone and can therefore run on any appliance in the region that has the Automation Engine role enabled. This can lead to unexpected behaviour.
 
-For example if employing services to provision virtual machines using the __/ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template__ class, the messages are zone independent as described. The message to execute the first child service template provision task however is queued for a worker with the __ems_operations__ role, but in the same zone as the server creating the message. If there are no CFME appliances in the zone with the Provider Operations role enabled, the task will not be dequeued and processed, and the service provision will appear to hang.
+For example if employing services to provision virtual machines using the __/ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template__ class, the messages are zone independent as described. The message to execute the first child service template provision task however is queued for a worker with the __ems_operations__ role, but in the same zone as the CFME appliance creating the message. If there are no CFME appliances in the zone with the Provider Operations role enabled, the task will not be dequeued and processed, and the service provision will appear to hang.
 
 Similarly services that have a catalog item type of "Generic" can run in any zone that has the Automation Engine role enabled. This might not be the intended action if the workflow is intended to run in a specific zone, such as in an environment where network access rules or firewall restrictions might be appliance-specific.
 
@@ -93,6 +93,8 @@ Similarly services that have a catalog item type of "Generic" can run in any zon
 When an automation request is submitted via the API, the automate task is queued by default on the same appliance that the web service is running on. This will be dequeued to run by any appliance with the Automation Engine role set _in the same zone_. If the WebUI/web service appliances have been placed in their own zone, this may not necessarily be the desired behaviour.
 
 === Identifying Automate Problems
+
+There are several problems that can be seen when running automation workflows in large-scale CloudForms deployments.
 
 ==== Requests Not Starting
 
@@ -128,7 +130,14 @@ Exiting worker due to timeout error Worker exiting.
 
 ==== State Machine Retries Exceeded
 
-If the number of retries attempted by a state machine state reaches the limit defined in the class schema, an error will be logged to _evm.log_.
+If the number of retries attempted by a state machine state reaches the limit defined in the class schema, an error will be logged to _evm.log_, as follows:
+
+[source,pypy] 
+----
+
+... ERROR -- : Q-task_id([automation_task_13921]) State=<pre4> running  ⏎
+raised exception: <number of retries <6> exceeded maximum of <5>>
+----
 
 === Tuning Automate
 
