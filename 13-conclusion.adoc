@@ -1,7 +1,8 @@
 
+[[conclusion]]
 == Conclusion
 
-As can be seen, the architecture of CloudForms is inherently scalable. 
+As can be seen from the previous chapters, the architecture of CloudForms is inherently scalable. 
 
 * The role/worker/message model allows server roles to be distributed throughout CFME appliances in a region.
 
@@ -14,11 +15,11 @@ As can be seen, the architecture of CloudForms is inherently scalable.
 
 * The region model allows many regions to be grouped together under a single master region
 
-The unique performance and load characteristics of individual virtual infrastructure, container or cloud platforms, and the many permutations of provider mean that there is no "magic formula" for tuning. Deploying CloudForms at scale involves careful monitoring and tuning of the various components; detecting low memory or high CPU conditions for workers and appliances, identifying the conditions that trigger message timeouts, for example.
+The unique performance and load characteristics of individual virtual infrastructure, container or cloud platforms, and the many permutations of provider mean that there is no "magic formula" for tuning. Deploying CloudForms at scale involves careful monitoring and tuning of the various components; detecting low memory or high CPU conditions for workers and appliances, or identifying the conditions that trigger message timeouts, for example.
 
 The scaling process is made easier by starting with a minimal set of server roles enabled to support the configured providers - inventory and event handling, for example - and establishing performance baselines once the CloudForms installation is optimally tuned for average and peak EMS load. Additional features such as capacity & utilization metrics collection, SmartState Analysis, provisioning, and automate workflows can then be enabled as required, with performance being monitored and appliances tuned at each step.
 
-Before this can be done however, an understanding of the components and how they fit together is necessary. The architectural and troubleshooting descriptions presented in this guide should help the reader determine the current performance level of each component in a CloudForms installation, and identify what tuning can be performed.
+Before this can be done however, an understanding of the components and how they fit together is necessary. The architectural and troubleshooting descriptions  in this guide are presented as a means to further this understanding.
 
 
 
