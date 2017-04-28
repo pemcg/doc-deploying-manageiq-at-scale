@@ -37,7 +37,8 @@ include::9-event_handling.adoc[]
 include::10-smartstate_analysis.adoc[]
 include::11-webui.adoc[]
 include::12-monitoring.adoc[]
-include::13-appendix_a.adoc[]
+include::13-conclusion.adoc[]
+include::14-appendix_a.adoc[]
 
 
 // vim: set syntax=asciidoc:
