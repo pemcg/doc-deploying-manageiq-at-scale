@@ -8,7 +8,7 @@ The timely processing of external and internal events is important to the overal
 
 The event processing workflow involves 3 different workers, as follows:
 
-. A provider-specific event catcher polls the EMS event source for new events using an API call such as `https://rhevm/api/events?from=54316` (see <<polling_freqency>>). For each new event caught a message is queued for the event handler
+. A provider-specific event catcher polls the EMS event source for new events using an API call such as `https://rhevm/api/events?from=54316` (see <<polling_frequency>>). For each new event caught a message is queued for the event handler
 . The generic _MiqEventHandler_ worker dequeues the message, and creates an _EmsEvent_ EventStream object. Any EMS-specific references such as `:vm=>{:id=>"4e7b66b7-080d-4593-b670-3d6259e47a0f"}` are translated into the equivalent CloudForms object ID such as `"VmOrTemplate::vm"=>1000000000023`, and a new high priority message is queued for automate
 . A Priority worker dequeues the message and processes it through the automate event switchboard using the EventStream object created by the _MiqEventHandler_. Processing the event may involve several _event handler_ automate instances that perform actions such as:
 ** Process any control policies associated with the event
