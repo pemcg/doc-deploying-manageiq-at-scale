@@ -102,7 +102,7 @@ By default each CFME appliance has 2 Priority and 2 Generic workers. If both of 
 
 ==== Long Running Tasks Timing Out
 
-The default message timeout for automate messages is 600 seconds, which means that the combined execution times of all automate methods that share a common `$evm.root` must be less than 10 minutes. If this time limit is exceeded the automate method will be deemed "non responsive" and terminated, and the Generic worker running the automation will exit and be re-spawned. This timer is only reset if a state machine method exits with `$evm.root['ae_result'] = 'retry'`.
+The default message timeout for automate messages is 600 seconds, which means that the combined execution times of all automate methods that share a common `$evm.root` object must be less than 10 minutes. If this time limit is exceeded the automate method will be deemed "non responsive" and terminated, and the Generic worker running the automation will exit and be re-spawned. This timer is only reset if a state machine method exits with `$evm.root['ae_result'] = 'retry'`.
 
 The timeout mechanism can be observed in _evm.log_, as follows:
 
@@ -190,7 +190,7 @@ If the calling method does not need to wait for the completion of `update_cmdb` 
 ----
 update_cmdb_request = $evm.execute('create_automation_request', ⏎
   options, 'admin', auto_approve)
-$evm.set_state_var(:update_cmdb_request_id, update_cmdb_request.id)
+$evm.set_state_var(:request_id, update_cmdb_request.id)
 $evm.root['ae_result'] = 'ok'
 exit MIQ_OK
 ----
@@ -199,7 +199,8 @@ The following state in the state machine would be `check_cmdb_request`, containi
 
 [source,ruby] 
 ----
-update_cmdb_request = $evm.vmdb(:miq_request, $evm.get_state_var(:update_cmdb_request_id))
+update_cmdb_request = 
+  $evm.vmdb(:miq_request, $evm.get_state_var(:request_id))
 case update_cmdb_request.state
 when "pending", "active"
   $evm.log(:info, "Request still active, waiting for 30 seconds...")
@@ -228,7 +229,8 @@ The options hash can be read from the request object by the caller using the `ge
 
 [source,ruby] 
 ----
-update_cmdb_request = $evm.vmdb(:miq_request, $evm.get_state_var(:update_cmdb_request_id))
+update_cmdb_request = 
+  $evm.vmdb(:miq_request, $evm.get_state_var(:request_id))
 returned_data = update_cmdb_request.get_option(:return)
 ----
 

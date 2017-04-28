@@ -16,7 +16,7 @@ This section describes some of the considerations when designing regions and zon
 
 === Regions
 
-A region is a self-contained collection of CloudForms Management Engine (CFME) appliances. Each region has a database - the VMDB - and one or more appliances running the _evmserverd_ application with an associated set of configured worker processes. Regions are often used for organisational or geographical separation of resources, and the choice of region count, location and size is often based on both operational and technical factors.
+A region is a self-contained collection of CloudForms Management Engine (CFME) appliances. Each region has a database - the VMDB - and one or more appliances running the _evmserverd_ service with an associated set of configured worker processes. Regions are often used for organisational or geographical separation of resources, and the choice of region count, location and size is often based on both operational and technical factors.
 
 ==== Region Size
 
@@ -57,7 +57,7 @@ When sizing a region, some thought needs to be given to the number of CloudForms
 
 Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware VMs or OpenStack instances in the rolling 60 minute time window that realtime metrics are retained for. As an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
 
-Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances in default configuration required for a region. For regions that will only manage providers with reduced capabilities (such as cloud providers), this ratio is often increased to 1:400.
+Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances in default configuration required for a region. For regions that will only manage providers with reduced capabilities (such as cloud or container providers), this ratio is often increased to 1:400.
 
 ==== Region Design
 
@@ -152,7 +152,7 @@ The advantages of deploying multiple regions to manage the objects in a distribu
 
 ==== Connecting Regions
 
-As illustrated in <<i3-1>> regions can be linked in such a way that several subordinate regions replicate their object data to a single _global_ region. The global region has no providers of its own, and is typically used for enterprise-wide reporting as it has visibility of all objects. A new feature with CloudForms 4.2 allows some management operations to be performed directly from the global region, utilising a RESTful API connection to the correct child region to perform the action. These operations include the following:
+As illustrated in <<i3-1>> regions can be linked in such a way that several subordinate regions replicate their object data to a single _global_ region. The global region has no providers of its own, and is typically used for enterprise-wide reporting as it has visibility of all objects. A new feature introduced with CloudForms 4.2 allows some management operations to be performed directly from the global region, utilising a RESTful API connection to the correct child region to perform the action. These operations include the following:
 
 * Virtual machine provisioning
 * Service provisioning

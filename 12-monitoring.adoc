@@ -2,7 +2,7 @@
 [[monitoring]]
 == Monitoring
 
-Monitoring of the various components discussed in this Reference Architecture is essential for maintaining optimum performance of a large CloudForms installation.
+Monitoring of the various components described in this document is essential for maintaining optimum performance of a large CloudForms installation.
 
 As mentioned in <<introduction>> the key to deploying CloudForms at scale is to monitor and tune at each stage of the scaling process. Once confidence has been established that the installation is working optimally at restricted scale, the scope of deployment can be enlarged and the CFME appliances tuned as required to handle the additional workload. 
 
@@ -39,7 +39,7 @@ Operational limits for non-VMDB or "worker" appliances are usually established o
 
 * Review rates and reasons for worker process restarts
 ** Increase allocated memory if workers are exceeding memory thresholds
-* Validate primary/secondary roles for workers in zones and region
+* Validate that the primary/secondary roles for workers in zones and region are as expected, and force a role failover if necessary
 
 ===== Provider Refresh
 
@@ -63,7 +63,7 @@ Operational limits for non-VMDB or "worker" appliances are usually established o
 ** Database load component
 * Are rollups completing in time?
 ** Confirm expected daily and hourly records for each VM
-* Validate numbers of Data Collector and Data Processor workers
+* Validate the numbers of Data Collector and Data Processor workers
 
 ===== Automate
 
@@ -76,23 +76,23 @@ Operational limits for non-VMDB or "worker" appliances are usually established o
 
 ===== Event Handling
 
-* Monitor utilization of CFME appliances with Event Monitor role enabled
-* Validate memory allocated to Event Monitor workers
+* Monitor the utilization of CFME appliances with the Event Monitor role enabled
+* Validate the memory allocated to Event Monitor workers
 
 ===== SmartState Analysis
 
-* Monitor utilization of CFME appliances with SmartProxy role enabled when scheduled scans are running
-* Review scan failures/aborts
-* Validate number of SmartProxy workers
+* Monitor utilization of CFME appliances with the SmartProxy role enabled when scheduled scans are running
+* Review scan failures or aborts
+* Validate the number of SmartProxy workers
 
 ===== Reporting 
 
 * Monitor utilization of appliances with Reporting role enabled when periodic reports are running.
-* Validate number of Reporting workers
+* Validate the number of Reporting workers
 
 === Alerts
 
-Some self-protection policies are available out-of-the-box in the form of alerts. <<i12-1>> shows the alert types that are available. Each is configurable to send an  email, an SNMP trap, or run an automate instance.
+Some self-protection policies are available out-of-the-box in the form of control alerts. <<i12-1>> shows the alert types that are available. Each is configurable to send an  email, an SNMP trap, or run an automate instance.
 
 
 [[i12-1]]

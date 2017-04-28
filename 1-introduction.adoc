@@ -4,11 +4,11 @@
 
 This document discusses the challenges of deploying CloudForms _at scale_ to manage large virtual infrastructures or clouds. The term "at scale" in this case infers several thousand managed virtual machines, instances, templates, clusters, hosts, datastores, containers or pods.
 
-Unfortunately there is no magic formula to describe the various maximum sizes, the number of CloudForms appliances and workers that will be required, nor the number of regions or placement of zones. The diverse nature of the many types of providers and their various workload characteristics makes generalization difficult, and at best misleading.
+Unfortunately there is no magic formula to describe the various maximum sizes, the number of CloudForms appliances and workers that will be required, nor the number of regions or placement of zones. The diverse nature of the many types of provider and their various workload characteristics makes generalization difficult, and at best misleading.
 
-Experience shows that the most effective way to deploy CloudForms in large environments is to start with a minimal set of features enabled, and go through an iterative process of monitoring, tuning and expanding. Understanding the architecture of the product and the various components is an essential part of this process. Although by default a CloudForms Management Engine (CFME) appliance is tuned for relatively small environments, the product _is_ scalable to manage many thousands of virtual machines, instances or containers. Achieving this level of scale however generally requires some customization of the core components for the specific environment being managed. This might include increasing the virtual machine resources such as vCPUs and memory, and also tuning the CFME workers; their numbers, placement, or memory thresholds for example.
+Experience shows that the most effective way to deploy CloudForms in large environments is to start with a minimal set of features enabled, and go through an iterative process of monitoring, tuning and expanding. Understanding the architecture of the product and the various components is an essential part of this process. Although by default a CloudForms Management Engine (CFME) appliance is tuned for relatively small environments, the product _is_ scalable to manage many thousands of virtual machines, instances or containers. Achieving this level of scale however generally requires some customization of the core components for the specific environment being managed. This might include increasing the virtual machine resources such as vCPUs and memory, or tuning the CFME workers; their numbers, placement, or memory thresholds for example.
 
-This reference architecture seeks to explain the architecture of CloudForms, and expose the inner workings of the core components. Several 'rules of thumb' such as guidelines for CFME appliance to VM ratios are offered, along with the rationale behind the numbers, and when they can be adjusted. The principal source of monitoring and tuning data is the _evm.log_ file. Many examples of log lines for various workers and strings to search for have been included, along with sample scripts to extract real-time timings for activities such as EMS refresh.
+This guide seeks to explain the architecture of CloudForms, and expose the inner workings of the core components. Several 'rules of thumb' such as guidelines for CFME appliance to VM ratios are offered, along with the rationale behind the numbers, and when they can be adjusted. The principal source of monitoring and tuning data is the _evm.log_ file, and many examples of log lines for various workers and strings to search for have been included, along with sample scripts to extract real-time timings for activities such as EMS refresh.
 
 The document is divided into three sections, as follows:
 
@@ -30,11 +30,11 @@ Part II - Component Scaling
 
 Part III - Monitoring
 
-* _Monitoring_ describes some of the in-built monitoring capabilities, and how to setup alerts to warn of problems such as worker restarts.
+* _Monitoring_ describes some of the in-built monitoring capabilities, and how to setup alerts to warn of problems such as workers being killed.
 
 === Acknowledgements
 
-The author would like to thank Tom Hennessy and Bill Helgeson of Red Hat for their patience, knowledge and advice when preparing this reference architecture.
+The author would particularly like to thank Tom Hennessy and Bill Helgeson of Red Hat for their patience, knowledge and advice when preparing this document.
 
 
 

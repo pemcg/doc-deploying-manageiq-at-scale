@@ -30,9 +30,9 @@ To allow for a degree of fault-tolerance in a large CloudForms installation, it 
 
 ==== Load Balancers
 
-Multiple CFME appliances in a WebUI zone are often placed behind a load balancer. The load balancer should be configured with sticky sessions enabled. This will cause the load balancer to send requests to the same UI worker during a session.
+Multiple CFME appliances in a WebUI zone are often placed behind a load balancer. The load balancer should be configured with sticky sessions enabled, which will force it to send requests to the same UI worker during a session.
 
-The load balancer should be configured to test for connectivity using the CloudForms ping response page at https://cfme_appliance/ping. The expected reply from the appliance is the text string “pong”. Using this URL is preferable to the standard login URL as it does not establish a connection to the database.
+The load balancer should also be configured to test for connectivity using the CloudForms ping response page at https://cfme_appliance/ping. The expected reply from the appliance is the text string “pong”. Using this URL is preferable to the standard login URL as it does not establish a connection to the database.
 
 By default the CloudForms UI workers store session data in the local appliance's memcache. When operating behind a load balancer the UI workers should be configured to store session data in the database. This prevents a user from having to re-login if the load balancer redirects them to an alternative server if their original UI worker is unresponsive.
 

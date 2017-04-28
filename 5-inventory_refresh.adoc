@@ -6,7 +6,7 @@ One of the biggest factors that affects the perceived performance of operations 
 
 [NOTE]
 ====
-A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for selected providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. 
+A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for the Amazon S3 and Ansible providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. 
 
 The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in CFME 5.7
 ====
@@ -131,7 +131,7 @@ This shows that the two significant time components to this operation were extra
 
 === Identifying Refresh Problems
 
-Refresh problems are best identified by establishing baseline timings when the managed EMS is least busy. To determine the relative EMS collection and database load times, the ':collect_inventory_for_targets' and ':db_save_inventory' timing counters from _evm.log_ can be plotted. For this example the cfme_log_parsing/ems_refresh_timings.rb script is used, as follows:
+Refresh problems are best identified by establishing baseline timings when the managed EMS is least busy. To determine the relative EMS collection and database load times, the ':collect_inventory_for_targets' and ':db_save_inventory' timing counters from _evm.log_ can be plotted. For this example the cfme-log-parsing/ems_refresh_timings.rb script is used, as follows:
 
 [source,pypy] 
 ----
@@ -230,11 +230,9 @@ The net result is that even though a provider may have a `:refresh_interval` set
 
 Although targeted refreshes are generally considerably faster than full refreshes, there is a break-even point after which a full refresh becomes more efficient to perform than many tens or hundreds of merged targeted requests. This point unfortunately varies between different CloudForms installations, and is dependant on the provider EMS type and API responsiveness, VMDB database I/O and CPU performance, and the number of managed objects within each provider.
 
-There is a global setting in the region's configuration YAML (accessible in the WebUI from *Configuration -> Settings -> Server -> Advanced*) called `:full_refresh_threshold`. This specifies the maximum number of concurrent targeted refreshes that should be attempted before being replaced by a single full request, by any provider in the region. 
+There is a *Configuration -> Advanced* setting called `:full_refresh_threshold`. This specifies the maximum number of concurrent targeted refreshes that should be attempted before being replaced by a single full request, by any provider in the region. 
 
-
-
-As can be seen, the default `:full_refresh_threshold` value is 100, and is provider-independent. The value can however be modified or overridden by provider type. For example to override the setting for all RHV providers in the region, the following lines could be added to the `:ems_refresh` section:
+The default `:full_refresh_threshold` value is 100 and is global (provider-independent), however the value can be modified or overridden by provider type if required. For example to override the setting for all RHV providers in the region, the following lines could be added to the `:ems_refresh` section:
 
 [source,pypy] 
 ----
@@ -242,7 +240,7 @@ As can be seen, the default `:full_refresh_threshold` value is 100, and is provi
     :full_refresh_threshold: 200
 ----
 
-If the full_refresh_threshold value is triggered, there will be a corresponding "Escalating" line written to _evm.log_, for example:
+If the `:full_refresh_threshold` value is triggered, there will be a corresponding "Escalating" line written to _evm.log_, for example:
 
 [source,pypy] 
 ----
@@ -251,15 +249,15 @@ preprocess_targets) Escalating to full refresh for EMS: [vCenter6], ⏎
 id: [1000000000002].
 ----
 
-Such escalations can happen if too many events are received in a short period of time. Section <<event_handling>> discusses blacklisting events.
+Such escalations can happen if too many events are received in a short period of time (section <<event_handling>> discusses blacklisting events).
 
 ====== Calculating a Suitable Refresh Threshold
  
 Finding the correct value for the refresh threshold for each CloudForms installation is important. The duration of the refresh process should be as short as possible for several reasons, including the following:
 
-. New VM instances are not recognised until an EMS refresh completes. This can have an adverse impact on other activities such as VM provisioning, where the CheckCompleted state machine stage waits for the newly provisioned VM to be discovered. This state will only wait for a fixed number of 60 second retries.
+. New VM instances are not recognised until an EMS refresh completes. This can have an adverse impact on other related activities such as VM provisioning.
 
-. A new EMS refresh operation cannot start until any prior refreshes are completed. If an existing (long) refresh has just missed the creation of a new object but is in progress, a further refresh may be needed to capture the new object.
+. A new EMS refresh operation cannot start until any prior refreshes have completed. If an existing (long) refresh has just missed the creation of a new object but is still in progress, a further refresh may be needed to capture the new object.
 
 The optimum value for the refresh threshold can only be found by examining the actual refresh times encountered for each provider. Having multiple providers of the same type in the same region can complicate this process, and if the optimal thresholds for each provider are found to be very different it may be worth splitting providers between regions.
 
