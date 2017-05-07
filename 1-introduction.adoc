@@ -27,10 +27,11 @@ Part II - Component Scaling
 * _Event Handling_ describes the three workers that combine to process events from external management systems, and how to scale them.
 * _SmartState Analysis_ takes a look at some of the tuning options available to scale SmartState Analysis in larger environments.
 * _Web User Interface_ discusses how to scale WebUI appliances behind load balancers.
-
-Part III - Monitoring
-
 * _Monitoring_ describes some of the in-built monitoring capabilities, and how to setup alerts to warn of problems such as workers being killed.
+
+Part III - Design Scenario
+
+* _Region Design Scenario_  takes the reader through a realistic design scenario for a large single region comprising several provider types.
 
 === Acknowledgements
 

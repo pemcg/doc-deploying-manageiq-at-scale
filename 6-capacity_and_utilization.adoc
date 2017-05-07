@@ -358,7 +358,7 @@ Delivered in [0.202901147] seconds
 
 When C&U is operating correctly, for each time-profile instance there should be one daily record and at least 24 hourly records for each powered-on VM. There should also be at most 5 of the metrics_## tables that contain more than zero records. 
 
-The following SQL query can be used to detect this where the VM rollups are suspected of not being complete.
+The following SQL query can be used to confirm that the records are being processed correctly:
 
 [source,pypy] 
 ----

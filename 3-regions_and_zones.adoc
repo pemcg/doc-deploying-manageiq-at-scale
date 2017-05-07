@@ -20,9 +20,12 @@ A region is a self-contained collection of CloudForms Management Engine (CFME) a
 
 ==== Region Size
 
-All CFME appliances in a region access the same PostgreSQL database, and so the I/O and CPU performance of the database server is a significant factor in determining the maximum size to which a region can grow (in terms of numbers of managed objects) whilst maintaining acceptable performance. 
+All CFME appliances in a region access the same PostgreSQL database, and so the I/O and CPU performance of the database server is a significant factor in determining the maximum size to which a region can grow (in terms of numbers of managed objects) whilst maintaining acceptable performance.
 
-Database load is determined by many factors including:
+[[database_load_factors]]
+===== Database Load Factors
+
+The VMDB database load is determined by many factors including:
 
 * The number of managed objects (VMs, hosts, datastores, etc.) in the region
 * The number and type of providers added to the region (for example providers such as VMware or RHV have more out-of-the-box events that can be detected and processed).
@@ -44,11 +47,34 @@ Database load is determined by many factors including:
 * The frequency and load profile of connections to the RESTful API (including the Self-Service UI)
 * The number of CFME appliances (more accurately, worker processes) in the region
 
-With this number of permutations it is very difficult to define a representative load for simulation purposes. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, datastores, etc.). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud and container providers - but as with any large database system, performance should be carefully monitored.
+===== Sizing Estimation
+
+It is very difficult to define a representative load for simulation purposes, due to the many permutations of workload factors. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, clusters and datastores, for example). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud and container providers - but as with any large database system, performance should be carefully monitored.
+
+<<guidelines_for_maximum_region_size>> provides suggested guidelines for the maximum number of objects (VMs, instances, images, templates, clusters, hosts, datastores, pods or containers, for example) in a region containing an active provider. Regions with several provider types (for example both VMware and Amazon EC2) will have a practical maximum somewhere between the limits suggested for each provider.
+
+[[guidelines_for_maximum_region_size]]
+.Guidelines for Maximum Region Size
+[width="50%",cols="^25%,^25%",options="header",align="center"]
+|=======
+|Provider|Guideline Number of Objects in Region
+|VMware|5000
+|RHV|5000
+|OpenStack|7500
+|OpenShift|10000
+|Microsoft SCVMM|10000
+|Microsoft Azure|10000
+|Amazon EC2|10000
+|Google Compute Engine|10000
+|=======
+
+It should be noted that these numbers are approximate and are only suitable for planning and design purposes. The absolute practical maximum size for a region will depend on acceptable performance criteria, database server capability, and the factors listed in <<database_load_factors>>.
+
+When planning regions it is often useful to under-size a region rather than over-size. It is usually easier to add capacity to a smaller region that is performing well, than it is to split an under-performing large single region into multiple regions.
 
 [NOTE]
 ====
-A 'global' region is generally capable of handling more objects than this as it has no active providers of its own, and has a lower database load.
+A 'global' region is generally capable of handling considerably more objects as it has no active providers of its own, and has a lower database load.
 ====
 
 ==== Number of CFME Appliances in a Region
@@ -57,7 +83,24 @@ When sizing a region, some thought needs to be given to the number of CloudForms
 
 Two of the most resource-intensive tasks are those performed by the C&U Data collector and Data Processor workers, particularly where there is a limited time window for the collection of realtime data as there is with VMware or OpenStack providers (see <<capacity_and_utilization>>). It has been established through testing that one C&U Data Collector worker can retrieve and store the metrics from approximately 150 VMware VMs or OpenStack instances in the rolling 60 minute time window that realtime metrics are retained for. As an out-of-the-box CFME appliance is configured with 2 C&U Data Collector workers, it should be able to handle the collection of realtime metrics for 300 VMs. If the number of workers is increased to 4, the appliance could handle the collection of realtime metrics for 600 VMs, although the increased CPU and memory load may adversely affect other processing taking place on the appliance.
 
-Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances in default configuration required for a region. For regions that will only manage providers with reduced capabilities (such as cloud or container providers), this ratio is often increased to 1:400.
+Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point for scaling the number of CFME appliances required for a region containing VMware, RHV or OpenStack providers. For other provider types this ratio is often increased to 1:400. 
+
+<<guidelines_for_appliance_to_object_ratios>> provides suggested guideline ratios for each of the provider types. It should be noted that these numbers are approximate and are only suitable for planning and design purposes. The final numbers of CFME appliances required for a region or zone can only be determined from analysis of the specific region workload, and the performance of existing CFME appliances.
+
+[[guidelines_for_appliance_to_object_ratios]]
+.Objects per CFME Appliance Guidelines
+[width="50%",cols="^25%,^25%",options="header",align="center"]
+|=======
+|Provider|Guideline Number of Objects/CFME Appliance
+|VMware|300 (VMs)
+|RHV|300 (VMs)
+|OpenStack|300 (instances)
+|OpenShift|400 (containers & pods)
+|Microsoft SCVMM|400 (VMs)
+|Microsoft Azure|400 (instances)
+|Amazon EC2|400 (instances)
+|Google Compute Engine|400 (instances)
+|=======
 
 ==== Region Design
 

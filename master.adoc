@@ -1,6 +1,6 @@
 = Deploying CloudForms at Scale
 Peter McGowan <pemcg@redhat.com>
-v1.0, {docdate}
+v1.1, {docdate}
 :doctype: book
 :toc:
 :sectnums:
@@ -37,8 +37,9 @@ include::9-event_handling.adoc[]
 include::10-smartstate_analysis.adoc[]
 include::11-webui.adoc[]
 include::12-monitoring.adoc[]
-include::13-conclusion.adoc[]
-include::14-appendix_a.adoc[]
+include::13-design_scenario.adoc[]
+include::14-conclusion.adoc[]
+include::15-appendix_a.adoc[]
 
 
 // vim: set syntax=asciidoc:
