@@ -1,5 +1,5 @@
 
-[[design_scnario]]
+[[design_scenario]]
 == Design Scenario
 
 This chapter discusses a hypothetical region and zone design for a new CloudForms installation, based on the topics discussed in this guide.
@@ -80,9 +80,9 @@ Latency from worker appliance to VMDB should be LAN speed, around 1ms or less. T
 
 ==== VMDB Server
 
-The optimum VMDB server for this design will be a standalone PostgreSQL server. Although database high availability (HA) has not been specified as an initial requirement, installing a standalone database appliance allows for HA to be configured in future if required. 
+The optimum VMDB server for this design will be a CFME appliance configured as a standalone PostgreSQL server. Although database high availability (HA) has not been specified as an initial requirement, installing a standalone database appliance allows for HA to be configured in future if required. 
 
-The database server will be installed in the enterprise network, hosted by the VMware 6.0 environment. The estimated size of the database after two years, based on the formula presented in <<database_sizing_and_optimization>> is approximately 468 GBytes. To allow for unexpected growth and a margin of uncertainty, a 750 GByte disk will be presented from a datastore backed by fast FC SAN storage, and used as the database volume.
+The database server will be installed in the Enterprise network, hosted by the VMware 6.0 virtual infrastructure. The estimated size of the database after two years, based on the formula presented in <<database_sizing_and_optimization>> is approximately 468 GBytes. To allow for unexpected growth and a margin of uncertainty, a 750 GByte disk will be presented from a datastore backed by fast FC SAN storage, and used as the database volume.
 
 The database server will have 8 GBytes memory, and a PostgreSQL shared_buffers region of 2 GBytes. A 2 GByte hugepage region will be created for PostgreSQL to use.
 
