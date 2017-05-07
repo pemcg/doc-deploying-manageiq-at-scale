@@ -108,7 +108,7 @@ There are a number of considerations for region design and layout, but the most 
 
 ===== Centrally Located Infrastructure
 
-With a single, centrally located small or medium sized (i.e. 5000 or fewer managed objects) virtual infrastructure or cloud, the selection of region design is simpler. A single region is usually the most suitable option, with high availability and fault tolerance built into the design.
+With a single, centrally located small or medium sized virtual infrastructure or cloud, the selection of region design is simpler. A single region is usually the most suitable option, with high availability and fault tolerance built into the design.
 
 [NOTE]
 ====
