@@ -42,7 +42,7 @@ CloudForms manages each cloud, container or virtual environment using modular su
 
 [NOTE]
 ====
-Although the terms _provider_ and _external management system (EMS)_ are often used interchangeably, there is an inportant distinction. The _provider_ is the CloudForms component, whereas the _EMS_ is the managed entity that the provider connects to, such as the VMware vCenter
+Although the terms _provider_ and _external management system (EMS)_ are often used interchangeably, there is an important distinction. The _provider_ is the CloudForms component, whereas the _EMS_ is the managed entity that the provider connects to, such as the VMware vCenter
 ====
 
 Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the CloudForms Support Matrix document. The most recent Support Matrix document is here: https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/support_matrix/]
