@@ -328,7 +328,7 @@ Use this command to check for workers exceeding their memory allocation.
 
 ==== Tuning Workers
 
-It is often a requirement to tune the number of per-appliance workers and their memory thresholds when CloudForms is deployed to manage larger clouds or virtual infrastructures. This can prevent CPU intensive worker processes from adversely affecting other workers on the same appliance.
+It is often a requirement to tune the number of per-appliance workers and their memory thresholds when CloudForms is deployed to manage larger clouds or virtual infrastructures. 
 
 [[worker_memory_thresholds]]
 ===== Worker Memory Thresholds
