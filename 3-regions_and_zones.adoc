@@ -298,4 +298,4 @@ The following guidelines can be used when designing a zone topology:
 * At least once CFME appliance in each zone should have the 'Provider Operations' role enabled to ensure that the service provision request tasks are processed correctly
 * Isolating the CFME appliances that general users interact with (running the User Interface and Web Services workers) into their own zone can allow for additional security measure to be taken to protect these servers
 ** At least one CFME appliance in a WebUI zone should have the 'Reporting' role enabled to ensure that reports interactively scheduled by users are correctly processed (see <<reporting_role>> for more details)
-** At least one CFME appliance in a WebUI zone should have the 'Provider Operations' role enabled to ensure that VM provisioning services are run correctly (see <<provider_operations_role>> for more details)
+
