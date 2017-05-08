@@ -158,7 +158,7 @@ VMware providers add an additional _MiqEmsRefreshCoreWorker_, while cloud provid
 
 [NOTE]
 ====
-The Provider Inventory refresh workers roles are described in more detail in <<inventory_refresh>>
+Provider Inventory refresh workers are described in more detail in <<inventory_refresh>>
 ====
 
 [[provider_operations_role]]
