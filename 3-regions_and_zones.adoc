@@ -95,11 +95,11 @@ Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point f
 |VMware|300 (VMs)
 |RHV|300 (VMs)
 |OpenStack|300 (instances)
-|OpenShift|400 (containers & pods)
 |Microsoft SCVMM|400 (VMs)
 |Microsoft Azure|400 (instances)
 |Amazon EC2|400 (instances)
 |Google Compute Engine|400 (instances)
+|OpenShift|500 (pods)
 |=======
 
 ==== Region Design
