@@ -93,6 +93,11 @@ Capacity and utilization (C&U) metrics processing is a relatively resource-inten
 
 * The _Capacity & Utilization Data Processor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_, and there is no limit to the number of concurrent workers in a zone. 
 
+[NOTE]
+====
+The Capacity & Utilization roles are described in more detail in <<capacity_and_utilization>>
+====
+
 ==== Database Operations
 
 The _Database Operations_ role enables a CFME appliance to run certain database maintenance tasks such as purging old metrics. This role does not have a dedicated worker, the database operations tasks are processed by a _MiqGenericWorker_.
@@ -125,6 +130,11 @@ The event handler worker, called _MiqEventHandler_, is responsible for feeding t
 
 There should be at least one CFME appliance with the event monitor role set in any zone containing a provider, however if more than one CFME appliance in a zone has this role, only one will be active at a time.
 
+[NOTE]
+====
+The event catcher and event handler workers are described in more detail in <<event_handling>>
+====
+
 ==== Git Repositories Owner
 
 A CFME appliance with the _Git Repositories Owner_ role enabled is responsible for synchronising git repository data from a git source such as Github or Gitlab, and making it available to other appliances in the region that have the automation engine role set. The git repository data is copied to _/var/www/miq/vmdb/data/git_repos/<git_profile_name>/<git_repo_name>_ on the CFME appliance. This role does not have a dedicated worker.
@@ -145,6 +155,11 @@ VMware providers add an additional _MiqEmsRefreshCoreWorker_, while cloud provid
 
 * _ManageIQ::Providers::Azure::CloudManager::RefreshWorker_
 * _ManageIQ::Providers::Azure::NetworkManager::RefreshWorker_
+
+[NOTE]
+====
+The Provider Inventory refresh workers roles are described in more detail in <<inventory_refresh>>
+====
 
 [[provider_operations_role]]
 ==== Provider Operations
@@ -195,7 +210,7 @@ The SmartProxy and SmartState Analysis roles are described in more detail in <<s
 
 ==== User Interface
 
-This role enables access to a CFME appliance using the Red Hat CloudForms WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
+This role enables access to a CFME appliance using the Red Hat CloudForms _Operations_ WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
 
 [NOTE]
 ====
@@ -208,7 +223,7 @@ This role enables the RESTful Web service API on a CFME appliance. More than one
 
 [NOTE]
 ====
-Both the User Interface and Web Services roles must be enabled on a CFME appliance to enable logins to the WebUI
+The Web Services role is required by the Self-Service User Interface (SSUI). Both the User Interface and Web Services roles must be enabled on a CFME appliance to enable logins to the Operations WebUI
 ====
 
 ==== Websocket
@@ -256,7 +271,7 @@ image::images/workers.png[Screenshot,700,align="center"]
 
 [NOTE]
 ====
-With CFME 5.8 the currently running worker processes on the local server _and_ remote servers can be seen, ordered by server and zone, using the following commands:
+CFME 5.8 has provided a new command that allows the currently running worker processes on the local server _and_ remote servers can be seen, ordered by server and zone:
 
 [source,bash] 
 ----
