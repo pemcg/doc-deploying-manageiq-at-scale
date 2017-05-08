@@ -18,7 +18,7 @@ It can be seen from the table in <<appendix_a>> that a region containing 10 idle
 
 === Sizing the Database Partition Before Installation
 
-The disk used for the database partition should be presented to the database appliance from the fastest available block storage (solid-state disk if possible). Sparsely allocated, thin provisioned or file-backed storage such as NFS are not recommended for optimum performance.. 
+The disk used for the database partition should be presented to the database appliance from the fastest available block storage. Sparsely allocated, thin provisioned or file-backed storage such as NFS are not recommended for optimum performance. 
 
 A rough estimate of database size in GBytes can be made by approximating the number of managed VMs, hosts and storage devices in the region over a one and two year period.footnote:[These sizing estimates have been generated from real-world VMDB usage statistics gathered from earlier versions of ManageIQ/CloudForms, managing virtual infrastructures such as VMware. To date insufficient data has been gathered for comparable sizing estimates of CloudForms installations that primarily manage OpenShift Container Platforms]
 
@@ -207,7 +207,7 @@ The database mount point `/var/opt/rh/rh-postgresql95/lib/pgsql` is a logical vo
 
 [NOTE]
 ====
-Some virtual or cloud infrastructures don't support the 'hot' adding of a new disk to a virtual machine that is powered on. It may be necessary to stop the `evmserverd` service on all CFME appliances in the region, and shut down the VMDB appliance before add the new disk.
+Some virtual or cloud infrastructures don't support the 'hot' adding of a new disk to a virtual machine that is powered on. It may be necessary to stop the `evmserverd` service on all CFME appliances in the region, and shut down the VMDB appliance before adding the new disk.
 ====
 
 The following steps illustrate the procedure to add an additional 10 GBytes of storage (a new disk /dev/vdd) to the database mount point:

@@ -2,7 +2,7 @@
 [[inventory_refresh]]
 == Inventory Refresh
 
-One of the biggest factors that affects the perceived performance of operations in a large CloudForms installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In CloudForms Management Engine 5.8 only the VMware and Red Hat Virtualization providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
+One of the biggest factors that affects the perceived performance of a large CloudForms installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In CloudForms Management Engine 5.8 only the VMware and Red Hat Virtualization providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
 
 [NOTE]
 ====
