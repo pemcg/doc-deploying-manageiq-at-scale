@@ -99,7 +99,7 @@ Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point f
 |Microsoft Azure|400 (instances)
 |Amazon EC2|400 (instances)
 |Google Compute Engine|400 (instances)
-|OpenShift|500 (pods)
+|OpenShift|400 (pods & containers)
 |=======
 
 ==== Region Design
@@ -205,7 +205,7 @@ As illustrated in <<i3-1>> regions can be linked in such a way that several subo
 
 ==== Region Numbering
 
-Regions have associated with them a region number that is allocated when the VMDB appliance is first initialised. When several regions are linked in a global/subregion hierarchy, all of the region numbers must be unique. Region numbers can be up to three digits long, and the region number is encoded into the leading digits of every object ID in the region. For example for following 3 message IDs are from different regions:
+Regions have associated with them a region number that is allocated when the VMDB appliance is first initialised. When several regions are linked in a global/subregion hierarchy, all of the region numbers must be unique. Region numbers can be up to three digits long, and the region number is encoded into the leading digits of every object ID in the region. For example the following 3 message IDs are from different regions:
 
 * Message id: [1000000933021]  (region 1)
 * Message id: [9900023878436]  (region 99)
