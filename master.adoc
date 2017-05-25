@@ -1,6 +1,6 @@
 = Deploying CloudForms at Scale
 Peter McGowan <pemcg@redhat.com>
-v1.1-1, {docdate}
+v1.1-2, {docdate}
 :doctype: book
 :toc:
 :sectnums:

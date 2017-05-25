@@ -19,7 +19,28 @@ As discussed in <<architecture>>, there are three CFME appliance roles connected
 
 ==== C&U Coordination
 
-Every 3 minutes a message is queued for the C&U Coordinator to begin processing.footnote:[The default value is 3 minutes, but this can be changed in 'Advanced' settings]. The Coordinator schedules the data collections for all of the managed objects in the VMDB, and queues messages for the C&U Data Collector to retrieve metrics for one or more objects if a collection is due. For VMs, Clusters and Hosts this is 50 minutes after the last collection for that object, and for storage, 60 minutes. The message specifies a counter type to retrieve ("realtime" or "hourly"), and an optional time range to collect data for.
+Every 3 minutes a message is queued for the C&U Coordinator to begin processing.footnote:[The default value is 3 minutes, but this can be changed in 'Advanced' settings]. The Coordinator schedules the data collections for all of the managed objects in the VMDB, and queues messages for the C&U Data Collector to retrieve metrics for any objects for which a collection is due. The default time interval between collections (the _capture threshold_) is 10 minutes, but for VMs, Clusters and Hosts this is expanded to 50 minutes, and for storage, 60 minutes. 
+
+The capture thresholds are defined in the `:performance` section of the *Configuration -> Advanced* settings, as follows:
+
+[source,pypy] 
+----
+:performance:
+  :capture_threshold:
+    :default: 10.minutes
+    :ems_cluster: 50.minutes
+    :host: 50.minutes
+    :storage: 60.minutes
+    :vm: 50.minutes
+  :capture_threshold_with_alerts:
+    :default: 1.minutes
+    :host: 20.minutes
+    :vm: 20.minutes
+----
+
+If a control alert is defined for an object type, the shorter capture thresholds defined under `:capture_threshold_with_alerts` are used to ensure a faster response.
+
+The message created by the C&U Coordinator specifies a counter type to retrieve ("realtime" or "hourly"), and an optional time range to collect data for.
 
 ==== Data Collection
 
@@ -246,6 +267,24 @@ Some providers keep realtime performance data for a limited time period, and if 
 The C&U Coordinator schedules a new VM, host or cluster realtime performance collection 50 minutes after the last data sample was collected for that object. This allows up to 10 minutes for the message to be dequeued and processed, before the realtime metrics are captured. In a large VMware or OpenStack environment the messages for the C&U Data Collectors can take longer than 10 minutes to be dequeued, meaning that some realtime data samples are lost. As the environment grows (more VMs) the problem slowly becomes worse. 
 
 There are several types of log line written to _evm.log_ that can indicate C&U data collection problems.
+
+===== Messages Still Queued from Last C&U Coordinator Run
+
+Before the C&U Coordinator starts queueing new messages it calls an internal method `perf_capture_health_check` that prints the number of capture messages still queued from previous C&U Coordinator schedules. If the C&U Data Collectors are keeping pace with the rate of message additions, there should be approximately 0 messages remaining in the queue when the C&U Coordinator runs. If the C&U Data Collectors are not dequeuing and processing messages quickly enough there will be a backlog.
+
+Searching for the string "perf_capture_health_check" on the CFME appliance with the active C&U Coordinator role will show the state of the queue before the C&U Coordinator adds further messages, and any backlog will be visible.
+
+[source,pypy] 
+----
+...  INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+520 "realtime" captures on the queue for zone [VMware Zone] - ⏎
+oldest: [2016-12-13T07:14:44Z], recent: [2016-12-13T08:02:32Z]
+... INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+77 "hourly" captures on the queue for zone [VMware Zone] - ⏎
+oldest: [2016-12-13T08:02:15Z], recent: [2016-12-13T08:02:17Z]
+... INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+0 "historical" captures on the queue for zone [VMware Zone]
+----
 
 ===== Long Dequeue Times
 
