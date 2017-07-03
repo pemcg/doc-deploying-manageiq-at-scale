@@ -6,11 +6,12 @@ When planning a large CloudForms implementation, consideration must be given to 
 
 [[i3-1]]
 .Regions and Zones
-image::images/regions_and_zones.png[Screenshot,450,align="center"]
+image::images/zones_and_regions_alt.png[Screenshot,750,align="center"]
 {zwsp} +
 
+In this example there are three geographical "subordinate" regions containing providers (US West, US East, and Scandinavia), and one master region. Each of the subordinate regions has its own VMDB database, managed in its own dedicated VMDB zone. The three subordinate region VMDBs are replicated to the master region VMDB.
 
-In this example the Corporate HQ is located in Chicago Technology Center. This location contains a global "Master" region, and a sub-region that manages the worker appliances. The Mahwah technology center contains a single sub-region that manages two zones. Likewise, the San Diego Technology Center contains a single sub-region managing one zone.
+Each region has a dedicated WebUI zone containing two CFME appliances (load-balanced), that users local to the region connect to for interactive management. The three subordinate regions each have one or more provider-specific zones, containing the CFME appliances that manage the workload for their respective providers.
 
 This section describes some of the considerations when designing regions and zones, and presents some guidelines and suggestions for implementation.
 
@@ -74,7 +75,7 @@ When planning regions it is often useful to under-size a region rather than over
 
 [NOTE]
 ====
-A 'global' region is generally capable of handling considerably more objects as it has no active providers of its own, and has a lower database load.
+A 'global' region is generally capable of handling considerably more objects as it has no active providers of its own, and has a lower database load. Many CloudForms installations have global regions that manage in excess of 50,000 objects.
 ====
 
 ==== Number of CFME Appliances in a Region
@@ -99,7 +100,7 @@ Using the 1:300 ratio of CFME appliances to VMs is a convenient starting point f
 |Microsoft Azure|400 (instances)
 |Amazon EC2|400 (instances)
 |Google Compute Engine|400 (instances)
-|OpenShift|400 (pods &/or containers)
+|OpenShift|1500 (pods &/or containers)
 |=======
 
 ==== Region Design
@@ -119,9 +120,9 @@ Large virtual infrastructures can often be split between several regions using m
 
 With a distributed or large infrastructure the most obvious choice of region design might seem to be to allocate a region to each distributed location, however there are a number of advantages to both single and multi-region implementations for distributed infrastructures.
 
-====== Wide Area Network Factors
+====== Wide Area Network Factors - Intra-Region
 
-Network latency between CFME appliances and the database plays a big factor in overall CloudForms "system" responsiveness. There are two utilities supplied on each CFME appliance that can check the latency to a database. The first, db_ping, is designed to check intra-region latency between an existing appliance and its own regional database. The second, db_ping_remote, is designed to check inter-region latency, and so requires external PostgreSQL server details and credentials. The are run as follows:
+Network latency between CFME appliances and the database _within a region_ plays a big factor in overall CloudForms "system" responsiveness. There is a utility, db_ping, supplied on each CFME appliance that can check the latency between an existing appliance and its own regional database. It is run as follows:
 
 [source,pypy] 
 ----
@@ -134,31 +135,19 @@ tools/db_ping.rb
 1.048192 ms
 
 Average: 0.898454 ms
-
-tools/db_ping_remote.rb 10.3.0.22 5432 root vmdb_production
-Enter the password for database user root on host 10.3.0.22
-Password:
-0.874407 ms
-0.984994 ms
-1.040376 ms
-1.119602 ms
-1.031609 ms
-
-Average: 1.010198 ms
 ----
 
 [NOTE]
 ====
-On CFME versions prior to 5.8, these tools should be prefixed by `bin/rails runner`, for example:
+On CFME versions prior to 5.8, this tool should be prefixed by `bin/rails runner`, for example:
 
 [source,pypy] 
 ----
 bin/rails runner tools/db_ping.rb
-bin/rails runner tools/db_ping_remote.rb
 ----
 ====
 
-The architecture of CloudForms assumes LAN-speed latency (≈ 1 ms) between CFME appliances and the database for optimal performance. As latency increases, so overall system responsiveness decreases.
+The architecture of CloudForms assumes LAN-speed latency (≈ 1 ms) between CFME appliances and their regional database for optimal performance. As latency increases, so overall system responsiveness decreases.
 
 Typical symptoms of a high latency connection are as follows:
 
@@ -170,6 +159,26 @@ Typical symptoms of a high latency connection are as follows:
 ** Metrics collection might not keep up with the EMS's realtime statistics retention period.footnote:[discussed in <<capacity_and_utilization>>]
 
 When considering deploying a CloudForms region spanning a WAN, it is important to establish acceptable performance criteria for the installation. Although in general a higher latency will result in slower but error-free performance, it has been observed that a latency of 5ms can cause the VMDB update transaction from an EMS refresh to timeout in very large regions. A latency as high as 42 ms can cause failures in database seeding operations.footnote:[See https://bugzilla.redhat.com/show_bug.cgi?id=1422671]
+
+====== Wide Area Network Factors - Inter-Region
+
+Network latency between subordinate and master regions is less critical as database replication occurs asynchronously. Latencies of 100 ms have been tested and shown to present no performance problems.
+
+A second utility, db_ping_remote, is designed to check inter-region latency. It requires external PostgreSQL server details and credentials, and is run as follows:
+
+[source,pypy] 
+----
+tools/db_ping_remote.rb 10.3.0.22 5432 root vmdb_production
+Enter the password for database user root on host 10.3.0.22
+Password:
+10.874407 ms
+10.984994 ms
+11.040376 ms
+11.119602 ms
+11.031609 ms
+
+Average: 11.010198 ms
+----
 
 ====== Single Region
 
