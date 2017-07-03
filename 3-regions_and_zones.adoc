@@ -6,12 +6,12 @@ When planning a large CloudForms implementation, consideration must be given to 
 
 [[i3-1]]
 .Regions and Zones
-image::images/zones_and_regions_alt.png[Screenshot,750,align="center"]
+image::images/zones_and_regions_alt_2.png[Screenshot,750,align="center"]
 {zwsp} +
 
-In this example there are three geographical "subordinate" regions containing providers (US West, US East, and Scandinavia), and one master region. Each of the subordinate regions has its own VMDB database, managed in its own dedicated VMDB zone. The three subordinate region VMDBs are replicated to the master region VMDB.
+In this example there are two geographical "subordinate" regions containing providers (US West and US East), and one master region. Each of the subordinate regions has its own VMDB database, managed in its own dedicated VMDB zone. The two subordinate region VMDBs are replicated to the master region VMDB.
 
-Each region has a dedicated WebUI zone containing two CFME appliances (load-balanced), that users local to the region connect to for interactive management. The three subordinate regions each have one or more provider-specific zones, containing the CFME appliances that manage the workload for their respective providers.
+Each region has a dedicated WebUI zone containing two CFME appliances (load-balanced), that users local to the region connect to for interactive management. The two subordinate regions each have one or more provider-specific zones, containing the CFME appliances that manage the workload for their respective providers.
 
 This section describes some of the considerations when designing regions and zones, and presents some guidelines and suggestions for implementation.
 
