@@ -5,3 +5,42 @@
      <para>The purpose of this document is to provide guidelines and considerations for deploying Red Hat CloudForms 4.x to manage large-scale clouds or virtual infrastructures</para>
  </abstract>
  <xi:include href="Common_Content/Legal_Notice.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+<revhistory>
+  <revision>
+    <revnumber>1.2-1</revnumber>
+    <date>Aug 18, 2017</date>
+    <authorinitials>Peter McGowan</authorinitials>
+    <revremark>
+      <itemizedlist mark='*'>
+        <listitem>
+          Updated maximum region size guidelines 
+        </listitem>
+      </itemizedlist>
+    </revremark>
+  </revision>
+  <revision>
+    <revnumber>1.2</revnumber>
+    <date>July 3, 2017</date>
+    <authorinitials>Peter McGowan</authorinitials>
+    <revremark>
+      <itemizedlist mark='*'>
+        <listitem>
+          Updated Regions and Zones chapter for clarity
+        </listitem>
+      </itemizedlist>
+    </revremark>
+  </revision>
+  <revision>
+    <revnumber>1.1-2</revnumber>
+    <date>May 25, 2017</date>
+    <authorinitials>Peter McGowan</authorinitials>
+    <revremark>
+      <itemizedlist mark='*'>
+        <listitem>
+          Added further information to C&U chapter
+        </listitem>
+      </itemizedlist>
+    </revremark>
+  </revision>
+</revhistory>
