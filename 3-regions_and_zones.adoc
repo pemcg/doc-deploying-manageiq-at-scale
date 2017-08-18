@@ -28,7 +28,7 @@ All CFME appliances in a region access the same PostgreSQL database, and so the 
 
 The VMDB database load is determined by many factors including:
 
-* The total number of managed objects in the region (for example VMs, instances, images, templates, hosts, clusters, datastores, networks, tenants, routers, orchestration stacks, projects, services, pods, containers, etc.) in the region.
+* The total number of managed objects (for example VMs, instances, images, templates, hosts, clusters, datastores, networks, tenants, routers, orchestration stacks, projects, services, pods, containers, etc.) in the region.
 * The number of running or "active" objects generating events (typically VMs, instances, hosts, nodes, pods, containers, etc.)
 * The number and type of providers added to the region (for example providers such as VMware or RHV have more out-of-the-box events that can be detected and processed).
 * The overall "busyness" of the external management systems (such as vCenters), which determines the rate at which events are received and processed, and thus the rate at which inventory refreshes are requested and loaded.footnote:[With VMware providers relatively minor changes such as VM and Host property updates are detected by the Vim Broker and also cause EMS refreshes to be scheduled] (see <<inventory_refresh>>)
