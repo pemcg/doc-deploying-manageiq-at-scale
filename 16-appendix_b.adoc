@@ -2,16 +2,16 @@
 :numbered!:
 [[appendix_b]]
 [appendix]
-== Revision History
+== Revision Changes
 
-*v1.1-1 25-May-2017*
+*v1.1-1*
 
 Added further information to C&U chapter
 
-*v1.2   3-July-2017*
+*v1.2*
 
 Updated Regions and Zones chapter for clarity
 
-*v1.2-1   18-August-2017*
+*v1.2-1*
 
-Updated the "Guidelines for Maximum Region Size" table in chapter 3
+Updated maximum region size guidelines
