@@ -52,21 +52,21 @@ The VMDB database load is determined by many factors including:
 
 It is very difficult to define a representative load for simulation purposes, due to the many permutations of workload factors. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, clusters and datastores, for example). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud and container providers - but as with any large database system, performance should be carefully monitored.
 
-<<guidelines_for_maximum_region_size>> provides suggested guidelines for the maximum number of objects (VMs, instances, images, templates, clusters, hosts, datastores, pods or containers, for example) in a region containing an active provider. Regions with several provider types (for example both VMware and Amazon EC2) will have a practical maximum somewhere between the limits suggested for each provider.
+<<guidelines_for_maximum_region_size>> provides suggested guidelines for the maximum number of active or "running" objects (for example VMs, instances, clusters, hosts, datastores, pods or containers) in a region containing an active provider. Regions with several provider types (for example both VMware and Amazon EC2) will have a practical maximum somewhere between the limits suggested for each provider.
 
 [[guidelines_for_maximum_region_size]]
 .Guidelines for Maximum Region Size
 [width="50%",cols="^25%,^25%",options="header",align="center"]
 |=======
 |Provider|Guideline Number of Objects in Region
-|VMware|5000
-|RHV|5000
-|OpenStack|7500
-|OpenShift|10000
-|Microsoft SCVMM|10000
-|Microsoft Azure|10000
-|Amazon EC2|10000
-|Google Compute Engine|10000
+|VMware|5000 (VMs, clusters, hosts, datastores)
+|RHV|5000 (VMs, clusters, hosts, storage domains)
+|OpenStack|7500 (instances, compute nodes)
+|OpenShift|10000 (nodes, pods, containers)
+|Microsoft SCVMM|10000 (VMs)
+|Microsoft Azure|10000 (instances)
+|Amazon EC2|10000 (instances)
+|Google Compute Engine|10000 (instances)
 |=======
 
 It should be noted that these numbers are approximate and are only suitable for planning and design purposes. The absolute practical maximum size for a region will depend on acceptable performance criteria, database server capability, and the factors listed in <<database_load_factors>>.
