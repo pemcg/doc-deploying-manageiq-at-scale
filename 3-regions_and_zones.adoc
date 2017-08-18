@@ -28,13 +28,15 @@ All CFME appliances in a region access the same PostgreSQL database, and so the 
 
 The VMDB database load is determined by many factors including:
 
-* The number of managed objects (VMs, hosts, datastores, etc.) in the region
+* The total number of managed objects in the region (for example VMs, instances, images, templates, hosts, clusters, datastores, networks, tenants, routers, orchestration stacks, projects, services, pods, containers, etc.) in the region.
+* The number of running or "active" objects generating events (typically VMs, instances, hosts, nodes, pods, containers, etc.)
 * The number and type of providers added to the region (for example providers such as VMware or RHV have more out-of-the-box events that can be detected and processed).
 * The overall "busyness" of the external management systems (such as vCenters), which determines the rate at which events are received and processed, and thus the rate at which inventory refreshes are requested and loaded.footnote:[With VMware providers relatively minor changes such as VM and Host property updates are detected by the Vim Broker and also cause EMS refreshes to be scheduled] (see <<inventory_refresh>>)
 * The frequency of "event storms" (see <<event_handling>>) from the external management systems
 * Whether or not Capacity and Utilization (C&U) metric collection is enabled for the region
 ** Whether this is for all clusters and datastores or a subset of each
 ** The frequency of collection
+** Whether realtime alerts have been enabled for any metrics
 * Whether or not SmartState Analysis is enabled for the region
 ** The frequency of collection
 ** The amount of data collected in the SmartState Analysis profile
@@ -52,16 +54,16 @@ The VMDB database load is determined by many factors including:
 
 It is very difficult to define a representative load for simulation purposes, due to the many permutations of workload factors. Some analysis has been made of existing large CloudForms installations however, and it has been observed that for an "average" mix of the workload factors listed above, an optimally tuned and maintained PostgreSQL server should be able to handle the load from managing up to 5000 VMware objects (VMs, hosts, clusters and datastores, for example). Larger regions than this are possible if the overall database workload is lighter - typically the case for the cloud and container providers - but as with any large database system, performance should be carefully monitored.
 
-<<guidelines_for_maximum_region_size>> provides suggested guidelines for the maximum number of active or "running" objects (for example VMs, instances, clusters, hosts, datastores, pods or containers) in a region containing an active provider. Regions with several provider types (for example both VMware and Amazon EC2) will have a practical maximum somewhere between the limits suggested for each provider.
+<<guidelines_for_maximum_region_size>> provides suggested guidelines for the maximum number of active or "running" objects (for example VMs, instances, clusters, hosts, datastores, pods or containers) in a region containing one or more providers. Regions with several provider types (for example both VMware and Amazon EC2) will have a practical maximum somewhere between the limits suggested for each provider.
 
 [[guidelines_for_maximum_region_size]]
 .Guidelines for Maximum Region Size
 [width="50%",cols="^25%,^25%",options="header",align="center"]
 |=======
-|Provider|Guideline Number of Objects in Region
-|VMware|5000 (VMs, clusters, hosts, datastores)
-|RHV|5000 (VMs, clusters, hosts, storage domains)
-|OpenStack|7500 (instances, compute nodes)
+|Provider|Guideline Number of Active/Running Objects in Region
+|VMware|5000 (VMs, hosts, datastores)
+|RHV|5000 (VMs, hosts, storage domains)
+|OpenStack|7500 (instances, nodes, network objects, storage managers)
 |OpenShift|10000 (nodes, pods, containers)
 |Microsoft SCVMM|10000 (VMs)
 |Microsoft Azure|10000 (instances)

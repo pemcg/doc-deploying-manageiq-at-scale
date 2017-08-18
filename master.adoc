@@ -40,6 +40,6 @@ include::12-monitoring.adoc[]
 include::13-design_scenario.adoc[]
 include::14-conclusion.adoc[]
 include::15-appendix_a.adoc[]
-
+include::16-appendix_b.adoc[]
 
 // vim: set syntax=asciidoc:
