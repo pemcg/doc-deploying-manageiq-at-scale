@@ -137,11 +137,26 @@ By default the block device used for the database partition is used for the `PGD
                                # can be absolute or relative to PGDATA
 ----
 
-This value creates the log file as __/var/opt/rh/rh-postgresql95/lib/pgsql/data/pg_log/postgresql.log__. To use the default CFME log directory for the log file, change this line to be:
+This value creates the log file as __/var/opt/rh/rh-postgresql95/lib/pgsql/data/pg_log/postgresql.log__. The following commands can be used to setup an alternative directory for the log file such as __/var/log/pg_log__.
 
 [source,pypy] 
 ----
-log_directory = '/var/www/miq/vmdb/log' 
+mkdir -p /var/log/pg_log
+chown postgres:postgres /var/log/pg_log
+----
+
+Change the *log_directory* line in __/var/opt/rh/rh-postgresql95/lib/pgsql/data/postgresql.conf__: 
+
+[source,pypy] 
+----
+log_directory = '/var/log/pg_log'
+----
+
+Restart PostgreSQL:
+
+[source,pypy] 
+----
+systemctl restart rh-postgresql95-postgresql.service
 ----
 
 ===== Huge Pages
