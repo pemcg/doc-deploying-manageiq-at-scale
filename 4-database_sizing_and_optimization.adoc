@@ -159,6 +159,29 @@ Restart PostgreSQL:
 systemctl restart rh-postgresql95-postgresql.service
 ----
 
+The file __/etc/logrotate.d/miq_logs.conf__ should be edited to reflect the new PostgreSQL log directory so that logs will be rotated correctly:
+
+[source,pypy] 
+----
+/var/www/miq/vmdb/log/*.log /var/www/miq/vmdb/log/apache/*.log ⏎
+        /var/log/pg_log/*.log /var/log/tower/*.log {
+  daily
+  dateext
+  missingok
+  rotate 14
+  notifempty
+  compress
+  copytruncate
+  prerotate
+    source /etc/default/evm; /bin/sh ⏎
+       ${APPLIANCE_SOURCE_DIRECTORY}/logrotate_free_space_check.sh $1
+  endscript
+  lastaction
+    /sbin/service httpd reload > /dev/null 2>&1 || true
+  endscript
+}
+----
+
 ===== Huge Pages
 
 For VMDB appliances configured as dedicated database instances, some performance gain can be achieved by creating sufficient kernel huge pages for PostgreSQL and the configured shared_buffers region. The following bash commands allocate 600 huge pages (1.2 GBytes):
