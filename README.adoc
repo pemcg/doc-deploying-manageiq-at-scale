@@ -1,32 +1,28 @@
 = Deploying ManageIQ at Scale
 :toc:
 :toc-placement!:
-// Links for GitHub
-ifdef::env-github,backend-html5[]
-  <<1-introduction.adoc#Introduction>>
-  <<2-architecture.adoc#Architecture>>
-  <<3-regions_and_zones.adoc#rRegions and Zones>>
-  <<4-database_sizing_and_optimization.adoc#Database Sizing and Optimisation>>
-endif::[]
+<<1-introduction.adoc#Introduction>>
+<<2-architecture.adoc#Architecture>>
+<<3-regions_and_zones.adoc#rRegions and Zones>>
+<<4-database_sizing_and_optimization.adoc#Database Sizing and Optimisation>>
 // includes for AsciiDoc processing
-ifndef::env-github,backend-html5[]
-  include::1-introduction.adoc[]
-  include::2-architecture.adoc[]
-  include::3-regions_and_zones.adoc[]
-  include::4-database_sizing_and_optimization.adoc[]
-  include::5-inventory_refresh.adoc[]
-  include::6-capacity_and_utilization.adoc[]
-  include::7-automate.adoc[]
-  include::8-provisioning.adoc[]
-  include::9-event_handling.adoc[]
-  include::10-smartstate_analysis.adoc[]
-  include::11-webui.adoc[]
-  include::12-monitoring.adoc[]
-  include::13-design_scenario.adoc[]
-  include::14-conclusion.adoc[]
-  include::15-appendix_a.adoc[]
-endif::[]
-
+//ifndef::env-github,backend-html5[]
+//  include::1-introduction.adoc[]
+//  include::2-architecture.adoc[]
+//  include::3-regions_and_zones.adoc[]
+//  include::4-database_sizing_and_optimization.adoc[]
+//  include::5-inventory_refresh.adoc[]
+//  include::6-capacity_and_utilization.adoc[]
+//  include::7-automate.adoc[]
+//  include::8-provisioning.adoc[]
+//  include::9-event_handling.adoc[]
+//  include::10-smartstate_analysis.adoc[]
+//  include::11-webui.adoc[]
+//  include::12-monitoring.adoc[]
+//  include::13-design_scenario.adoc[]
+//  include::14-conclusion.adoc[]
+//  include::15-appendix_a.adoc[]
+//endif::[]
 // vim: set syntax=asciidoc:
 
 toc::[]
