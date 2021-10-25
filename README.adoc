@@ -1,7 +1,6 @@
 = Deploying ManageIQ at Scale
 :toc:
 :toc-placement!:
-
 // Links for GitHub
 ifdef::env-github,backend-html5[]
   <<1-introduction.adoc#Introduction>>
