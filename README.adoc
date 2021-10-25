@@ -1,4 +1,6 @@
 = Deploying ManageIQ at Scale
+:toc:
+:toc-placement!:
 
 // Links for GitHub
 ifdef::env-github,backend-html5[]
@@ -27,10 +29,5 @@ ifndef::env-github,backend-html5[]
 endif::[]
 
 // vim: set syntax=asciidoc:
-
-:toc:
-:toc-placement!:
-
-Here is my preamble paragraph, but I could really place the TOC anywhere! Lorem ipsum foo bar baz.
 
 toc::[]
