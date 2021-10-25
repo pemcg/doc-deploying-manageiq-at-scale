@@ -1,10 +1,15 @@
 = Deploying ManageIQ at Scale
 :toc:
 :toc-placement!:
+
 <<1-introduction.adoc#Introduction>>
+
 <<2-architecture.adoc#Architecture>>
+
 <<3-regions_and_zones.adoc#rRegions and Zones>>
+
 <<4-database_sizing_and_optimization.adoc#Database Sizing and Optimisation>>
+
 // includes for AsciiDoc processing
 //ifndef::env-github,backend-html5[]
 //  include::1-introduction.adoc[]
