@@ -2,13 +2,13 @@
 [[design_scenario]]
 == Design Scenario
 
-This chapter discusses a hypothetical region and zone design for a new CloudForms installation, based on the topics discussed in this guide.
+This chapter discusses a hypothetical region and zone design for a new ManageIQ installation, based on the topics discussed in this guide.
 
 === Environment to be Managed
 
-CloudForms is to be installed to manage the virtualization and cloud environments used by the Engineering and R&D departments of a large organization. These environments comprise a traditional virtual infrastructure, public and private IaaS clouds, and a container-based PaaS. 
+ManageIQ is to be installed to manage the virtualization and cloud environments used by the Engineering and R&D departments of a large organization. These environments comprise a traditional virtual infrastructure, public and private IaaS clouds, and a container-based PaaS. 
 
-The organization also has a centrally-managed VMware 6.0 environment that hosts many enterprise-wide services such as email, file & print, collaboration, and the Microsoft Active Directory infrastructure. This will not be managed by CloudForms, although it is available to host CFME appliances if required.
+The organization also has a centrally-managed VMware 6.0 environment that hosts many enterprise-wide services such as email, file & print, collaboration, and the Microsoft Active Directory infrastructure. This will not be managed by ManageIQ, although it is available to host ManageIQ appliances if required.
 
 ==== Virtual Infrastructure
 
@@ -35,7 +35,7 @@ For security isolation the Engineering/R&D RHV, OpenStack and OpenShift environm
 
 Additional firewall routes into and out of the Enterprise network are possible, but require security change approval.
 
-User workstations are connected to a 'Desktops' network, which has very limited access to servers in the Enterprise or Engineering/R&D networks. User who wish to access the CloudForms environment must connect to WebUI servers accessible from this Desktops network.
+User workstations are connected to a 'Desktops' network, which has very limited access to servers in the Enterprise or Engineering/R&D networks. User who wish to access the ManageIQ environment must connect to WebUI servers accessible from this Desktops network.
 
 ==== Enterprise Integration Points
 
@@ -43,9 +43,9 @@ The Enterprise network hosts common components such as a Configuration Managemen
 
 Virtual machines provisioned into the Engineering/R&D RHV and OpenStack networks may require registration with one or more of these enterprise tools.
 
-==== Required CloudForms Functionality
+==== Required ManageIQ Functionality
 
-The following capabilities of CloudForms are required:
+The following capabilities of ManageIQ are required:
 
 * Inventory/Insight of all VMs, instances pods, containers and infrastructure components such as hosts and storage domains
 * Rightsizing recommendations for cloud instances
@@ -76,29 +76,29 @@ Based on the maximum suggested region sizes shown in <<guidelines_for_maximum_re
 
 ==== Network Latency
 
-Latency from worker appliance to VMDB should be LAN speed, around 1ms or less. This will dictate where the VMDB appliance should be situated, and also the optimum location of the worker CFME appliances. For this design network latency is good, so the VMDB server should be placed in the most centrally accessible location.
+Latency from worker appliance to VMDB should be LAN speed, around 1ms or less. This will dictate where the VMDB appliance should be situated, and also the optimum location of the worker ManageIQ appliances. For this design network latency is good, so the VMDB server should be placed in the most centrally accessible location.
 
 ==== VMDB Server
 
-The optimum VMDB server for this design will be a CFME appliance configured as a standalone PostgreSQL server. Although database high availability (HA) has not been specified as an initial requirement, installing a standalone database appliance allows for HA to be configured in future if required. 
+The optimum VMDB server for this design will be a ManageIQ appliance configured as a standalone PostgreSQL server. Although database high availability (HA) has not been specified as an initial requirement, installing a standalone database appliance allows for HA to be configured in future if required. 
 
 The database server will be installed in the Enterprise network, hosted by the VMware 6.0 virtual infrastructure. The estimated size of the database after two years, based on the formula presented in <<database_sizing_and_optimization>> is approximately 468 GBytes. To allow for unexpected growth and a margin of uncertainty, a 750 GByte disk will be presented from a datastore backed by fast FC SAN storage, and used as the database volume.
 
 The database server will have 8 GBytes memory, and a PostgreSQL shared_buffers region of 2 GBytes. A 2 GByte hugepage region will be created for PostgreSQL to use.
 
-The planned zone design contains 13 CFME appliances. Referring to the table in <<appendix_a>> shows that the database server will need 6 vCPUs to maintain an idle CPU load under 20%.
+The planned zone design contains 13 ManageIQ appliances. Referring to the table in <<appendix_a>> shows that the database server will need 6 vCPUs to maintain an idle CPU load under 20%.
 
 The database maintenance scripts will be enabled on the VMDB server.
 
 ==== Zones
 
-A zone should be created per provider (unless the EMS only manages a small number of systems; around 100 VMs or so). There should be a minimum of 2 CFME appliances per zone for resilience, and zones should not span networks.
+A zone should be created per provider (unless the EMS only manages a small number of systems; around 100 VMs or so). There should be a minimum of 2 ManageIQ appliances per zone for resilience, and zones should not span networks.
 
 For this design scenario the following zones are proposed.
 
 ==== WebUI Zone
 
-A WebUI zone will be created that contains 2 CFME appliances, each running the following server roles:
+A WebUI zone will be created that contains 2 ManageIQ appliances, each running the following server roles:
 
 * Automation Engine (to process zone events)
 * Provider Operations (because VM provisioning services are used)
@@ -107,11 +107,11 @@ A WebUI zone will be created that contains 2 CFME appliances, each running the f
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will be hosted by the enterprise VMware 6.0 environment, in a vLAN accessible from user workstations. User access to them will be via a hardware load-balancer and common Fully-Qualified Domain Name.
+The ManageIQ appliances in this zone will be hosted by the enterprise VMware 6.0 environment, in a vLAN accessible from user workstations. User access to them will be via a hardware load-balancer and common Fully-Qualified Domain Name.
 
 ==== Management Zone
 
-A Management zone will be created that contains 2 CFME appliances, each running the following server roles:
+A Management zone will be created that contains 2 ManageIQ appliances, each running the following server roles:
 
 * Automation Engine
 * Provider Operations
@@ -124,7 +124,7 @@ A Management zone will be created that contains 2 CFME appliances, each running 
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will be hosted by the enterprise VMware 6.0 environment. The zone will not contain any providers, but automate workflows that interact with the CMDB and IPAM solutions will run in this zone.
+The ManageIQ appliances in this zone will be hosted by the enterprise VMware 6.0 environment. The zone will not contain any providers, but automate workflows that interact with the CMDB and IPAM solutions will run in this zone.
 
 ==== RHV Zone
 
@@ -142,7 +142,7 @@ The RHV zone will contain approximately 600 managed objects. The table <<guideli
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will be hosted by the RHV environment, and so firewall ports must be opened to allow these appliances to connect to the VMDB server in the Enterprise network. The RHV provider will be in this zone.
+The ManageIQ appliances in this zone will be hosted by the RHV environment, and so firewall ports must be opened to allow these appliances to connect to the VMDB server in the Enterprise network. The RHV provider will be in this zone.
 
 ==== OpenStack zone
 
@@ -158,7 +158,7 @@ The OpenStack zone will initially contain approximately 900 instances (for examp
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will be hosted by the OpenStack environment, and so firewall ports must be opened and routes created to allow these appliances to connect to the VMDB server in the Enterprise network, and to the OpenStack Director. Both OpenStack Cloud and Infrastructure Manager (Undercloud) providers will be in this zone.
+The ManageIQ appliances in this zone will be hosted by the OpenStack environment, and so firewall ports must be opened and routes created to allow these appliances to connect to the VMDB server in the Enterprise network, and to the OpenStack Director. Both OpenStack Cloud and Infrastructure Manager (Undercloud) providers will be in this zone.
 
 Further appliances will need to be added to this zone as the number of managed objects increases.
 
@@ -178,7 +178,7 @@ The OpenShift zone will contain approximately 800 managed objects. The table <<g
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will also be hosted by the OpenStack environment, and so firewall ports must be opened and routes created to allow these appliances to connect to the VMDB server in the Enterprise network, and to the OpenShift master. The OpenShift provider will be in this zone.
+The ManageIQ appliances in this zone will also be hosted by the OpenStack environment, and so firewall ports must be opened and routes created to allow these appliances to connect to the VMDB server in the Enterprise network, and to the OpenShift master. The OpenShift provider will be in this zone.
 
 Further appliances will need to be added to this zone as the number of managed objects increases.
 
@@ -197,7 +197,7 @@ The Amazon zone will contain approximately 250 managed objects. The table <<guid
 * Web Services
 * Websocket
 
-The CFME appliances in this zone will be hosted on a separate vLAN in the RHV environment, and so firewall ports must be opened to allow these appliances to connect to the VMDB server in the Enterprise network, and to the Amazon EC2 network. The Embedded Ansible role will be enabled on these CFME appliances so that Ansible playbooks can be run from service catalogs. The Amazon EC2 providers for both accounts will be in this zone.
+The ManageIQ appliances in this zone will be hosted on a separate vLAN in the RHV environment, and so firewall ports must be opened to allow these appliances to connect to the VMDB server in the Enterprise network, and to the Amazon EC2 network. The Embedded Ansible role will be enabled on these ManageIQ appliances so that Ansible playbooks can be run from service catalogs. The Amazon EC2 providers for both accounts will be in this zone.
 
 The proposed zone design is shown in <<a1-1>>.
 
@@ -208,9 +208,9 @@ image::images/scenario_networks.png[Screenshot,600,align="center"]
 
 === Initial Deployment
 
-The initial deployment and configuration of CFME appliances will be made without enabling the C&U or SmartState Analysis roles on any server. This allows the baseline VMDB database server load to be established over a period of several days from purely EMS refresh activity, and allow an initial RHV `:full_refresh_threshold` to be calculated.
+The initial deployment and configuration of ManageIQ appliances will be made without enabling the C&U or SmartState Analysis roles on any server. This allows the baseline VMDB database server load to be established over a period of several days from purely EMS refresh activity, and allow an initial RHV `:full_refresh_threshold` to be calculated.
 
-Once the initial performance baselines have been established (and any associated tuning performed), the remaining roles can be enabled. Ongoing monitoring at this stage is important, as this will help fine-tune the number and configuration of worker processes, CFME appliance vCPU and memory sizes, and database configuration parameters.
+Once the initial performance baselines have been established (and any associated tuning performed), the remaining roles can be enabled. Ongoing monitoring at this stage is important, as this will help fine-tune the number and configuration of worker processes, ManageIQ appliance vCPU and memory sizes, and database configuration parameters.
 
 === Provisioning Workflow
 

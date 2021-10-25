@@ -2,7 +2,7 @@
 [[automate]]
 == Automate
 
-Automate is an important component of CloudForms that performs many tasks, such as:
+Automate is an important component of ManageIQ that performs many tasks, such as:
 
 * Event processing
 * Service provisioning and retirement
@@ -23,7 +23,7 @@ This process can be observed in _evm.log_ by following the message (Message id: 
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
+... INFO -- : ManageIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
 Message id: [1038885], MiqWorker id: [3758], Zone: [default], ⏎
 Role: [automate], Server: [], Ident: [generic], Target id: [], ⏎
 Instance id: [], Task id: [miq_provision_147], ⏎
@@ -34,7 +34,7 @@ Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, ⏎
 :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, ⏎
 :tenant_id=>1}], Dequeued in: [3.50249721] seconds
 
-... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) ⏎
+... INFO -- : Q-task_id([miq_provision_147]) ManageIQ(MiqAeEngine.deliver) ⏎
 Delivering {"request"=>"vm_provision"} for object ⏎
 [ManageIQ::Providers::Redhat::InfraManager::Provision.147] ⏎
 with state [] to Automate
@@ -44,7 +44,7 @@ The automation engine processes the first 9 states in the state machine, but doe
 
 [source,pypy] 
 ----
-... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqAeEngine.deliver) ⏎
+... INFO -- : Q-task_id([miq_provision_147]) ManageIQ(MiqAeEngine.deliver) ⏎
 Requeuing :object_type=>"ManageIQ::Providers::Redhat::InfraManager:: ⏎
 Provision", :object_id=>147, :attrs=>{"request"=>"vm_provision"}, ⏎
 :instance_name=>"AUTOMATION", :user_id=>1, :miq_group_id=>2, ⏎
@@ -58,10 +58,10 @@ CheckProvisioned\n ae_state_retries: 1\n  ae_state_started: ⏎
 [CheckProvisioned] to Automate for delivery in [60] seconds
 
 ... INFO -- : Q-task_id([miq_provision_147]) ⏎
-MIQ(ManageIQ::Providers::Redhat::InfraManager::Provision# ⏎
+ManageIQ(ManageIQ::Providers::Redhat::InfraManager::Provision# ⏎
 after_ae_delivery) ae_result="retry"
 
-... INFO -- : Q-task_id([miq_provision_147]) MIQ(MiqQueue#delivered) ⏎
+... INFO -- : Q-task_id([miq_provision_147]) ManageIQ(MiqQueue#delivered) ⏎
 Message id: [1038885], State: [ok], Delivered in [50.708623233] seconds
 ----
 
@@ -74,17 +74,17 @@ There are several challenges of scale for automate.
 [[zone-related-issues]]
 ==== Zone-Related Considerations
 
-There are some zone-related implications that should be considered when running automation tasks in a large multi-zone CloudForms deployment. 
+There are some zone-related implications that should be considered when running automation tasks in a large multi-zone ManageIQ deployment. 
 
 ===== Automation Engine Enablement
 
-All zones should have at least one CFME appliance with the Automation Engine role set, to process zone-related events. Even zones that have no providers associated with them will generate events such as __evm_worker_stop__, or __evm_worker_memory_exceeded__. If no appliance in a zone has the Automation Engine role enabled, the messages for these events will accumulate in the miq_queue table and never be removed.
+All zones should have at least one ManageIQ appliance with the Automation Engine role set, to process zone-related events. Even zones that have no providers associated with them will generate events such as __evm_worker_stop__, or __evm_worker_memory_exceeded__. If no appliance in a zone has the Automation Engine role enabled, the messages for these events will accumulate in the miq_queue table and never be removed.
 
 ===== Services
 
 Most automate messages specify the zone that the automate action should be performed in, however an exception to this is found in the messages that initiate service template provision requests and tasks. These messages don't specify a zone and can therefore run on any appliance in the region that has the Automation Engine role enabled. This can lead to unexpected behaviour.
 
-For example if employing services to provision virtual machines using the __/ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template__ class, the messages are zone independent as described. The message to execute the first child service template provision task however is queued for a worker with the __ems_operations__ role, but in the same zone as the CFME appliance creating the message. If there are no CFME appliances in the zone with the Provider Operations role enabled, the task will not be dequeued and processed, and the service provision will appear to hang.
+For example if employing services to provision virtual machines using the __/ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template__ class, the messages are zone independent as described. The message to execute the first child service template provision task however is queued for a worker with the __ems_operations__ role, but in the same zone as the ManageIQ appliance creating the message. If there are no ManageIQ appliances in the zone with the Provider Operations role enabled, the task will not be dequeued and processed, and the service provision will appear to hang.
 
 Similarly services that have a catalog item type of "Generic" can run in any zone that has the Automation Engine role enabled. This might not be the intended action if the workflow is intended to run in a specific zone, such as in an environment where network access rules or firewall restrictions might be appliance-specific.
 
@@ -94,11 +94,11 @@ When an automation request is submitted via the API, the automate task is queued
 
 === Identifying Automate Problems
 
-There are several problems that can be seen when running automation workflows in large-scale CloudForms deployments.
+There are several problems that can be seen when running automation workflows in large-scale ManageIQ deployments.
 
 ==== Requests Not Starting
 
-By default each CFME appliance has 2 Priority and 2 Generic workers. If both of the Generic workers are busy processing long-running automate tasks or high priority messages (such as from an event storm), no further priority 100 automate messages will be dequeued and processed until either of the workers completes their current task. This is often observed in larger deployments when service or automation requests appear to remain in a "Pending" state for a long time.
+By default each ManageIQ appliance has 2 Priority and 2 Generic workers. If both of the Generic workers are busy processing long-running automate tasks or high priority messages (such as from an event storm), no further priority 100 automate messages will be dequeued and processed until either of the workers completes their current task. This is often observed in larger deployments when service or automation requests appear to remain in a "Pending" state for a long time.
 
 ==== Long Running Tasks Timing Out
 
@@ -117,13 +117,13 @@ occurred during method evaluation:
 ... ERROR -- : <AutomationEngine> <AEMethod test> SignalException: ⏎
 SIGTERM
 
-... ERROR -- : MIQ(MiqQueue#deliver) Message id: [1054092], timed ⏎
+... ERROR -- : ManageIQ(MiqQueue#deliver) Message id: [1054092], timed ⏎
 out after 600.03190583 seconds.  Timeout threshold [600]
 
-... INFO -- : MIQ(MiqQueue#delivered) Message id: [1054092], ⏎
+... INFO -- : ManageIQ(MiqQueue#delivered) Message id: [1054092], ⏎
 State: [timeout], Delivered in [600.047235602] seconds
 
-... ERROR -- : MIQ(MiqGenericWorker::Runner) ID [3758] PID [3149] ⏎
+... ERROR -- : ManageIQ(MiqGenericWorker::Runner) ID [3758] PID [3149] ⏎
 GUID [d8bbe584-0e0f-11e7-a1a8-001a4aa0151a] ⏎
 Exiting worker due to timeout error Worker exiting.
 ----
@@ -147,9 +147,9 @@ Individual Ruby-based automate workflows can be made more reliable by adopting e
 
 ==== Increasing Concurrency
 
-The number of Priority workers per CFME appliance can be increased up to a maximum of 4, and Generic workers up to a maximum of 9. This will increase the concurrency at which automate messages can be processed, however worker count should only be increased after consideration of the additional CPU and memory requirements that an increased number of workers will place on an appliance. 
+The number of Priority workers per ManageIQ appliance can be increased up to a maximum of 4, and Generic workers up to a maximum of 9. This will increase the concurrency at which automate messages can be processed, however worker count should only be increased after consideration of the additional CPU and memory requirements that an increased number of workers will place on an appliance. 
 
-For larger CloudForms installations it can be beneficial to separate any of the Capacity and Utilization, and the Automation Engine server roles onto different CFME appliances, as both are resource intensive. In very large CloudForms installations it can be beneficial to have dedicated appliances per zone with the Automation Engine role enabled, each with the maximum numbers of Generic and Priority workers.
+For larger ManageIQ installations it can be beneficial to separate any of the Capacity and Utilization, and the Automation Engine server roles onto different ManageIQ appliances, as both are resource intensive. In very large ManageIQ installations it can be beneficial to have dedicated appliances per zone with the Automation Engine role enabled, each with the maximum numbers of Generic and Priority workers.
 
 ==== Reducing Execution Time
 
@@ -192,7 +192,7 @@ update_cmdb_request = $evm.execute('create_automation_request', ⏎
   options, 'admin', auto_approve)
 $evm.set_state_var(:request_id, update_cmdb_request.id)
 $evm.root['ae_result'] = 'ok'
-exit MIQ_OK
+exit ManageIQ_OK
 ----
 
 The following state in the state machine would be `check_cmdb_request`, containing code similar to the following:
@@ -213,7 +213,7 @@ else
   $evm.log(:warn, "Unexpected request status")
   $evm.root['ae_result'] = 'error'
 end
-exit MIQ_OK
+exit ManageIQ_OK
 ----
 
 Sometimes the called method needs to pass data back to the caller, and this can be returned via the request object's options hash. The called method `update_cmdb` can retrieve its own request object and use the `set_option` method to encode a key/value pair (where the value is a JSON-encoded hash) as follows:
@@ -242,9 +242,9 @@ The default behaviour of services and API requests with regard to zones may not 
 
 ===== Services
 
-If services are to be used to provision virtual machines, at least one CFME appliance with the Provider Operations role should be enabled in each zone.
+If services are to be used to provision virtual machines, at least one ManageIQ appliance with the Provider Operations role should be enabled in each zone.
 
-As mentioned in <<zone-related-issues>>, services that have a catalog item type of "Generic" might run in any zone that has a CFME appliance with the Automation Engine server role enabled. If this is not desired behaviour, a workaround is for the service catalog item provisioning entry point to run a simple method that re-launches the service provisioning state machine from a `$evm.execute('create_automation_request',...)` call. This allows the target zone to be specified as the `:miq_zone` option, for example:
+As mentioned in <<zone-related-issues>>, services that have a catalog item type of "Generic" might run in any zone that has a ManageIQ appliance with the Automation Engine server role enabled. If this is not desired behaviour, a workaround is for the service catalog item provisioning entry point to run a simple method that re-launches the service provisioning state machine from a `$evm.execute('create_automation_request',...)` call. This allows the target zone to be specified as the `:miq_zone` option, for example:
 
 [source,ruby] 
 ----

@@ -2,11 +2,11 @@
 [[provisioning]]
 == VM and Instance Provisioning
 
-Although the provisioning workflows for virtual machines and instances are run by the automation engine, there are several provisioning-specific factors that should be considered when deploying CloudForms at scale. 
+Although the provisioning workflows for virtual machines and instances are run by the automation engine, there are several provisioning-specific factors that should be considered when deploying ManageIQ at scale. 
 
 === State Machines
 
-The VM provisioning process is one of the most complex automate workflows supplied out-of-the-box with CloudForms. The workflow consists of two nested state machines, the VM provision state machine in the automate datastore, and a provider-specific _internal_ state machine.
+The VM provisioning process is one of the most complex automate workflows supplied out-of-the-box with ManageIQ. The workflow consists of two nested state machines, the VM provision state machine in the automate datastore, and a provider-specific _internal_ state machine.
 
 ==== VM Provision State Machine
 
@@ -48,7 +48,7 @@ The final state of the internal state machine marks the provision task object as
 
 === Challenges of Scale
 
-The VM or instance provisioning workflow contains several operations that are external to CloudForms, but contribute to overall provisioning time.
+The VM or instance provisioning workflow contains several operations that are external to ManageIQ, but contribute to overall provisioning time.
 
 * Interactions with the external management system
 ** EMS API calls from the internal state machine - cloning the template or adding a disk for example
@@ -57,7 +57,7 @@ The VM or instance provisioning workflow contains several operations that are ex
 * Interactions with other enterprise systems such as Active Directory, IPAM or a CMDB
 * Post-provisioning time consumed by initialization scripts such as cloud-init or sysprep (particularly where this includes a software update of the new virtual machine)
 
-With larger enterprises the number of interactions - and inherent workflow delays - often increases, and CloudForms sometimes needs tuning to cater for this.
+With larger enterprises the number of interactions - and inherent workflow delays - often increases, and ManageIQ sometimes needs tuning to cater for this.
 
 ==== State Machine Timeouts
 
@@ -65,7 +65,7 @@ As mentioned in <<automate>>, the message to initiate a VM provisioning workflow
 
 ===== External Integration
 
-In larger CloudForms deployments it is common to add enterprise integration to the VM provisioning workflow. Custom instances are often added to the placeholder fields such as *AcquireIPAddress* to retrieve an IP address from a corporate IP Address Management (IPAM) solution, for example. If the methods run by these stages take minutes to run under high load, the state machine may timeout before the *CheckProvisioned* state is reached.
+In larger ManageIQ deployments it is common to add enterprise integration to the VM provisioning workflow. Custom instances are often added to the placeholder fields such as *AcquireIPAddress* to retrieve an IP address from a corporate IP Address Management (IPAM) solution, for example. If the methods run by these stages take minutes to run under high load, the state machine may timeout before the *CheckProvisioned* state is reached.
 
 To reduce this possibility the VM provision state machine can be expanded to include check-and-retry states after the custom methods, such as the *CheckIPAddressAcquired* state in <<i8-2>>.
 
@@ -88,7 +88,7 @@ The placement methods are designed to be user-editable so that alternative crite
 
 ===== CheckProvisioned
 
-The *CheckProvisioned* state of the VM provision state machine executes a check-and-retry loop until the provisioning task object shows a `state` of 'provisioned' or 'error'. At this point the newly provisioned VM is powered on, and is represented by an object in the CloudForms VMDB. 
+The *CheckProvisioned* state of the VM provision state machine executes a check-and-retry loop until the provisioning task object shows a `state` of 'provisioned' or 'error'. At this point the newly provisioned VM is powered on, and is represented by an object in the ManageIQ VMDB. 
 The maximum retries for the *CheckProvisioned* state is set at 100, and the default retry interval (set in the __check_provisioned__ method) is as follows:
 
 [source,ruby] 
@@ -107,8 +107,8 @@ The effect of such delays can be minimized by increasing the number of retries i
 
 === Tuning Provisioning 
 
-As can be seen, many of the provisioning related problems of scale are related to external factors. Although some fine tuning of timeouts and method optimization can be performed, reliability cannot necessarily be improved by scaling out CloudForms (for example adding CFME appliances, or increasing worker counts).
+As can be seen, many of the provisioning related problems of scale are related to external factors. Although some fine tuning of timeouts and method optimization can be performed, reliability cannot necessarily be improved by scaling out ManageIQ (for example adding ManageIQ appliances, or increasing worker counts).
 
 ==== Incubation Region
 
-It can sometimes be beneficial in large virtual environments to create a separate provisioning or _incubation_ CloudForms region that manages a small sub-set of the overall infrastructure. This can be used to provision new virtual machines, which can then be migrated to the production data centers or clusters once they are patched and ready for use.
+It can sometimes be beneficial in large virtual environments to create a separate provisioning or _incubation_ ManageIQ region that manages a small sub-set of the overall infrastructure. This can be used to provision new virtual machines, which can then be migrated to the production data centers or clusters once they are patched and ready for use.

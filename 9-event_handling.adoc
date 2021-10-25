@@ -2,14 +2,14 @@
 [[event_handling]]
 == Event Handling
 
-The timely processing of external and internal events is important to the overall smooth running of a CloudForms installation. This section discusses the event handling process and how it can be tuned for scale.
+The timely processing of external and internal events is important to the overall smooth running of a ManageIQ installation. This section discusses the event handling process and how it can be tuned for scale.
 
 === Event Processing Workflow
 
 The event processing workflow involves 3 different workers, as follows:
 
 . A provider-specific event catcher polls the EMS event source for new events using an API call such as `https://rhevm/api/events?from=54316` (see <<polling_frequency>> for the frequency of this polling). For each new event caught a message is queued for the event handler
-. The generic _MiqEventHandler_ worker dequeues the message, and creates an _EmsEvent_ EventStream object. Any EMS-specific references such as `:vm=>{:id=>"4e7b66b7-080d-4593-b670-3d6259e47a0f"}` are translated into the equivalent CloudForms object ID such as `"VmOrTemplate::vm"=>1000000000023`, and a new high priority message is queued for automate
+. The generic _MiqEventHandler_ worker dequeues the message, and creates an _EmsEvent_ EventStream object. Any EMS-specific references such as `:vm=>{:id=>"4e7b66b7-080d-4593-b670-3d6259e47a0f"}` are translated into the equivalent ManageIQ object ID such as `"VmOrTemplate::vm"=>1000000000023`, and a new high priority message is queued for automate
 . A Priority worker dequeues the message and processes it through the automate event switchboard using the EventStream object created by the _MiqEventHandler_. Processing the event may involve several _event handler_ automate instances that perform actions such as:
 ** Process any control policies associated with the event
 ** Process any alarms associated with the event
@@ -25,7 +25,7 @@ image::images/event_processing.png[Screenshot,500,align="center"]
 [[polling_frequency]]
 ==== Event Catcher Polling Frequency
 
-The polling frequency of each of the provider-specific event catchers is defined in the `:event_catcher` section of the *Configuration->Advanced* settings. The default settings for CloudForms Management Engine 5.8 are as follows:
+The polling frequency of each of the provider-specific event catchers is defined in the `:event_catcher` section of the *Configuration->Advanced* settings. The default settings for ManageIQ Management Engine 5.8 are as follows:
 
 [source,pypy] 
 ----
@@ -113,20 +113,20 @@ Event storms are very large bursts of events emitted by a provider's EMS. They c
 
 [NOTE]
 ====
-The log snippet above is from a production CloudForms installation. Note that many events are received within the same millisecond - typical of an event storm
+The log snippet above is from a production ManageIQ installation. Note that many events are received within the same millisecond - typical of an event storm
 ====
 
-Event storms are highly detrimental to the overall performance of a CloudForms region for many reasons, including the following:
+Event storms are highly detrimental to the overall performance of a ManageIQ region for many reasons, including the following:
 
 * All _MiqEventHandler_ workers in a zone can be overwhelmed processing messages from one provider, to the detriment of other providers in that zone
 * The many hundreds of thousands (up to tens of millions) of unprocessed high-priority messages in the miq_queue table consume all Generic and Priority workers in the zone
 * The number of messages in the miq_queue table affects the performance of `get_message_via_drb` for all queue workers in the entire region
 
-In some cases the problems are temporary and clear themselves after the event message emission stops and the CFME appliances can process the messages already queued for processing. In other cases the sheer volume of event messages can result in appliances which still appear to be running, but where the CFME services - including the WebUI - are unresponsive.
+In some cases the problems are temporary and clear themselves after the event message emission stops and the ManageIQ appliances can process the messages already queued for processing. In other cases the sheer volume of event messages can result in appliances which still appear to be running, but where the ManageIQ services - including the WebUI - are unresponsive.
 
 ==== Handling and Recovering from Event Storms
 
-Until the cause of the event storm is identified and corrected, the quickest way to restore any operation for the CloudForms environment is to to prevent the continued growth of the miq_queue table. The simplest techniques are to blacklist the event(s) causing the storm (see <<blacklisting_events>>), or to disable the event monitor role on all CFME appliance in the provider's zone. 
+Until the cause of the event storm is identified and corrected, the quickest way to restore any operation for the ManageIQ environment is to to prevent the continued growth of the miq_queue table. The simplest techniques are to blacklist the event(s) causing the storm (see <<blacklisting_events>>), or to disable the event monitor role on all ManageIQ appliance in the provider's zone. 
 
 [NOTE]
 ====
@@ -153,11 +153,11 @@ There are several measures that can be taken to tune event handling for scale, i
 [[blacklisting_events]]
 ==== Blacklisting Events
 
-Some provider events occur relatively frequently, but are either uninteresting to CloudForms, or processing them would consume excessive resources (such as those typically associated with event storms). Events such as these can be skipped or _blacklisted_. The event catchers write a list of blacklisted events to _evm.log_ when they start, for example:
+Some provider events occur relatively frequently, but are either uninteresting to ManageIQ, or processing them would consume excessive resources (such as those typically associated with event storms). Events such as these can be skipped or _blacklisted_. The event catchers write a list of blacklisted events to _evm.log_ when they start, for example:
 
 [source,pypy] 
 ----
-... MIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: ⏎
+... ManageIQ(ManageIQ::Providers::Redhat::InfraManager::EventCatcher:: ⏎
 Runner#after_initialize) EMS [rhevm.bit63.net] as [cfme@internal] ⏎
 Event Catcher skipping the following events:
 ... INFO -- :   - UNASSIGNED
@@ -218,7 +218,7 @@ from blacklisted_events;
 
 If processing of any of the events in the blacklisted_events table _is_ required, the _enabled_ field can be set to false and the provider-specific event catcher restarted.
 
-An EMS can also report some minor object property changes as events, even though these are not modelled in the CloudForms VMDB. For VMware providers such event types can be added to the "Vim Broker Exclude List" so that they can be discarded without processing. The exclude list is found under `:broker_notify_properties` in the *Configuration -> Advanced* settings, as follows:
+An EMS can also report some minor object property changes as events, even though these are not modelled in the ManageIQ VMDB. For VMware providers such event types can be added to the "Vim Broker Exclude List" so that they can be discarded without processing. The exclude list is found under `:broker_notify_properties` in the *Configuration -> Advanced* settings, as follows:
 
 [source,pypy] 
 ----
@@ -265,9 +265,9 @@ An EMS can also report some minor object property changes as events, even though
 
 ==== Flood Monitoring
 
-CloudForms recently introduced the concept of flood monitoring for the provider-specific event catchers. This stops provider events from being queued when too many duplicates are received in a short time. By default an event is considered as flooding if it is received 30 times in one minute.
+ManageIQ recently introduced the concept of flood monitoring for the provider-specific event catchers. This stops provider events from being queued when too many duplicates are received in a short time. By default an event is considered as flooding if it is received 30 times in one minute.
 
-Flood monitoring is a generic concept for event processing, but requires the appropriate supporting methods to be added to each provider. As of CloudForms Management Engine 5.8 only the VMware provider supports this functionality.
+Flood monitoring is a generic concept for event processing, but requires the appropriate supporting methods to be added to each provider. As of ManageIQ Management Engine 5.8 only the VMware provider supports this functionality.
 
 ==== Event Catcher Configuration
 
@@ -299,4 +299,4 @@ The configuration settings rarely need to be changed from their defaults.
 
 === Scaling Out
 
-The event processing workflow can be quite resource-intensive. CloudForms installations managing several thousand objects may benefit from dedicated CFME appliances exclusively running the provider-specific _EventCatcher_ workers and _MiqEventHandler_ worker in any zone containing providers.
+The event processing workflow can be quite resource-intensive. ManageIQ installations managing several thousand objects may benefit from dedicated ManageIQ appliances exclusively running the provider-specific _EventCatcher_ workers and _MiqEventHandler_ worker in any zone containing providers.

@@ -2,18 +2,18 @@
 [[inventory_refresh]]
 == Inventory Refresh
 
-One of the biggest factors that affects the perceived performance of a large CloudForms installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In CloudForms Management Engine 5.8 only the VMware and Red Hat Virtualization providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
+One of the biggest factors that affects the perceived performance of a large ManageIQ installation is the time taken to update the provider inventory in the VMDB. This is known as an EMS refresh. There are two types of EMS refresh: a full refresh, where all objects are returned from the provider; and a targeted refresh, where only the details of requested components such as specific VMs or hosts are fetched and processed. In ManageIQ _Fine_ only the VMware and Red Hat Virtualization providers are capable of supporting targeted refreshes; all other providers perform a full refresh.
 
 [NOTE]
 ====
-A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for the Amazon S3 and Ansible providers in CFME 5.8. Graph refresh improves EMS refresh performance by up to 6 times. 
+A new type of refresh architecture called _graph refresh_ is currently in development, and has been implemented for the Amazon S3 and Ansible providers in ManageIQ _Fine_. Graph refresh improves EMS refresh performance by up to 6 times. 
 
-The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in CFME 5.7
+The timings mentioned in this chapter are based on the pre-graph refresh architecture that existed in ManageIQ _Euwe_
 ====
 
 === Refresh Overview
 
-Whenever CloudForms is notified of a change related to a managed object, a message is queued either for a refresh of that object (where targeted is supported), or a full EMS refresh. There is never more than one EMS refresh operation in progress for each provider at any one time, with at most one further refresh queued.
+Whenever ManageIQ is notified of a change related to a managed object, a message is queued either for a refresh of that object (where targeted is supported), or a full EMS refresh. There is never more than one EMS refresh operation in progress for each provider at any one time, with at most one further refresh queued.
 
 If a new refresh is called for, the miq_queue table is first examined to see if a refresh message already exists in the "ready" state for the intended EMS. If no such message already exists, a new one is created. If a message already exists and it is for a full refresh, the new request is ignored, but if the new refresh is targeted and an existing targeted message is found, the new request is merged into the existing message payload, and the message is re-queued. The addition of further targets to a "ready" queued message can happen several times until the message is dequeued.
 
@@ -21,7 +21,7 @@ This action can be observed in _evm.log_. In the following example an EMS refres
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqQueue.put) Message id: [32170091],  id: [], ⏎
+... INFO -- : ManageIQ(MiqQueue.put) Message id: [32170091],  id: [], ⏎
 Zone: [VMware], Role: [ems_inventory], Server: [], Ident: [ems_2], ⏎
 Target id: [], Instance id: [], Task id: [], ⏎
 Command: [EmsRefresh.refresh], Timeout: [7200], Priority: [100], ⏎
@@ -33,7 +33,7 @@ Before this message has been dequeued and processed however, a further EMS refre
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqQueue.put_or_update) Message id: [32170091],  ⏎
+... INFO -- : ManageIQ(MiqQueue.put_or_update) Message id: [32170091],  ⏎
 id: [], Zone: [VMware], Role: [ems_inventory], Server: [], ⏎
 Ident: [ems_2], Target id: [], Instance id: [], Task id: [], ⏎
 Command: [EmsRefresh.refresh], Timeout: [7200], Priority: [100], ⏎
@@ -62,7 +62,7 @@ Fortunately the line printed to _evm.log_ at the completion of the operation con
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Refresher#refresh) ⏎
+... INFO -- : ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Refresher#refresh) ⏎
 EMS: [CLOUD], id: [1000000000001] Refreshing targets for EMS...Complete - ⏎
 Timings {:server_dequeue=>0.006215572357177734, ⏎
 :get_ems_data=>1.1113097667694092, ⏎
@@ -162,7 +162,7 @@ Some variation in database load times throughout a 24 hour period is expected, b
 
 === Tuning Refresh
 
-There is little CloudForms tuning that can be done to improve the data extraction time of a refresh. If the extraction times vary significantly throughout the day then some investigation into the performance of the EMS itself may be warranted.
+There is little ManageIQ tuning that can be done to improve the data extraction time of a refresh. If the extraction times vary significantly throughout the day then some investigation into the performance of the EMS itself may be warranted.
 
 If database load times are high, then CPU, memory and I/O load on the database appliance should be investigated and if necessary tuned. The __top_output.log__ and __vmstat_output.log__ files in _/var/www/miq/vmdb/log_ on the database appliance can be used to correlate the times of high CPU and memory demand against the long database load times.
 
@@ -214,7 +214,7 @@ Refresh workers also however have a *Configuration -> Advanced* setting called `
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager:: ⏎
+... INFO -- : ManageIQ(ManageIQ::Providers::Redhat::InfraManager:: ⏎
 RefreshWorker::Runner#do_before_work_loop) EMS [rhvm] as [admin] ⏎
 Queueing initial refresh for EMS
 ----
@@ -228,7 +228,7 @@ The net result is that even though a provider may have a `:refresh_interval` set
 
 ===== Refresh Threshold
 
-Although targeted refreshes are generally considerably faster than full refreshes, there is a break-even point after which a full refresh becomes more efficient to perform than many tens or hundreds of merged targeted requests. This point unfortunately varies between different CloudForms installations, and is dependant on the provider EMS type and API responsiveness, VMDB database I/O and CPU performance, and the number of managed objects within each provider.
+Although targeted refreshes are generally considerably faster than full refreshes, there is a break-even point after which a full refresh becomes more efficient to perform than many tens or hundreds of merged targeted requests. This point unfortunately varies between different ManageIQ installations, and is dependant on the provider EMS type and API responsiveness, VMDB database I/O and CPU performance, and the number of managed objects within each provider.
 
 There is a *Configuration -> Advanced* setting called `:full_refresh_threshold`. This specifies the maximum number of concurrent targeted refreshes that should be attempted before being replaced by a single full request, by any provider in the region. 
 
@@ -244,7 +244,7 @@ If the `:full_refresh_threshold` value is triggered, there will be a correspondi
 
 [source,pypy] 
 ----
-... MIQ(ManageIQ::Providers::Vmware::InfraManager::Refresher# ⏎
+... ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Refresher# ⏎
 preprocess_targets) Escalating to full refresh for EMS: [vCenter6], ⏎
 id: [1000000000002].
 ----
@@ -253,7 +253,7 @@ Such escalations can happen if too many events are received in a short period of
 
 ====== Calculating a Suitable Refresh Threshold
  
-Finding the correct value for the refresh threshold for each CloudForms installation is important. The duration of the refresh process should be as short as possible for several reasons, including the following:
+Finding the correct value for the refresh threshold for each ManageIQ installation is important. The duration of the refresh process should be as short as possible for several reasons, including the following:
 
 . New VM instances are not recognised until an EMS refresh completes. This can have an adverse impact on other related activities such as VM provisioning.
 
@@ -261,7 +261,7 @@ Finding the correct value for the refresh threshold for each CloudForms installa
 
 The optimum value for the refresh threshold can only be found by examining the actual refresh times encountered for each provider. Having multiple providers of the same type in the same region can complicate this process, and if the optimal thresholds for each provider are found to be very different it may be worth splitting providers between regions.
 
-For example a CloudForms installation managing a single VMware provider with approximately 800 VMs was examined to find the optimum refresh threshold. The _evm.log_ file for the CFME appliance with the Provider Inventory role was examined over a period of several days.
+For example a ManageIQ installation managing a single VMware provider with approximately 800 VMs was examined to find the optimum refresh threshold. The _evm.log_ file for the ManageIQ appliance with the Provider Inventory role was examined over a period of several days.
 
 It was discovered that that the average time for a targeted EMS refresh for a single VM was approximately 9 seconds, and that this increased by roughly 3 seconds for each additional VM added to the targeted refresh list.
 

@@ -2,15 +2,15 @@
 [[monitoring]]
 == Monitoring
 
-Monitoring of the various components described in this document is essential for maintaining optimum performance of a large CloudForms installation.
+Monitoring of the various components described in this document is essential for maintaining optimum performance of a large ManageIQ installation.
 
-As mentioned in <<introduction>> the key to deploying CloudForms at scale is to monitor and tune at each stage of the scaling process. Once confidence has been established that the installation is working optimally at restricted scale, the scope of deployment can be enlarged and the CFME appliances tuned as required to handle the additional workload. 
+As mentioned in <<introduction>> the key to deploying ManageIQ at scale is to monitor and tune at each stage of the scaling process. Once confidence has been established that the installation is working optimally at restricted scale, the scope of deployment can be enlarged and the ManageIQ appliances tuned as required to handle the additional workload. 
 
-The VMDB and CFME worker appliances within a region have different monitoring requirements, as described below.
+The VMDB and ManageIQ worker appliances within a region have different monitoring requirements, as described below.
 
 === Database Appliance
 
-The database appliance can become a performance bottleneck for the CloudForms region if it is not performing optimally. The following items should be regularly monitored:
+The database appliance can become a performance bottleneck for the ManageIQ region if it is not performing optimally. The following items should be regularly monitored:
 
 * VMDB disk space utilization - monitor and forecast when 80% of filesystem will become filled. Track actual disk consumption versus expected consumption
 * CPU utilization. A steady state utilization approaching 80% may indicate that VMDB appliance scaling or region redesign is required
@@ -24,7 +24,7 @@ The database appliance can become a performance bottleneck for the CloudForms re
 * Check that the maximum number of configured connections is not exceeded
 * Ensure that the database maintenance scripts run regularly
 
-=== CFME 'Worker' Appliances
+=== ManageIQ 'Worker' Appliances
 
 Operational limits for non-VMDB or "worker" appliances are usually established on a per-appliance basis, and depend on the enabled server roles and number of worker processes. The following items are typically monitored:
 
@@ -76,12 +76,12 @@ Operational limits for non-VMDB or "worker" appliances are usually established o
 
 ===== Event Handling
 
-* Monitor the utilization of CFME appliances with the Event Monitor role enabled
+* Monitor the utilization of ManageIQ appliances with the Event Monitor role enabled
 * Validate the memory allocated to Event Monitor workers
 
 ===== SmartState Analysis
 
-* Monitor utilization of CFME appliances with the SmartProxy role enabled when scheduled scans are running
+* Monitor utilization of ManageIQ appliances with the SmartProxy role enabled when scheduled scans are running
 * Review scan failures or aborts
 * Validate the number of SmartProxy workers
 
@@ -107,7 +107,7 @@ EVM Worker Started and EVM Worker Stopped events are normal occurrences and shou
 
 An email sent by one of these alerts will have a subject such as: 
 
-*Alert Triggered: EVM Worker Killed, for (MIQSERVER) cfmesrv06*. 
+*Alert Triggered: EVM Worker Killed, for (ManageIQSERVER) cfmesrv06*. 
 
 The email body will contain text such as the following:
 
@@ -123,7 +123,7 @@ To determine more information - such as the actual worker type that was killed -
 
 === Consolidated Logging
 
-The distributed nature of the worker/message architecture means that it is often impossible to predict which CFME appliance will run a particular action. This can add to the troubleshooting challenge of examining log files, as the correct appliance hosting the relevant log file must first be located.
+The distributed nature of the worker/message architecture means that it is often impossible to predict which ManageIQ appliance will run a particular action. This can add to the troubleshooting challenge of examining log files, as the correct appliance hosting the relevant log file must first be located.
 
-Although there is no out-of-the-box consolidated logging architecture for CloudForms at the time of writing, it is possible to add CloudForms logs as a source to an ELK/EFK stack. This can bring a number of benefits, and greatly simplifies the task of log searching in a CloudForms deployment comprising many CFME appliances.
+Although there is no out-of-the-box consolidated logging architecture for ManageIQ at the time of writing, it is possible to add ManageIQ logs as a source to an ELK/EFK stack. This can bring a number of benefits, and greatly simplifies the task of log searching in a ManageIQ deployment comprising many ManageIQ appliances.
 

@@ -1,4 +1,4 @@
-= Deploying CloudForms at Scale
+= Deploying ManageIQ at Scale
 Peter McGowan <pemcg@redhat.com>
 :doctype: book
 :toc:

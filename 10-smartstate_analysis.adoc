@@ -2,14 +2,14 @@
 [[smartstate_analysis]]
 == SmartState Analysis
 
-SmartState Analysis allows CloudForms to perform a deep introspection of virtual machines, containers and hosts to discover their contents. The technology is agentless, and does not require virtual machines to be powered on.
+SmartState Analysis allows ManageIQ to perform a deep introspection of virtual machines, containers and hosts to discover their contents. The technology is agentless, and does not require virtual machines to be powered on.
 
 [NOTE]
 ====
 SmartState Analysis is alternatively known as "fleecing"
 ====
 
-SmartState Analysis uses two server roles. The first - SmartState Analysis - is performed by a Generic or Priority worker, depending on message priority. The second server role - SmartProxy - enables the embedded or _coresident_.footnote:[Earlier versions of CloudForms and ManageIQ supported _external_ Smart Proxies running on Windows servers or VMware ESX hosts. These are no longer required and so have been removed from the product] __MiqSmartProxyWorker__ processes. These workers perform the following sequence of steps to scan each virtual machine: 
+SmartState Analysis uses two server roles. The first - SmartState Analysis - is performed by a Generic or Priority worker, depending on message priority. The second server role - SmartProxy - enables the embedded or _coresident_.footnote:[Earlier versions of ManageIQ and ManageIQ supported _external_ Smart Proxies running on Windows servers or VMware ESX hosts. These are no longer required and so have been removed from the product] __MiqSmartProxyWorker__ processes. These workers perform the following sequence of steps to scan each virtual machine: 
 
 * Create a snapshot of the VM
 * Analyze the snapshot:
@@ -27,11 +27,11 @@ There are several provider-specific considerations to be aware of when configuri
 
 ==== VMware
 
-The _MiqSmartProxyWorker_ processes scan VMware virtual machines using the VixDiskLib API functionality provided by the VMware Virtual Disk Development Kit (VDDK). Any CFME appliance in the provider's zone that is running the SmartProxy role must therefore have the VDDK installed.footnote:[The procedure to install the VDDK is described in the following Red Hat Knowledge Base article: https://access.redhat.com/articles/2078103]. 
+The _MiqSmartProxyWorker_ processes scan VMware virtual machines using the VixDiskLib API functionality provided by the VMware Virtual Disk Development Kit (VDDK). Any ManageIQ appliance in the provider's zone that is running the SmartProxy role must therefore have the VDDK installed.footnote:[The procedure to install the VDDK is described in the following Red Hat Knowledge Base article: https://access.redhat.com/articles/2078103]. 
 
 ===== Authentication
 
-The VDDK requires an authenticated connection to be made to the ESXi host running the VM. For the authentication to succeed the credentials for each ESXi hypervisor must be defined against the host properties in the CloudForms WebUI. The credentials should use either _root_, or a VMware account with the following role permissions:
+The VDDK requires an authenticated connection to be made to the ESXi host running the VM. For the authentication to succeed the credentials for each ESXi hypervisor must be defined against the host properties in the ManageIQ WebUI. The credentials should use either _root_, or a VMware account with the following role permissions:
 
 * Datastore
 ** Browse Datastore
@@ -53,7 +53,7 @@ The VDDK requires an authenticated connection to be made to the ESXi host runnin
 
 If it is not possible to add credentials for the ESXi hosts, virtual machine scanning can still be performed using an authentication token provided by the vCenter.
 
-The CloudForms *Configuration -> Advanced* settings contain a section entitled `:coresident_miqproxy` that has a value `:scan_via_host`. By default this is set to `true`, but changing the value to `false` and restarting the __MiqSmartProxyWorker__ processes enables vCenter authentication for VM scans.
+The ManageIQ *Configuration -> Advanced* settings contain a section entitled `:coresident_miqproxy` that has a value `:scan_via_host`. By default this is set to `true`, but changing the value to `false` and restarting the __MiqSmartProxyWorker__ processes enables vCenter authentication for VM scans.
 
 [NOTE]
 ====
@@ -69,36 +69,36 @@ The name `:scan_via_host` is slightly misleading. Setting this value to `false` 
  
 ==== Red Hat Virtualization
 
-For SmartState Analysis of Red Hat Virtualization (RHV) virtual machines to complete successfully, the CFME appliances running the SmartProxy server roles must be in the same RHV datacenter as the VM being scanned. The storage domains much also be accessible to the SmartProxy appliances. Fibre channel or iSCSI storage domains should be presented to each SmartProxy appliance as shareable direct LUNs. NFS datastores must be mountable by each SmartProxy appliance, which may mean adding secondary network interfaces to the CFME appliances, connected to the storage network.
+For SmartState Analysis of Red Hat Virtualization (RHV) virtual machines to complete successfully, the ManageIQ appliances running the SmartProxy server roles must be in the same RHV datacenter as the VM being scanned. The storage domains much also be accessible to the SmartProxy appliances. Fibre channel or iSCSI storage domains should be presented to each SmartProxy appliance as shareable direct LUNs. NFS datastores must be mountable by each SmartProxy appliance, which may mean adding secondary network interfaces to the ManageIQ appliances, connected to the storage network.
 
-The _management engine relationship_ must also be set for each CFME appliance. This enables the VM SmartState Analysis job to determine the datacenter where the CFME appliance is running and thus to identify which storage it has access to.
+The _management engine relationship_ must also be set for each ManageIQ appliance. This enables the VM SmartState Analysis job to determine the datacenter where the ManageIQ appliance is running and thus to identify which storage it has access to.
 
 ==== OpenStack
 
-CloudForms is capable of performing a SmartState Analysis of both Overcloud images, and Undercloud Nova compute nodes.
+ManageIQ is capable of performing a SmartState Analysis of both Overcloud images, and Undercloud Nova compute nodes.
 
 ===== Overcloud
 
-CloudForms is able to perform a SmartState Analysis of Glance-backed OpenStack images. In order to scan a running instance, an image snapshot is taken and copied to the CFME appliance to be scanned (SmartState Analysis requires byte-level offset/length access to images which cannot be performed remotely using the current OpenStack APIs). 
+ManageIQ is able to perform a SmartState Analysis of Glance-backed OpenStack images. In order to scan a running instance, an image snapshot is taken and copied to the ManageIQ appliance to be scanned (SmartState Analysis requires byte-level offset/length access to images which cannot be performed remotely using the current OpenStack APIs). 
 
-To ensure that this storage area is large enough to receive large image snapshots, any CFME appliance in an OpenStack zone with the SmartProxy role enabled should have its temporary storage area extended using the following *appliance_console* option:
+To ensure that this storage area is large enough to receive large image snapshots, any ManageIQ appliance in an OpenStack zone with the SmartProxy role enabled should have its temporary storage area extended using the following *appliance_console* option:
 
 [source,pypy] 
 ----
  10) Extend Temporary Storage
 ----
 
-This option will format an unpartitioned disk attached to the CFME appliance and mount it as _/var/www/miq_tmp_
+This option will format an unpartitioned disk attached to the ManageIQ appliance and mount it as _/var/www/miq_tmp_
 
 ===== OpenStack Platform Director (Undercloud)
 
-CloudForms is able to perform a SmartState Analysis of OpenStack Platform Director Nova compute nodes. To allow the smart proxy to connect to the Nova hosts, the RSA key pair private key for the hosts should be added to the provider details. The heat-admin user is typically used for host connection.
+ManageIQ is able to perform a SmartState Analysis of OpenStack Platform Director Nova compute nodes. To allow the smart proxy to connect to the Nova hosts, the RSA key pair private key for the hosts should be added to the provider details. The heat-admin user is typically used for host connection.
 
 ==== OpenShift
 
 SmartState scanning of OpenShift containers is performed by an __image_inspector__ pod that is pulled from the Red Hat registry as required. The image inspector dynamically downloads and uses the latest OpenScap definition/rules file from Red Hat before scanning.footnote:[Enabling proxy access for the openshift3/image-inspector is described in the following Red Hat Knowledge Base article: https://access.redhat.com/solutions/2915411]
 
-With CloudForms 4.5 the registry and repository are configurable in *Configuration -> Advanced* settings, as follows:
+With ManageIQ 4.5 the registry and repository are configurable in *Configuration -> Advanced* settings, as follows:
 
 [source,pypy] 
 ----
@@ -114,7 +114,7 @@ The total time for each VM scan can be determined from the time duration between
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqAeEngine.deliver) Delivering ⏎
+... INFO -- : ManageIQ(MiqAeEngine.deliver) Delivering ⏎
 {:event_type=>"request_vm_scan", "VmOrTemplate::vm"=>39, :vm_id=>39, ⏎
 :host=>nil, "MiqEvent::miq_event"=>20690, :miq_event_id=>20690, ⏎
 "EventStream::event_stream"=>20690, :event_stream_id=>20690} ⏎
@@ -123,7 +123,7 @@ with state [] to Automate
 
 ...
 
-... INFO -- : MIQ(MiqAeEngine.deliver) Delivering ⏎
+... INFO -- : ManageIQ(MiqAeEngine.deliver) Delivering ⏎
 {:event_type=>"vm_scan_complete", "VmOrTemplate::vm"=>39, :vm_id=>39,  
 :host=>nil, "MiqEvent::miq_event"=>20692, :miq_event_id=>20692, ⏎
 "EventStream::event_stream"=>20692, :event_stream_id=>20692} ⏎
@@ -164,7 +164,7 @@ Virtual machines running such applications must not be snapshotted, and should t
 
 [NOTE]
 ====
-A SmartState Analysis of the CloudForms VMDB appliance should never be performed 
+A SmartState Analysis of the ManageIQ VMDB appliance should never be performed 
 ====
 
 A control policy can be created to prevent SmartState Analysis from running on any VM tagged with "exclusions/do_not_analyze", as shown in <<i10-1>>.
@@ -185,26 +185,26 @@ Problems with SmartState Analysis are logged to _evm.log_, and can be identified
 grep 'VmScan#process_abort' evm.log
 ----
 
-Many of the most common errors are caused as a result of scaling parts of the infrastructure - hosts or CFME appliances - and forgetting to update the provider-specific considerations for SmartState Analysis.
+Many of the most common errors are caused as a result of scaling parts of the infrastructure - hosts or ManageIQ appliances - and forgetting to update the provider-specific considerations for SmartState Analysis.
 
 ===== No active SmartProxies found
 
-If the _JobProxyDispatcher_ cannot find a suitable SmartProxy to scan a virtual machine, the error "No active SmartProxies found to analyze this VM" is logged. In VMware environments this is often caused by failing to install the VDDK on a new CFME appliance that has been configured with the SmartProxy server role.
+If the _JobProxyDispatcher_ cannot find a suitable SmartProxy to scan a virtual machine, the error "No active SmartProxies found to analyze this VM" is logged. In VMware environments this is often caused by failing to install the VDDK on a new ManageIQ appliance that has been configured with the SmartProxy server role.
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
+... ManageIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
 :[[NFS_PROD] odrsrv001/odrsrv001.vmx] - [No active SmartProxies found ⏎
 to analyze this VM], aborting job [8064001a-e2ea-11e6-9140-005056b19b0f].
 ----
 
 ===== Provide credentials
 
-If a new VMware ESXi hosts's credentials have been omitted from the CloudForms WebUI (or a host's credentials changed), the error "Provide credentials for this VM's Host to perform SmartState Analysis" will be logged if a scan is attempted of a virtual machine running on that host.
+If a new VMware ESXi hosts's credentials have been omitted from the ManageIQ WebUI (or a host's credentials changed), the error "Provide credentials for this VM's Host to perform SmartState Analysis" will be logged if a scan is attempted of a virtual machine running on that host.
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
+... ManageIQ(VmScan#process_abort) job aborting, No eligible proxies for VM ⏎
 :[[FCP_MID] osdweb01/osdweb01.vmx] - [Provide credentials for this VM's ⏎
 Host to perform SmartState Analysis], aborting job ⏎
 [d2e08e70-c26b-11e6-aaa4-00505695be62].
@@ -212,11 +212,11 @@ Host to perform SmartState Analysis], aborting job ⏎
 
 ===== Unable to mount filesystem
 
-If a CFME appliance running the SmartProxy server role does not have access to the storage network of a RHV provider, an attempted scan of a virtual machine on an NFS storage domain will timeout.
+If a ManageIQ appliance running the SmartProxy server role does not have access to the storage network of a RHV provider, an attempted scan of a virtual machine on an NFS storage domain will timeout.
 
 [source,pypy] 
 ----
-... MIQ(VmScan#process_abort) job aborting, Unable to mount filesystem. ⏎
+... ManageIQ(VmScan#process_abort) job aborting, Unable to mount filesystem. ⏎
 Reason:[mount.nfs: Connection timed out
 ----
 
@@ -240,7 +240,7 @@ The default value of `:concurrent_per_host` is 1, which limits the number of con
 
 The default number of "VM Analysis Collector" (_MiqSmartProxyWorker_) workers per appliance is 3. This can be increased to a maximum of 5, although consideration should be given to the additional CPU and memory requirements that an increased number of workers will place on an appliance. It may be more appropriate to add further appliances and scale horizontally.
 
-CloudForms installations managing several thousand objects may benefit from dedicated CFME appliances in the provider zones exclusively running the SmartState Analysis and SmartProxy roles.
+ManageIQ installations managing several thousand objects may benefit from dedicated ManageIQ appliances in the provider zones exclusively running the SmartState Analysis and SmartProxy roles.
 
 ==== SmartProxy Affinity
 
@@ -251,4 +251,4 @@ Hosts and datastores can be can be 'pinned' to specific embedded SmartProxy serv
 image::images/smartproxy_affinity.png[Screenshot,500,align="center"]
 {zwsp} +
 
-This can help ensure that only the most optimally placed or suitably configured CFME appliances are used for SmartState Analysis scans.
+This can help ensure that only the most optimally placed or suitably configured ManageIQ appliances are used for SmartState Analysis scans.

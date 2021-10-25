@@ -2,7 +2,7 @@
 [[capacity_and_utilization]]
 == Capacity & Utilization
 
-The processing of Capacity & Utililization (C&U) data is both resource intensive, and with some providers also time critical as real-time counters are only stored for a short period of time. These two factors must be carefully considered and monitored when deploying CloudForms to manage large virtual infrastructures or clouds.
+The processing of Capacity & Utililization (C&U) data is both resource intensive, and with some providers also time critical as real-time counters are only stored for a short period of time. These two factors must be carefully considered and monitored when deploying ManageIQ to manage large virtual infrastructures or clouds.
 
 [NOTE]
 ====
@@ -11,7 +11,7 @@ C&U processing is often referred to as _metrics processing_
 
 === Component Parts
 
-As discussed in <<architecture>>, there are three CFME appliance roles connected with C&U processing:
+As discussed in <<architecture>>, there are three ManageIQ appliance roles connected with C&U processing:
 
 * Capacity & Utilization Coordinator
 * Capacity & Utilization Data Collector
@@ -71,7 +71,7 @@ A successful capture is written to _evm.log_, as follows.footnote:[As with the E
 
 [source,pypy] 
 ----
-... MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_capture) ⏎
+... ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_capture) ⏎
 [realtime] Capture for ⏎
 ManageIQ::Providers::Vmware::InfraManager::Vm name: [VP23911], ⏎
 id: [1000000000789]...Complete - Timings: ⏎
@@ -95,7 +95,7 @@ The successful completion of this initial processing stage can be seen in _evm.l
 
 [source,pypy] 
 ----
-... MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) ⏎
+... ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) ⏎
 [realtime] Processing for ⏎
 ManageIQ::Providers::Vmware::InfraManager::Vm name: [VR11357], ⏎
 id: [1000000000043], ⏎
@@ -120,7 +120,7 @@ Additional analysis is performed on the hourly rollup data to identify bottlenec
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm# ⏎
+... INFO -- : ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Vm# ⏎
 perf_rollup) [hourly] Rollup for ManageIQ::Providers::Vmware:: ⏎
 InfraManager::Vm name: [ranj001], id: [1000000000752] for time: ⏎
 [2016-12-13T02:00:00Z]...Complete - Timings: ⏎
@@ -156,7 +156,7 @@ The challenges of scale for capacity & utilization are related to the time const
 * Rolling up the realtime counters before the records are purged from the VMDB
 * Inter-worker message timeout
 
-When capacity & utilization is not collecting and processing the data consistently, other CloudForms capabilities that depend on the metrics - such as chargeback or rightsizing - become unreliable.
+When capacity & utilization is not collecting and processing the data consistently, other ManageIQ capabilities that depend on the metrics - such as chargeback or rightsizing - become unreliable.
 
 The challenges are addressed by adding concurrency - scaling out both the data collection and processing workers - and by keeping each step in the process as short as possible to maximise throughput.
 
@@ -216,7 +216,7 @@ With a very large number of managed objects the C&U Coordinator becomes unable t
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
+... INFO -- : ManageIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
 Message id: [10000221979280], MiqWorker id: [10000001075231], ⏎
 Zone: [OCP], Role: [ems_metrics_coordinator], Server: [], ⏎
 Ident: [generic], Target id: [], Instance id: [], Task id: [], ⏎
@@ -224,10 +224,10 @@ Command: [Metric::Capture.perf_capture_timer], Timeout: [600], ⏎
 Priority: [20], State: [dequeue], Deliver On: [], Data: [], ⏎
 Args: [], Dequeued in: [2.425676767] seconds
 
-... INFO -- : MIQ(Metric::Capture.perf_capture_timer) Queueing ⏎
+... INFO -- : ManageIQ(Metric::Capture.perf_capture_timer) Queueing ⏎
 performance capture...
 
-... INFO -- : MIQ(MiqQueue.put) Message id: [10000221979391],  ⏎
+... INFO -- : ManageIQ(MiqQueue.put) Message id: [10000221979391],  ⏎
 id: [], Zone: [OCP], Role: [ems_metrics_collector], Server: [], ⏎
 Ident: [openshift_enterprise], Target id: [], ⏎
 Instance id: [10000000000113], Task id: [], ⏎
@@ -238,7 +238,7 @@ Args: [2017-03-23 20:59:00 UTC, 2017-03-24 18:33:23 UTC]
 
 ...
 
-... INFO -- : MIQ(MiqQueue.put) Message id: [10000221990773],  ⏎
+... INFO -- : ManageIQ(MiqQueue.put) Message id: [10000221990773],  ⏎
 id: [], Zone: [OCP], Role: [ems_metrics_collector], Server: [], ⏎
 Ident: [openshift_enterprise], Target id: [], ⏎
 Instance id: [10000000032703], Task id: [], ⏎
@@ -247,7 +247,7 @@ ContainerGroup.perf_capture_realtime], Timeout: [600], ⏎
 Priority: [100], State: [ready], Deliver On: [], Data: [], ⏎
 Args: [2017-03-24 18:10:20 UTC, 2017-03-24 18:43:15 UTC]
 
-... ERROR -- : MIQ(MiqQueue#deliver) Message id: [10000221979280], ⏎
+... ERROR -- : ManageIQ(MiqQueue#deliver) Message id: [10000221979280], ⏎
 timed out after 600.002976954 seconds.  Timeout threshold [600]
 ----
 
@@ -272,17 +272,17 @@ There are several types of log line written to _evm.log_ that can indicate C&U d
 
 Before the C&U Coordinator starts queueing new messages it calls an internal method `perf_capture_health_check` that prints the number of capture messages still queued from previous C&U Coordinator schedules. If the C&U Data Collectors are keeping pace with the rate of message additions, there should be approximately 0 messages remaining in the queue when the C&U Coordinator runs. If the C&U Data Collectors are not dequeuing and processing messages quickly enough there will be a backlog.
 
-Searching for the string "perf_capture_health_check" on the CFME appliance with the active C&U Coordinator role will show the state of the queue before the C&U Coordinator adds further messages, and any backlog will be visible.
+Searching for the string "perf_capture_health_check" on the ManageIQ appliance with the active C&U Coordinator role will show the state of the queue before the C&U Coordinator adds further messages, and any backlog will be visible.
 
 [source,pypy] 
 ----
-...  INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+...  INFO -- : ManageIQ(Metric::Capture.perf_capture_health_check) ⏎
 520 "realtime" captures on the queue for zone [VMware Zone] - ⏎
 oldest: [2016-12-13T07:14:44Z], recent: [2016-12-13T08:02:32Z]
-... INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+... INFO -- : ManageIQ(Metric::Capture.perf_capture_health_check) ⏎
 77 "hourly" captures on the queue for zone [VMware Zone] - ⏎
 oldest: [2016-12-13T08:02:15Z], recent: [2016-12-13T08:02:17Z]
-... INFO -- : MIQ(Metric::Capture.perf_capture_health_check) ⏎
+... INFO -- : ManageIQ(Metric::Capture.perf_capture_health_check) ⏎
 0 "historical" captures on the queue for zone [VMware Zone]
 ----
 
@@ -292,7 +292,7 @@ Searching for the string "MetricsCollectorWorker::Runner#get_message_via_drb" wi
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager:: ⏎
+... INFO -- : ManageIQ(ManageIQ::Providers::Vmware::InfraManager:: ⏎
 MetricsCollectorWorker::Runner#get_message_via_drb) ⏎
 Message id: [1000032258093], MiqWorker id: [1000000120960], ⏎
 Zone: [VMware], Role: [ems_metrics_collector], Server: [], ⏎
@@ -309,7 +309,7 @@ Searching for the string "expected to get data" can reveal whether requested dat
 
 [source,pypy] 
 ----
-... WARN -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::HostEsx ⏎
+... WARN -- : ManageIQ(ManageIQ::Providers::Vmware::InfraManager::HostEsx ⏎
 #perf_capture) [realtime] For ManageIQ::Providers::Vmware:: ⏎
 InfraManager::HostEsx name: [esx04], id: [1000000000023], ⏎
 expected to get data as of [2016-12-13T01:20:00Z], ⏎
@@ -322,7 +322,7 @@ Searching for the string "performance rows...Complete" reveals the number of per
 
 [source,pypy] 
 ----
-...  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm# ⏎
+...  INFO -- : ManageIQ(ManageIQ::Providers::Vmware::InfraManager::Vm# ⏎
 perf_process) [realtime] Processing 138 performance rows...Complete ⏎
 - Added 138 / Updated 0
 ----
@@ -331,7 +331,7 @@ For VMware this should be less than 180 per collection interval (180 points is t
 
 ===== Unresponsive Provider
 
-In some cases the CloudForms processes are working as expected, but the provider EMS is overloaded and not responding to API requests. To determine the relative EMS connection and query times for a VMware provider, the ':vim_connect' and ':vim_execute_time' timing counters from _evm.log_ can be plotted. For this example the perf_process_timings.rb script can be used, as follows:
+In some cases the ManageIQ processes are working as expected, but the provider EMS is overloaded and not responding to API requests. To determine the relative EMS connection and query times for a VMware provider, the ':vim_connect' and ':vim_execute_time' timing counters from _evm.log_ can be plotted. For this example the perf_process_timings.rb script can be used, as follows:
 
 [source,pypy] 
 ----
@@ -379,7 +379,7 @@ The "Dequeued in" and "Delivered in" times for messages processed by the MiqEmsM
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqEmsMetricsProcessorWorker::Runner# ⏎
+... INFO -- : ManageIQ(MiqEmsMetricsProcessorWorker::Runner# ⏎
 get_message_via_drb) Message id: [1000032171247], MiqWorker id: ⏎
 [1000000253077], Zone: [VMware], Role: [ems_metrics_processor], ⏎
 Server: [], Ident: [ems_metrics_processor], Target id: [], ⏎
@@ -390,7 +390,7 @@ Deliver On: [2016-12-13 03:00:00 UTC], Data: [], ⏎
 Args: ["2016-12-13T02:00:00Z", "hourly"], ⏎
 Dequeued in: [243.967960013] seconds
 
-... INFO -- : MIQ(MiqQueue#delivered) Message id: [1000032171247], ⏎
+... INFO -- : ManageIQ(MiqQueue#delivered) Message id: [1000032171247], ⏎
 State: [ok], ⏎
 Delivered in [0.202901147] seconds
 ----
@@ -433,11 +433,11 @@ image::images/gap_collection.png[Screenshot,600,align="center"]
 
 === Tuning Capacity and Utilization
 
-Tuning capacity and utilization generally involves ensuring that the VMDB is running optimally, and adding workers and CFME appliances to scale out the processing capability. 
+Tuning capacity and utilization generally involves ensuring that the VMDB is running optimally, and adding workers and ManageIQ appliances to scale out the processing capability. 
 
 ==== Scheduling
 
-Messages for the __ems_metrics_coordinator__ (C&U coordinator) server role are processed by a Generic or Priority worker. These workers also process automation messages, which are often long-running. For larger CloudForms installations it can be beneficial to separate the C&U Coordinator and Automation Engine server roles onto different CFME appliances.
+Messages for the __ems_metrics_coordinator__ (C&U coordinator) server role are processed by a Generic or Priority worker. These workers also process automation messages, which are often long-running. For larger ManageIQ installations it can be beneficial to separate the C&U Coordinator and Automation Engine server roles onto different ManageIQ appliances.
 
 ==== Data Collection
 
@@ -449,7 +449,7 @@ If realtime data samples are regularly being lost, there are two remedial measur
 
 The default number of C&U Data Collector workers per appliance is 2. This can be increased to a maximum of 9, although consideration should be given to the additional CPU and memory requirements that an increased number of workers will place on an appliance. It may be more appropriate to add further appliances and scale horizontally. 
 
-For larger CloudForms installations it can be beneficial to separate the C&U Data Collector and Automation Engine server roles onto different CFME appliances, as both are resource intensive. Very large CloudForms installations (managing several thousand objects) may benefit from dedicated CFME appliances in the provider zones exclusively running the C&U data collector role.
+For larger ManageIQ installations it can be beneficial to separate the C&U Data Collector and Automation Engine server roles onto different ManageIQ appliances, as both are resource intensive. Very large ManageIQ installations (managing several thousand objects) may benefit from dedicated ManageIQ appliances in the provider zones exclusively running the C&U data collector role.
 
 ===== Reducing the Collection Interval
 
@@ -465,10 +465,10 @@ The collection interval can be reduced from 50 minutes to a smaller value (for e
     :vm: 50.minutes
 ----
 
-Reducing the collection interval places a higher overall load on both the EMS and CloudForms appliances, so this option should be considered with caution. 
+Reducing the collection interval places a higher overall load on both the EMS and ManageIQ appliances, so this option should be considered with caution. 
 
 ==== Data Processing
 
-If C&U data processing is taking too long to process the rollups for all objects, the number of C&U Data Processor workers can be increased from the default of 2 up to a maximum of 4 per appliance. As before, consideration should be given to the additional CPU and memory requirements that an increased number of workers will place on an appliance. Adding further CFME appliances to the zone may be more appropriate.
+If C&U data processing is taking too long to process the rollups for all objects, the number of C&U Data Processor workers can be increased from the default of 2 up to a maximum of 4 per appliance. As before, consideration should be given to the additional CPU and memory requirements that an increased number of workers will place on an appliance. Adding further ManageIQ appliances to the zone may be more appropriate.
 
-For larger CloudForms installations it can be beneficial to separate the C&U Data Processor and Automation Engine server roles onto different CFME appliances, as both are resource intensive. CloudForms installations managing several thousand objects may benefit from dedicated CFME appliances in the provider zones exclusively running the C&U Data Processor role.
+For larger ManageIQ installations it can be beneficial to separate the C&U Data Processor and Automation Engine server roles onto different ManageIQ appliances, as both are resource intensive. ManageIQ installations managing several thousand objects may benefit from dedicated ManageIQ appliances in the provider zones exclusively running the C&U Data Processor role.

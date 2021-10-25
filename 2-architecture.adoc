@@ -2,16 +2,16 @@
 [[architecture]]
 == Architecture
 
-In order to understand how to deploy CloudForms at scale, it is important to understand the architectural components that affect the design and deployment decisions. These principal components are described in this chapter.
+In order to understand how to deploy ManageIQ at scale, it is important to understand the architectural components that affect the design and deployment decisions. These principal components are described in this chapter.
 
 === Appliances
 
-To simplify installation, the Red Hat CloudForms product is distributed as a self-contained virtual machine template, which when cloned becomes a CloudForms Management Engine (CFME) _appliance_. Each release of the Red Hat CloudForms product since v2.0 has had a corresponding CloudForms Management Engine release, although the version numbers are not the same (for historical reasons). The following table summarizes the relative CFME and CloudForms product versions.
+To simplify installation, the Red Hat ManageIQ product is distributed as a self-contained virtual machine template, which when cloned becomes a ManageIQ Management Engine (ManageIQ) _appliance_. Each release of the Red Hat ManageIQ product since v2.0 has had a corresponding ManageIQ Management Engine release, although the version numbers are not the same (for historical reasons). The following table summarizes the relative ManageIQ and CloudForms product versions.
 
-.Summary of the relative CFME and CloudForms product versions
+.Summary of the relative ManageIQ and ManageIQ product versions
 [width="50%",cols="^25%,^25%",options="header",align="center"]
 |=======
-|CloudForms Management Engine version|CloudForms (Product) version
+|ManageIQ Management Engine version|ManageIQ (Product) version
 |5.1|2.0
 |5.2|3.0
 |5.3|3.1
@@ -22,30 +22,30 @@ To simplify installation, the Red Hat CloudForms product is distributed as a sel
 |5.8|4.5
 |=======
 
-A CFME 5.8 (CloudForms 4.5) appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.2, the CloudForms evmserverd service, and all associated Ruby gems installed. A new addition with CFME 5.8 is the Embedded Ansible 3.1 automation manager, also packaged with the appliance.
+A ManageIQ 5.8 (ManageIQ 4.5) appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.2, the ManageIQ evmserverd service, and all associated Ruby gems installed. A new addition with ManageIQ 5.8 is the Embedded Ansible 3.1 automation manager, also packaged with the appliance.
 
-The self-contained nature of appliances makes them ideal for horizontally scaling a CloudForms deployment to handle the increased load that larger clouds or virtual infrastructures present. 
+The self-contained nature of appliances makes them ideal for horizontally scaling a ManageIQ deployment to handle the increased load that larger clouds or virtual infrastructures present. 
 
 Appliances are downloadable as images or templates in formats suitable for VMware, Red Hat Virtualization, OpenStack, Amazon EC2, Microsoft's System Center Virtual Machine Manager or Azure cloud, and Google Compute Engine. The most recent versions can also be installed as an OpenShift 3.x container image (although this platform is a technology preview).
 
 === Database
 
-A CloudForms region stores all of its data in a PostgreSQL database. This is known as the _Virtual Management Database_ or _VMDB_, although the terms "database" and "VMDB" are often used interchangeably. The database can be internal and integral with an appliance running several other roles (typical for smaller CloudForms deployments), but for larger CloudForms deployments it is typically a dedicated database server or cluster configured for high availability and disaster recovery.
+A ManageIQ region stores all of its data in a PostgreSQL database. This is known as the _Virtual Management Database_ or _VMDB_, although the terms "database" and "VMDB" are often used interchangeably. The database can be internal and integral with an appliance running several other roles (typical for smaller ManageIQ deployments), but for larger ManageIQ deployments it is typically a dedicated database server or cluster configured for high availability and disaster recovery.
 
 === Application
 
-CloudForms is a Ruby on Rails application. The main __miq_server.rb__ Rails application is supported by a number of worker processes that perform the various interactions with managed systems, or collect and analyse data.
+ManageIQ is a Ruby on Rails application. The main __miq_server.rb__ Rails application is supported by a number of worker processes that perform the various interactions with managed systems, or collect and analyse data.
 
 === Providers
 
-CloudForms manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. CloudForms acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is referred to as an _External Management System_ or _EMS_.
+ManageIQ manages each cloud, container or virtual environment using modular subcomponents called providers. Each provider contains the classes and modules required to connect to and manage its specific target platform, and this provider specialization enables common functionality to be abstracted by provider type or class. ManageIQ acts as a "manager of managers", and in keeping with this concept, providers communicate with their respective underlying cloud or infrastructure platform manager (such as vCenter server or RHV-M) using the native APIs published for the platform manager. A provider's platform manager is referred to as an _External Management System_ or _EMS_.
 
 [NOTE]
 ====
-Although the terms _provider_ and _external management system (EMS)_ are often used interchangeably, there is an important distinction. The _provider_ is the CloudForms component, whereas the _EMS_ is the managed entity that the provider connects to, such as the VMware vCenter
+Although the terms _provider_ and _external management system (EMS)_ are often used interchangeably, there is an important distinction. The _provider_ is the ManageIQ component, whereas the _EMS_ is the managed entity that the provider connects to, such as the VMware vCenter
 ====
 
-Providers are broadly divided into categories, and in CloudForms 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the CloudForms Support Matrix document. The most recent Support Matrix document is here: https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/support_matrix/]
+Providers are broadly divided into categories, and in ManageIQ 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the ManageIQ Support Matrix document. The most recent Support Matrix document is here: https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/support_matrix/]
 
 ==== Provider Namespaces
 
@@ -65,7 +65,7 @@ Some examples of this are as follows:
 
 === Server Roles
 
-A CloudForms Management Engine 5.8 appliance can be configured to run up to 19 different server roles. These are enabled or disabled in the server *Configuration* section of the WebUI (see <<i2-1>>).
+A ManageIQ Management Engine 5.8 appliance can be configured to run up to 19 different server roles. These are enabled or disabled in the server *Configuration* section of the WebUI (see <<i2-1>>).
 
 [[i2-1]]
 .Server Roles
@@ -76,7 +76,7 @@ Server roles are implemented by worker processes (see <<workers>>), many of whic
 
 ==== Automation Engine
 
-The _Automation Engine_ role enables a CFME appliance to process queued automation tasks.footnote:[Not all automation tasks are queued. The automate methods that populate dynamic dialog elements, for example, are run immediately on the CFME appliance running the WebUI session, regardless of whether it has the _Automation Engine_ role enabled]. There should be at least one CFME appliance with this role set in each zone. The role does not have a dedicated worker, automate tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+The _Automation Engine_ role enables a ManageIQ appliance to process queued automation tasks.footnote:[Not all automation tasks are queued. The automate methods that populate dynamic dialog elements, for example, are run immediately on the ManageIQ appliance running the WebUI session, regardless of whether it has the _Automation Engine_ role enabled]. There should be at least one ManageIQ appliance with this role set in each zone. The role does not have a dedicated worker, automate tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
 [NOTE]
 ====
@@ -87,11 +87,11 @@ The Automation Engine also handles the processing of events through the automate
 
 Capacity and utilization (C&U) metrics processing is a relatively resource-intensive operation, and there are three roles associated with its operation.
 
-* The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one CFME appliance in a zone has this role enabled, only one will be active at a time. This role does not have a dedicated worker, the C&U Coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+* The _Capacity & Utilization Coordinator_ role acts as a scheduler for the collection of C&U data in a zone, and queues work for the Capacity and Utilization Data Collector. If more than one ManageIQ appliance in a zone has this role enabled, only one will be active at a time. This role does not have a dedicated worker, the C&U Coordinator tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
-* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there is no limit to the number of concurrent workers in a zone. Enabling this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a CFME appliance in a zone configured with a Red Hat Virtualization provider would contain one or more _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ processes if the C&U Data Collector server role was enabled.
+* The _Capacity & Utilization Data Collector_ performs the actual collection of C&U data. This role has a dedicated worker, and there is no limit to the number of concurrent workers in a zone. Enabling this role starts the provider-specific data collector workers for any providers in the appliance's zone. For example a ManageIQ appliance in a zone configured with a Red Hat Virtualization provider would contain one or more _ManageIQ::Providers::Redhat::InfraManager::MetricsCollectorWorker_ processes if the C&U Data Collector server role was enabled.
 
-* The _Capacity & Utilization Data Processor_ processes all of the data collected, allowing CloudForms to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_, and there is no limit to the number of concurrent workers in a zone. 
+* The _Capacity & Utilization Data Processor_ processes all of the data collected, allowing ManageIQ to create charts, display utilization statistics, etc.. This role has a dedicated worker called the _MiqEmsMetricsProcessorWorker_, and there is no limit to the number of concurrent workers in a zone. 
 
 [NOTE]
 ====
@@ -100,18 +100,18 @@ The Capacity & Utilization roles are described in more detail in <<capacity_and_
 
 ==== Database Operations
 
-The _Database Operations_ role enables a CFME appliance to run certain database maintenance tasks such as purging old metrics. This role does not have a dedicated worker, the database operations tasks are processed by a _MiqGenericWorker_.
+The _Database Operations_ role enables a ManageIQ appliance to run certain database maintenance tasks such as purging old metrics. This role does not have a dedicated worker, the database operations tasks are processed by a _MiqGenericWorker_.
 
 ==== Embedded Ansible
 
-The _Embedded Ansible_ role enables the use of the built-in Ansible automation manager, which allows Ansible playbooks to be run from service catalogs, or from control actions and alerts. If more than one CFME appliance in a region has this role enabled, only one will be active at a time. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but enabling the role also starts the following event catcher and refresh workers:
+The _Embedded Ansible_ role enables the use of the built-in Ansible automation manager, which allows Ansible playbooks to be run from service catalogs, or from control actions and alerts. If more than one ManageIQ appliance in a region has this role enabled, only one will be active at a time. This role has a dedicated worker called the _EmbeddedAnsibleWorker_, but enabling the role also starts the following event catcher and refresh workers:
 
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::EventCatcher_
 * _ManageIQ::Providers::EmbeddedAnsible::AutomationManager::RefreshWorker_ 
 
 [NOTE]
 ====
-Enabling the Embedded Ansible role adds approximately 2GBytes to the memory requirements of a CFME appliance
+Enabling the Embedded Ansible role adds approximately 2GBytes to the memory requirements of a ManageIQ appliance
 ====
 
 ==== Event Monitor
@@ -128,7 +128,7 @@ Some cloud providers automatically add several types of manager, and these might
 
 The event handler worker, called _MiqEventHandler_, is responsible for feeding the events from all event catchers in the zone into the automation engine's event switchboard for processing.
 
-There should be at least one CFME appliance with the event monitor role set in any zone containing a provider, however if more than one CFME appliance in a zone has this role, only one will be active at a time.
+There should be at least one ManageIQ appliance with the event monitor role set in any zone containing a provider, however if more than one ManageIQ appliance in a zone has this role, only one will be active at a time.
 
 [NOTE]
 ====
@@ -137,17 +137,17 @@ The event catcher and event handler workers are described in more detail in <<ev
 
 ==== Git Repositories Owner
 
-A CFME appliance with the _Git Repositories Owner_ role enabled is responsible for synchronising git repository data from a git source such as Github or Gitlab, and making it available to other appliances in the region that have the automation engine role set. The git repository data is copied to _/var/www/miq/vmdb/data/git_repos/<git_profile_name>/<git_repo_name>_ on the CFME appliance. This role does not have a dedicated worker.
+A ManageIQ appliance with the _Git Repositories Owner_ role enabled is responsible for synchronising git repository data from a git source such as Github or Gitlab, and making it available to other appliances in the region that have the automation engine role set. The git repository data is copied to _/var/www/miq/vmdb/data/git_repos/<git_profile_name>/<git_repo_name>_ on the ManageIQ appliance. This role does not have a dedicated worker.
 
 ==== Notifier
 
-The _Notifier_ role should be enabled if CloudForms is required to forward SNMP traps to a monitoring system, or to send e-mails. These might be initiated by an automate method or from a control policy, for example.
+The _Notifier_ role should be enabled if ManageIQ is required to forward SNMP traps to a monitoring system, or to send e-mails. These might be initiated by an automate method or from a control policy, for example.
 
-If more than one CFME appliance in a region has this role enabled, only one will be active at a time. This role does not have a dedicated worker, notifications are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+If more than one ManageIQ appliance in a region has this role enabled, only one will be active at a time. This role does not have a dedicated worker, notifications are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
 ==== Provider Inventory
 
-The _Provider Inventory_ role is responsible for refreshing provider inventory data for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one CFME appliance in a zone has this role enabled, only one will be active at a time. 
+The _Provider Inventory_ role is responsible for refreshing provider inventory data for all provider objects such as  virtual machines, hosts, clusters, tenants, or orchestration templates. It is also responsible for capturing datastore file lists. If more than one ManageIQ appliance in a zone has this role enabled, only one will be active at a time. 
 
 Setting this role starts the provider-specific refresh workers for any providers in the appliance's zone; a zone containing a RHV provider would contain a _ManageIQ::Providers::Redhat::InfraManager::RefreshWorker_ worker, for example. 
 
@@ -164,7 +164,7 @@ Provider Inventory refresh workers are described in more detail in <<inventory_r
 [[provider_operations_role]]
 ==== Provider Operations
 
-A CFME appliance with the _Provider Operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. The role does not have a dedicated worker, provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority. There is no limit to the number of concurrent workers handling this role in a zone.
+A ManageIQ appliance with the _Provider Operations_ role performs certain managed object operations such as stop, start, suspend, shutdown guest, clone, reconfigure, etc., to provider objects such as VMs. These operations might be initiated from the WebUI, from Automate, or from a REST call. It also handles some storage-specific operations such as creating cloud volume snapshots. The role does not have a dedicated worker, provider operations tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority. There is no limit to the number of concurrent workers handling this role in a zone.
 
 [NOTE]
 ====
@@ -175,33 +175,33 @@ For example, enabling the Provider Operations role in a WebUI zone can improve p
 
 ==== RHN Mirror
 
-A CFME appliance with the _RHN Mirror_ role acts as a repository server for the latest CloudForms Management Engine RPM packages. It also configures other CFME appliances within the same region to point to itself for updates. This provides a low bandwidth method to update environments with multiple appliances. The role does not have a dedicated worker.
+A ManageIQ appliance with the _RHN Mirror_ role acts as a repository server for the latest ManageIQ Management Engine RPM packages. It also configures other ManageIQ appliances within the same region to point to itself for updates. This provides a low bandwidth method to update environments with multiple appliances. The role does not have a dedicated worker.
 
 [[reporting_role]]
 ==== Reporting
 
-The _Reporting_ role allows a CFME appliance to generate reports. There should be at least one CFME appliance with this role in any zone in which reports are automatically scheduled or manually requested/queued.footnote:[See also https://bugzilla.redhat.com/show_bug.cgi?id=1422943] (such as from a WebUI zone).
+The _Reporting_ role allows a ManageIQ appliance to generate reports. There should be at least one ManageIQ appliance with this role in any zone in which reports are automatically scheduled or manually requested/queued.footnote:[See also https://bugzilla.redhat.com/show_bug.cgi?id=1422943] (such as from a WebUI zone).
 
 Enabling this server role starts one or more _MiqReportingWorker_ workers.
 
 ==== Scheduler
 
-The _Scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled CloudForms events will not occur. Enabling this server role starts the _MiqScheduleWorker_ worker.
+The _Scheduler_ sends messages to start all scheduled activities such as report generation, database backups, or to retire VMs or services. One server in each region must be assigned this role or scheduled ManageIQ events will not occur. Enabling this server role starts the _MiqScheduleWorker_ worker.
 
 [NOTE]
 ====
-Each CFME appliance also has a schedule worker running but this only handles local appliance task scheduling. 
+Each ManageIQ appliance also has a schedule worker running but this only handles local appliance task scheduling. 
 
 The Scheduler role is for region-specific scheduling and is only active on one appliance per region.
 ====
 
 ==== SmartProxy
 
-Enabling the _SmartProxy_ role turns on the embedded SmartProxy on the CFME appliance. The embedded SmartProxy can analyse virtual machines that are registered to a host and templates that are associated with a provider. Enabling this role starts three _MiqSmartProxyWorker_ workers. 
+Enabling the _SmartProxy_ role turns on the embedded SmartProxy on the ManageIQ appliance. The embedded SmartProxy can analyse virtual machines that are registered to a host and templates that are associated with a provider. Enabling this role starts three _MiqSmartProxyWorker_ workers. 
 
 ==== SmartState Analysis
 
-The _SmartState Analysis_ role controls which CFME appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker, SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
+The _SmartState Analysis_ role controls which ManageIQ appliances can control SmartState Analyses and process the data from the analysis. There should be at least one of these in each zone that contains a provider. This role does not have a dedicated worker, SmartState tasks are processed by either a _MiqGenericWorker_ or a _MiqPriorityWorker_, depending on message priority.
 
 [NOTE]
 ====
@@ -210,7 +210,7 @@ The SmartProxy and SmartState Analysis roles are described in more detail in <<s
 
 ==== User Interface
 
-This role enables access to a CFME appliance using the Red Hat CloudForms _Operations_ WebUI console. More than one CFME appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
+This role enables access to a ManageIQ appliance using the ManageIQ _Operations_ WebUI console. More than one ManageIQ appliance can have this role in a zone (the default behaviour is to have this role enabled on all appliances). Enabling this server role starts one or more _MiqUiWorker_ workers. 
 
 [NOTE]
 ====
@@ -219,20 +219,20 @@ The use of multiple WebUI appliances in conjunction with load balancers is descr
 
 ==== Web Services
 
-This role enables the RESTful Web service API on a CFME appliance. More than one CFME appliance can have this role in a zone. Enabling this server role starts one or more _MiqWebServiceWorker_ workers.
+This role enables the RESTful Web service API on a ManageIQ appliance. More than one ManageIQ appliance can have this role in a zone. Enabling this server role starts one or more _MiqWebServiceWorker_ workers.
 
 [NOTE]
 ====
-The Web Services role is required by the Self-Service User Interface (SSUI). Both the User Interface and Web Services roles must be enabled on a CFME appliance to enable logins to the Operations WebUI
+The Web Services role is required by the Self-Service User Interface (SSUI). Both the User Interface and Web Services roles must be enabled on a ManageIQ appliance to enable logins to the Operations WebUI
 ====
 
 ==== Websocket
 
-This role enables a CFME appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the WebUI notification service. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
+This role enables a ManageIQ appliance to be used as a websocket proxy for the VNC and SPICE HTML5 remote access consoles. It is also used by the WebUI notification service. Enabling this server role starts one or more _MiqWebsocketWorker_ workers. 
 
 ==== Server Role Zone Affinity
 
-Many server roles - or more accurately their worker processes - have an affinity to the zone with which the hosting CFME appliance is associated. For example messages intended for zone "A" will generally not be processed by worker processes in zone "B".
+Many server roles - or more accurately their worker processes - have an affinity to the zone with which the hosting ManageIQ appliance is associated. For example messages intended for zone "A" will generally not be processed by worker processes in zone "B".
 
 The following server roles have zone affinity:
 
@@ -254,7 +254,7 @@ Some server roles such as Automation Engine have optional zone affinity. If an a
 [[workers]]
 === Workers
 
-As can be seen, many of the server roles start worker processes. The currently running worker processes on a CFME appliance can be viewed using the following commands in a root bash shell on an appliance:
+As can be seen, many of the server roles start worker processes. The currently running worker processes on a ManageIQ appliance can be viewed using the following commands in a root bash shell on an appliance:
 
 [source,bash] 
 ----
@@ -271,7 +271,7 @@ image::images/workers.png[Screenshot,700,align="center"]
 
 [NOTE]
 ====
-CFME 5.8 has provided a new command that allows the currently running worker processes on the local server _and_ remote servers can be seen, ordered by server and zone:
+ManageIQ _Fine_ has provided a new command that allows the currently running worker processes on the local server _and_ remote servers can be seen, ordered by server and zone:
 
 [source,bash] 
 ----
@@ -294,13 +294,13 @@ Generic and Priority workers process tasks for the following server roles:
 [[worker_validation]]
 ==== Worker Validation
 
-Monitoring the health status of workers becomes important as a CloudForms installation is scaled. A server thread called __validate_worker__ checks that workers are alive (they have recently issued a 'heartbeat' ping.footnote:[Worker processes issue a heartbeat ping every 10 seconds]), and are within their time limits and memory thresholds. Some workers such as Refresh and SmartProxy workers have a maximum lifetime of 2 hours to restrict their resource consumption.footnote:[The time limit for Refresh workers sometimes needs to be increased in very large environments where a full refresh can take longer than 2 hours]. If this time limit is exceeded, the validate_worker thread will instruct the worker to exit at the end of its current message processing, and spawn a new replacement. 
+Monitoring the health status of workers becomes important as a ManageIQ installation is scaled. A server thread called __validate_worker__ checks that workers are alive (they have recently issued a 'heartbeat' ping.footnote:[Worker processes issue a heartbeat ping every 10 seconds]), and are within their time limits and memory thresholds. Some workers such as Refresh and SmartProxy workers have a maximum lifetime of 2 hours to restrict their resource consumption.footnote:[The time limit for Refresh workers sometimes needs to be increased in very large environments where a full refresh can take longer than 2 hours]. If this time limit is exceeded, the validate_worker thread will instruct the worker to exit at the end of its current message processing, and spawn a new replacement. 
 
 The following _evm.log_ line shows an example of the normal timeout processing for a RefreshWorker:
 
 [source,pypy] 
 ----
-INFO -- : MIQ(MiqServer#validate_worker) Worker ⏎
+INFO -- : ManageIQ(MiqServer#validate_worker) Worker ⏎
 [ManageIQ::Providers::Vmware::InfraManager::RefreshWorker] ⏎
 with ID: [1000000258651], PID: [17949], ⏎
 GUID: [77362eba-c179-11e6-aaa4-00505695be62] uptime has reached ⏎
@@ -311,7 +311,7 @@ The following log line shows an example of an abnormal exit request for a _MiqEm
 
 [source,pypy] 
 ----
-WARN -- : MIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] ⏎
+WARN -- : ManageIQ(MiqServer#validate_worker) Worker [MiqEmsMetricsProcessorWorker] ⏎
 with ID: [1000000259290], PID: [15553], ⏎
 GUID: [40698326-c18a-11e6-aaa4-00505695be62] process memory usage [598032000] ⏎
 exceeded limit [419430400], requesting worker to exit
@@ -328,16 +328,16 @@ Use this command to check for workers exceeding their memory allocation.
 
 ==== Tuning Workers
 
-It is often a requirement to tune the number of per-appliance workers and their memory thresholds when CloudForms is deployed to manage larger clouds or virtual infrastructures. 
+It is often a requirement to tune the number of per-appliance workers and their memory thresholds when ManageIQ is deployed to manage larger clouds or virtual infrastructures. 
 
 [[worker_memory_thresholds]]
 ===== Worker Memory Thresholds
 
-Each worker type is given an out-of-the-box initial memory threshold. The default values have been chosen to perform well with an 'average' workload, but these sometimes need to be increased, depending on the runtime requirements of the specific CloudForms installation. 
+Each worker type is given an out-of-the-box initial memory threshold. The default values have been chosen to perform well with an 'average' workload, but these sometimes need to be increased, depending on the runtime requirements of the specific ManageIQ installation. 
 
 ===== Adjusting Worker Settings
 
-The count and maximum memory thresholds for most worker types can be tuned from the CloudForms WebUI, in the *Workers* tab of the *Configuration -> Settings* page for each appliance (see <<i2-3>>).
+The count and maximum memory thresholds for most worker types can be tuned from the ManageIQ WebUI, in the *Workers* tab of the *Configuration -> Settings* page for each appliance (see <<i2-3>>).
 
 [[i2-3]]
 .Worker Settings
@@ -396,7 +396,7 @@ The queue workers receive work instructions from messages, delivered via a VMDB 
 
 ==== Message Prefetch
 
-To improve the performance of the messaging system, each CFME appliance prefetches a batch of messages into its local memcache. When a worker looks for work by searching for a "ready" state message, it calls an MiqQueue method __get_message_via_drb__ that transparently searches the prefetched message copies in the memcache. If a suitable message is found, the message's state in the VMDB __miq_queue__ table is changed to "dequeue", and the message is processed by the worker.
+To improve the performance of the messaging system, each ManageIQ appliance prefetches a batch of messages into its local memcache. When a worker looks for work by searching for a "ready" state message, it calls an MiqQueue method __get_message_via_drb__ that transparently searches the prefetched message copies in the memcache. If a suitable message is found, the message's state in the VMDB __miq_queue__ table is changed to "dequeue", and the message is processed by the worker.
 
 ==== Message Fields
 
@@ -408,7 +408,7 @@ Each message has an _Ident_ field that specifies the worker type that the messag
 
 ===== Role
 
-The message also has a _Role_ field that specifies the server role that the message is intended for. Some workers - the Generic and Priority workers for example - process the messages for several server roles such as Automation Engine or Provider Operations. Workers are aware of the active server roles on their CFME appliance, and only dequeue messages for the enabled server roles.
+The message also has a _Role_ field that specifies the server role that the message is intended for. Some workers - the Generic and Priority workers for example - process the messages for several server roles such as Automation Engine or Provider Operations. Workers are aware of the active server roles on their ManageIQ appliance, and only dequeue messages for the enabled server roles.
 
 ===== Priority
 
@@ -420,7 +420,7 @@ Each message has a _Zone_ field that specifies the zone that the receiving worke
 
 ===== Server
 
-Messages have a _Server_ field, which is only used if the message is intended to be processed by a particular CFME appliance. If used, the field specifies the GUID of the target CFME appliance.
+Messages have a _Server_ field, which is only used if the message is intended to be processed by a particular ManageIQ appliance. If used, the field specifies the GUID of the target ManageIQ appliance.
 
 ===== Timeout
 
@@ -432,7 +432,7 @@ The messages have a _State_ field that describes the current processing status o
 
 ==== Tracing Messages in evm.log
 
-Message processing is so critical to the overall performance of a CloudForms installation, that understanding how to follow messages in _evm.log_ is an important skill to master when scaling CloudForms. There are generally four stages of message processing that can be followed in the log file. For this example a message will be traced that instructs the Automation Engine (role "automate" in queue "generic") to run the method `AutomationTask.execute` on automation task ID 7829. 
+Message processing is so critical to the overall performance of a ManageIQ installation, that understanding how to follow messages in _evm.log_ is an important skill to master when scaling ManageIQ. There are generally four stages of message processing that can be followed in the log file. For this example a message will be traced that instructs the Automation Engine (role "automate" in queue "generic") to run the method `AutomationTask.execute` on automation task ID 7829. 
 
 ===== Stage 1 - Adding a message to the queue. 
 
@@ -440,7 +440,7 @@ A worker (or other Rails process) adds a message to the queue by calling `MiqQue
 
 [source,pypy] 
 ----
-... INFO -- : Q-task_id([automation_request_6298]) MIQ(MiqQueue.put) ⏎
+... INFO -- : Q-task_id([automation_request_6298]) ManageIQ(MiqQueue.put) ⏎
 Message id: [32425368], ⏎
 id: [], ⏎
 Zone: [RHV], ⏎
@@ -465,7 +465,7 @@ A Generic worker calls `get_message_via_drb` to dequeue the next available messa
 
 [source,pypy] 
 ----
-... INFO -- : MIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
+... INFO -- : ManageIQ(MiqGenericWorker::Runner#get_message_via_drb) ⏎
 Message id: [32425368], ⏎
 MiqWorker id: [260305], ⏎
 Zone: [RHV], ⏎
@@ -487,7 +487,7 @@ Dequeued in: [6.698342458] seconds
 
 [TIP]
 ====
-The "Dequeued in" value is particularly useful to monitor when scaling CloudForms as this shows the length of time that the message was in the queue before being processed. Although most messages are dequeued within a small number of seconds, a large value does not necessarily indicate a problem. Some messages are queued with a 'Deliver On' time which may be many minutes or hours in the future. The message will not be dequeued until the 'Deliver On' time has expired. 
+The "Dequeued in" value is particularly useful to monitor when scaling ManageIQ as this shows the length of time that the message was in the queue before being processed. Although most messages are dequeued within a small number of seconds, a large value does not necessarily indicate a problem. Some messages are queued with a 'Deliver On' time which may be many minutes or hours in the future. The message will not be dequeued until the 'Deliver On' time has expired. 
 
 An example of this can be seen in the message to schedule a C&U hourly rollup, as follows:
 
@@ -506,7 +506,7 @@ The MiqQueue class's `deliver` method writes to _evm.log_ to indicate that the m
 [source,pypy] 
 ----
 ... INFO -- : Q-task_id([automation_task_7829]) ⏎
-MIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
+ManageIQ(MiqQueue#deliver) Message id: [32425368], Delivering...
 ----
 
 ===== Stage 4 - Message delivered and work is complete.
@@ -516,7 +516,7 @@ Once the worker has finished processing the task associated with the message, th
 [source,pypy] 
 ----
 ... INFO -- : Q-task_id([automation_task_7829]) ⏎
-MIQ(MiqQueue#delivered) ⏎
+ManageIQ(MiqQueue#delivered) ⏎
 Message id: [32425368], ⏎
 State: [ok], ⏎
 Delivered in [23.469068759] seconds
@@ -524,12 +524,12 @@ Delivered in [23.469068759] seconds
 
 [TIP]
 ====
-The "Delivered in" value is particularly useful to monitor when scaling CloudForms as this shows the time that the worker spent processing the task associated with the message.
+The "Delivered in" value is particularly useful to monitor when scaling ManageIQ as this shows the time that the worker spent processing the task associated with the message.
 ====
 
 ==== Monitoring Message Queue Status
 
-The overall performance of any multi-appliance CloudForms installation is largely dependant on the timely processing of messages. Fortunately the internal `log_system_status` method writes the queue states to _evm.log_ every 5 minutes, and this information can be used to assess message throughput.  
+The overall performance of any multi-appliance ManageIQ installation is largely dependant on the timely processing of messages. Fortunately the internal `log_system_status` method writes the queue states to _evm.log_ every 5 minutes, and this information can be used to assess message throughput.  
 
 To find the numbers of messages currently being processed (in state "dequeue") in each zone, use the following bash command:
 
@@ -540,7 +540,7 @@ grep 'count for state=\["dequeue"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+... Q-task_id([log_status]) ManageIQ(MiqServer.log_system_status) ⏎
 [EVM Server (2768)] MiqQueue count for state=["dequeue"] ⏎
 by zone and role: {"RHV"=>{nil=>1, "automate"=>1, ⏎
 "ems_metrics_coordinator"=>1, "ems_metrics_collector"=>2, ⏎
@@ -562,7 +562,7 @@ grep 'count for state=\["error"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+... Q-task_id([log_status]) ManageIQ(MiqServer.log_system_status) ⏎
 [EVM Server (2768)] MiqQueue count for state=["error"] ⏎
 by zone and role: {"RHV"=>{nil=>36}, "default"=>{nil=>16}, ⏎
 "UI Zone"=>{nil=>35}}
@@ -577,7 +577,7 @@ grep 'count for state=\["ready"\]' evm.log
 
 [source,pypy] 
 ---- 
-... Q-task_id([log_status]) MIQ(MiqServer.log_system_status) ⏎
+... Q-task_id([log_status]) ManageIQ(MiqServer.log_system_status) ⏎
 [EVM Server (2768)] \ MiqQueue count for state=["ready"] ⏎
 by zone and role: {"UI Zone"=>{"smartstate"=>15, "smartproxy"=>2, ⏎
 nil=>4}, "default"=>{"automate"=>2, nil=>21, "smartstate"=>1, ⏎
@@ -588,7 +588,7 @@ nil=>19, "smartstate"=>2, "ems_metrics_processor"=>1259, ⏎
 
 [TIP]
 ====
-The count for "ready" state elements in the MiqQueue table should not be greater than twice the number of managed objects (e.g. hosts, VMs, storages) in the region. A higher number than this is a good indication that the worker count should be increased, or further CFME appliances deployed to handle the additional workload.
+The count for "ready" state elements in the MiqQueue table should not be greater than twice the number of managed objects (e.g. hosts, VMs, storages) in the region. A higher number than this is a good indication that the worker count should be increased, or further ManageIQ appliances deployed to handle the additional workload.
 ====
 
 === Summary of Roles, Workers and Messages
