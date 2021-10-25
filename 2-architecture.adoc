@@ -6,23 +6,9 @@ In order to understand how to deploy ManageIQ at scale, it is important to under
 
 === Appliances
 
-To simplify installation, the Red Hat ManageIQ product is distributed as a self-contained virtual machine template, which when cloned becomes a ManageIQ Management Engine (ManageIQ) _appliance_. Each release of the Red Hat ManageIQ product since v2.0 has had a corresponding ManageIQ Management Engine release, although the version numbers are not the same (for historical reasons). The following table summarizes the relative ManageIQ and CloudForms product versions.
+To simplify installation, the ManageIQ product is distributed as a self-contained virtual machine template, which when cloned becomes a ManageIQ _appliance_. 
 
-.Summary of the relative ManageIQ and ManageIQ product versions
-[width="50%",cols="^25%,^25%",options="header",align="center"]
-|=======
-|ManageIQ Management Engine version|ManageIQ (Product) version
-|5.1|2.0
-|5.2|3.0
-|5.3|3.1
-|5.4|3.2
-|5.5|4.0
-|5.6|4.1
-|5.7|4.2
-|5.8|4.5
-|=======
-
-A ManageIQ 5.8 (ManageIQ 4.5) appliance runs Red Hat Enterprise Linux 7.3, with PostgreSQL 9.5, Rails 5.0.2, the ManageIQ evmserverd service, and all associated Ruby gems installed. A new addition with ManageIQ 5.8 is the Embedded Ansible 3.1 automation manager, also packaged with the appliance.
+A ManageIQ _Fine_ appliance runs CentOS Linux 7.3, with PostgreSQL 9.5, Rails 5.0.2, the ManageIQ evmserverd service, and all associated Ruby gems installed. A new addition with ManageIQ _Fine_ is the Embedded Ansible 3.1 automation manager, also packaged with the appliance.
 
 The self-contained nature of appliances makes them ideal for horizontally scaling a ManageIQ deployment to handle the increased load that larger clouds or virtual infrastructures present. 
 
@@ -45,7 +31,7 @@ ManageIQ manages each cloud, container or virtual environment using modular subc
 Although the terms _provider_ and _external management system (EMS)_ are often used interchangeably, there is an important distinction. The _provider_ is the ManageIQ component, whereas the _EMS_ is the managed entity that the provider connects to, such as the VMware vCenter
 ====
 
-Providers are broadly divided into categories, and in ManageIQ 4.5 these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the ManageIQ Support Matrix document. The most recent Support Matrix document is here: https://access.redhat.com/documentation/en-us/red_hat_cloudforms/4.2/html/support_matrix/]
+Providers are broadly divided into categories, and in ManageIQ _Fine_ these are Cloud, Infrastructure, Container, Configuration Management, Automation, Network, Middleware and Storage.footnote:[The full list of supported providers and their capabilities is included in the ManageIQ Capabilities Matrix document. The most recent Capabilities Matrix document is here: https://www.manageiq.org/docs/reference/latest/capabilities_matrix/index.html]
 
 ==== Provider Namespaces
 
