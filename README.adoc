@@ -27,3 +27,10 @@ ifndef::env-github,backend-html5[]
 endif::[]
 
 // vim: set syntax=asciidoc:
+
+:toc:
+:toc-placement!:
+
+Here is my preamble paragraph, but I could really place the TOC anywhere! Lorem ipsum foo bar baz.
+
+toc::[]
